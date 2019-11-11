@@ -34,7 +34,7 @@ spec:
     cpuThresholdPercentage: 90
   prometheus:
     enabled: true
-    path: /metrics
+    path: /actuator/metrics
   vault:
     enabled: true
   webproxy: true
