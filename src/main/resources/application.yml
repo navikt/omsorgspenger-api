@@ -1,8 +1,16 @@
-
 management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+
   endpoints:
     web:
       exposure:
-        include:
-          - health
-          - metrics
+        include: health,info,prometheus
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true

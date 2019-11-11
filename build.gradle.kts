@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.2.0.RELEASE"
+	id("org.springframework.boot") version "2.2.1.RELEASE"
 	id("io.spring.dependency-management") version "1.0.8.RELEASE"
 	kotlin("jvm") version "1.3.50"
 	kotlin("plugin.spring") version "1.3.50"
@@ -22,6 +22,8 @@ repositories {
 }
 
 dependencies {
+	compile("io.micrometer:micrometer-core:1.3.1")
+	compile( "io.micrometer:micrometer-registry-prometheus:1.3.1")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
