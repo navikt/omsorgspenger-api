@@ -22,6 +22,9 @@ repositories {
 }
 
 dependencies {
+	// https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
+	compile("net.logstash.logback:logstash-logback-encoder:6.2")
+
 	compile("io.micrometer:micrometer-core:1.3.1")
 	compile( "io.micrometer:micrometer-registry-prometheus:1.3.1")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
