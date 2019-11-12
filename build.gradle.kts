@@ -22,11 +22,13 @@ repositories {
 }
 
 dependencies {
-	// https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
-	compile("net.logstash.logback:logstash-logback-encoder:6.2")
+	implementation("no.nav.security:token-validation-core:1.1.2")
 
-	compile("io.micrometer:micrometer-core:1.3.1")
-	compile( "io.micrometer:micrometer-registry-prometheus:1.3.1")
+	// https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
+	implementation("net.logstash.logback:logstash-logback-encoder:6.2")
+
+	implementation("io.micrometer:micrometer-core:1.3.1")
+	implementation( "io.micrometer:micrometer-registry-prometheus:1.3.1")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
