@@ -39,8 +39,10 @@ spec:
     enabled: true
   webproxy: true
   env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: prod
     - name: CORS_ADDRESSES
-      value: https://pleiepengesoknad.nav.no
+      value: https://omsorgspengersoknad.nav.no
     - name: ISSUER
       value: https://login.microsoftonline.com/8b7dfc8b-b52e-4741-bde4-d83ea366f94f/v2.0/
     - name: COOKIE_NAME

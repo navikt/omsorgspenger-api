@@ -39,6 +39,8 @@ spec:
     enabled: true
   webproxy: true
   env:
+    - name: SPRING_PROFILES_ACTIVE
+      - value: q
     - name: CORS_ADDRESSES
       value: https://omsorgspengersoknad-q.nav.no
     - name: ISSUER
