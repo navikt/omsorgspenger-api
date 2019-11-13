@@ -22,11 +22,21 @@ repositories {
 }
 
 dependencies {
-	implementation("no.nav.security:token-validation-core:1.1.2")
+	val springSecurityVersion = "5.2.1.RELEASE"
+
+	// See here for more info about configuring security: https://docs.spring.io/spring-security/site/docs/current/reference/html/webflux-oauth2.html#webflux-oauth2-resource-server
+	// https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-resource-server
+	implementation("org.springframework.security:spring-security-oauth2-resource-server:$springSecurityVersion")
+
+	// https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-jose
+	implementation("org.springframework.security:spring-security-oauth2-jose:$springSecurityVersion")
+
+
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-config
+    implementation("org.springframework.security:spring-security-config:$springSecurityVersion")
 
 	// https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
 	implementation("net.logstash.logback:logstash-logback-encoder:6.2")
-
 	implementation("io.micrometer:micrometer-core:1.3.1")
 	implementation( "io.micrometer:micrometer-registry-prometheus:1.3.1")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -41,6 +51,7 @@ dependencies {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 	}
 	testImplementation("io.projectreactor:reactor-test")
+	testImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks.withType<Test> {
