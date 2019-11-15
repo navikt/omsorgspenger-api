@@ -51,11 +51,7 @@ spec:
       value: https://login.microsoftonline.com/navtestb2c.onmicrosoft.com/discovery/v2.0/keys?p=b2c_1a_idporten_ver1
     - name: K9_OPPSLAG_REGISTER_URL
       value: https://api-gw-q1.oera.no/helse-reverse-proxy/k9-selvbetjening-oppslag
-    - name: TOKEN_URL
-      value: https://api-gw-q1.oera.no/helse-reverse-proxy/security-token-service/rest/v1/sts/token
     - name: K9_DOKUMENT_BASE_URL
       value: https://k9-dokument.nais.oera-q.local
-    - name: AZURE_CLIENT_ID
-      value: 1c494523-b92c-4387-9e18-a43e654d511c
-    - name: AZURE_V2_DISCOVERY_ENDPOINT
-      value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration
+    - name: LOGIN_SERVICE_CLIENT_ID
+      value: 0090b6e1-ffcc-4c37-bc21-049f7d1f0fe5
