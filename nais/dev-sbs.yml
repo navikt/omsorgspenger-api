@@ -42,7 +42,7 @@ spec:
     - name: SPRING_PROFILES_ACTIVE
       value: q
     - name: CORS_ADDRESSES
-      value: https://omsorgspengersoknad-q.nav.no
+      value: https://omsorgspengesoknad-q.nav.no, https://omsorgspengesoknad.nais.oera-q.local
     - name: ISSUER
       value: https://login.microsoftonline.com/d38f25aa-eab8-4c50-9f28-ebf92c1256f2/v2.0/
     - name: COOKIE_NAME

@@ -1,4 +1,4 @@
-package no.nav.omsorgspengerapi
+package no.nav.omsorgspengerapi.security
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
