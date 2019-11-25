@@ -1,3 +1,6 @@
 spring:
   profiles:
     active: q
+
+nav.no:
+  cors-addresses: ${CORS_ADDRESSES}
