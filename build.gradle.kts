@@ -34,6 +34,10 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.security/spring-security-config
     implementation("org.springframework.security:spring-security-config:$springSecurityVersion")
 
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-sleuth
+    implementation("org.springframework.cloud:spring-cloud-starter-sleuth:2.1.6.RELEASE")
+
+
     // https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
     implementation("net.logstash.logback:logstash-logback-encoder:6.2")
     implementation("io.micrometer:micrometer-core:1.3.1")
