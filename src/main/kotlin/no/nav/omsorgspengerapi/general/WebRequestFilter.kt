@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
-class WebRequestFilter: WebFilter {
+class WebRequestFilter : WebFilter {
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(WebRequestFilter::class.java)

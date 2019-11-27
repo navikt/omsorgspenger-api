@@ -2,7 +2,8 @@ spring:
   profiles:
     active: dev
   sleuth:
-    propagation-keys: X-Correlation-ID
+    propagation-keys:
+      - X-Correlation-ID
 
   security:
     oauth2:
