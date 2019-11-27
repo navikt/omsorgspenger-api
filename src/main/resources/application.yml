@@ -3,7 +3,7 @@ spring:
     active: dev
   sleuth:
     propagation-keys:
-      - X-Correlation-ID
+      - x-correlation-id
 
   security:
     oauth2:
