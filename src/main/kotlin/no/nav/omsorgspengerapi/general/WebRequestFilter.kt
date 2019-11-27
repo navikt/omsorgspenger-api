@@ -24,8 +24,17 @@ class WebRequestFilter : WebFilter {
      * @return `Mono<Void>` to indicate when request processing is complete
      */
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
+        val request = exchange.request
+        val path = request.path.toString().toLowerCase()
+
+        // Ignore actuator endpoint requests...
+        if (path.contains("actuator")) {
+            return chain.filter(exchange)
+        }
+
         val requestId = UUID.randomUUID()
         log.info("Genererer requestId: {}", requestId)
+
         exchange.response.headers.add("X-Request-Id", "generated-${requestId}")
 
         return chain.filter(exchange)
