@@ -2,10 +2,16 @@ spring:
   profiles:
     active: dev
   sleuth:
-    local-keys:
-      x-correlation-id
+    propagation:
+      tag:
+        enabled: true
+    log:
+      slf4j:
+        whitelisted-mdc-keys:
+    local-keys: x_correlation_id
+      - x_correlation_id
     propagation-keys:
-      - x-correlation-id
+      - x_correlation_id
 
   security:
     oauth2:
