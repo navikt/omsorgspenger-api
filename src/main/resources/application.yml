@@ -45,4 +45,4 @@ management:
       prometheus:
         enabled: true
 server:
-  forward-headers-strategy: native
+  forward-headers-strategy: framework
