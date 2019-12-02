@@ -46,3 +46,7 @@ management:
         enabled: true
 server:
   forward-headers-strategy: framework
+
+http:
+  proyHost: http://webproxy-utvikler.nav.no
+  proxyPort: 8088
