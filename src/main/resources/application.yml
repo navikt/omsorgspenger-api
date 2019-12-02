@@ -22,6 +22,7 @@ spring:
     property-naming-strategy: SNAKE_CASE
 
 nav.no:
+  http-proxy: ${HTTP_PROXY}
   gateways:
     k9_lookup_url: ${K9_OPPSLAG_REGISTER_URL}
   cors-addresses:
@@ -46,7 +47,3 @@ management:
         enabled: true
 server:
   forward-headers-strategy: framework
-
-http:
-  proyHost: http://webproxy-utvikler.nav.no
-  proxyPort: 8088

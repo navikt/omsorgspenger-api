@@ -1,3 +1,4 @@
 nav.no:
+  http-proxy: 'http://localhost:8088'
   k9_lookup_url: 'http://localhost:8080/child-lookup'
   cors-addresses: 'http://localhost:**'
