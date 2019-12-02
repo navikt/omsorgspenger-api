@@ -1,4 +1,4 @@
-package no.nav.omsorgspengerapi.general
+package no.nav.omsorgspengerapi.config.general
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
