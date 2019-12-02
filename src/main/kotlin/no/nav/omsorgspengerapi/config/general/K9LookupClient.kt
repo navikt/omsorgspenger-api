@@ -40,10 +40,10 @@ class K9LookupClient {
     }
 
     @Bean()
-    protected fun rest(): WebClient {
-
+    protected fun rest(reactorClientHttpConnector: ReactorClientHttpConnector): WebClient {
 
         return WebClient.builder()
+                .clientConnector(reactorClientHttpConnector)
                 .defaultHeader("Accept", "application/json")
                 .filter(logRequest())
                 .filter(ServerBearerExchangeFilterFunction())
