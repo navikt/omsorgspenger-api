@@ -11,7 +11,7 @@ import reactor.core.publisher.Flux
 @Service
 class ChildLookupService(private val client: WebClient, private val tracer: Tracer) {
 
-    @Value("\${nav.no.k9_lookup_url}")
+    @Value("\${nav.no.gateways.k9_lookup_url}")
     lateinit var baseUrl: String
 
     companion object {
