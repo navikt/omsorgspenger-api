@@ -9,8 +9,19 @@ import javax.annotation.PostConstruct
 @Configuration
 class HttpProxyConfig {
 
-    @Value("\${nav.no.http-proxy}")
-    lateinit var httpProxy: String
+    @Value("\${http.proxyHost}")
+    lateinit var httpProxyHost: String
+
+    @Value("\${http.proxyPort}")
+    lateinit var httpProxyPort: Integer
+
+    @Value("\${http.nonProxyHosts}")
+    lateinit var httpNonProxyHosts: String
+    @Value("\${https.proxyHost}")
+    lateinit var httpsProxyHost: String
+
+    @Value("\${https.proxyPort}")
+    lateinit var httpsProxyPort: String
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(HttpProxyConfig::class.java)
@@ -18,7 +29,13 @@ class HttpProxyConfig {
 
     @PostConstruct
     fun log() {
-        log.info("Got hhtpProxy: {}", httpProxy)
-    }
+        httpNonProxyHosts = httpNonProxyHosts.replace("*", "\\*")
+        log.info("http.proxyHost={}", httpProxyHost)
+        log.info("http.proxyPort={}", httpProxyPort)
+        log.info("http.nonProxyHosts={}", httpNonProxyHosts)
+        log.info("https.proxyHost={}", httpsProxyHost)
+        log.info("https.proxyHost={}", httpsProxyPort)
 
+
+    }
 }

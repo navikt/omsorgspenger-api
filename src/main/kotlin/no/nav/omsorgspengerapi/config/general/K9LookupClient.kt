@@ -23,13 +23,14 @@ class K9LookupClient {
     }
 
     @Bean
-    fun httpClient(): HttpClient {
+    fun httpClient(proxyConfig: HttpProxyConfig): HttpClient {
         return HttpClient.create()
                 .tcpConfiguration { tcpClient: TcpClient ->
                     tcpClient.proxy { proxy: ProxyProvider.TypeSpec ->
                         proxy.type(ProxyProvider.Proxy.HTTP)
-                                .host("http://webproxy-utvikler.nav.no")
-                                .port(8088)
+                                .host(proxyConfig.httpProxyHost)
+                                .port(proxyConfig.httpProxyPort.toInt())
+                                .nonProxyHosts(proxyConfig.httpNonProxyHosts)
                     }
                 }
     }
@@ -40,7 +41,7 @@ class K9LookupClient {
     }
 
     @Bean()
-    protected fun rest(reactorClientHttpConnector: ReactorClientHttpConnector): WebClient {
+    protected fun webClient(reactorClientHttpConnector: ReactorClientHttpConnector): WebClient {
 
         return WebClient.builder()
                 .clientConnector(reactorClientHttpConnector)

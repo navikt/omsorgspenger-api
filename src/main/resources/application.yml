@@ -22,7 +22,6 @@ spring:
     property-naming-strategy: SNAKE_CASE
 
 nav.no:
-  http-proxy: ${HTTP_PROXY}
   gateways:
     k9_lookup_url: ${K9_OPPSLAG_REGISTER_URL}
   cors-addresses:
@@ -45,5 +44,11 @@ management:
     export:
       prometheus:
         enabled: true
-server:
-  forward-headers-strategy: framework
+
+http:
+  proxyHost:
+  proxyPort:
+  nonProxyHosts:
+https:
+  proxyHost:
+  proxyPort:

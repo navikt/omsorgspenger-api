@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: test
+
+http:
+  proxyHost: localhost
+  proxyPort: 8080
+  nonProxyHosts: localhost
+https:
+  proxyHost: localhost
+  proxyPort: 8080
+
+nav.no:
+  k9_lookup_url: 'http://localhost:8080/child-lookup'
+  cors-addresses: 'http://localhost:**'
