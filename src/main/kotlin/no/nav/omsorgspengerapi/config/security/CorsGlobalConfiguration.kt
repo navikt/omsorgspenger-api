@@ -14,7 +14,7 @@ class CorsGlobalConfiguration : WebFluxConfigurer {
     private lateinit var corsAddresses: List<String>
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(CorsGlobalConfiguration.javaClass)
+        private val log: Logger = LoggerFactory.getLogger(CorsGlobalConfiguration::class.java)
     }
 
     override fun addCorsMappings(corsRegistry: CorsRegistry) {

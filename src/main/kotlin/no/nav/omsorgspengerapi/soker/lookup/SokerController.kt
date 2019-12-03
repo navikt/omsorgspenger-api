@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono
 class SokerController(private val client: WebClient, private val tracer: Tracer) {
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(SokerController.javaClass)
+        private val log: Logger = LoggerFactory.getLogger(SokerController::class.java)
     }
 
     @GetMapping("/soker")
