@@ -19,33 +19,18 @@ import reactor.netty.tcp.TcpClient
 
 
 @Configuration
-class K9LookupClient {
+class K9LookupClient(private val proxyConfig: HttpProxyConfig) {
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(K9LookupClient::class.java)
     }
 
-    @Bean
-    fun httpClient(proxyConfig: HttpProxyConfig): HttpClient {
-        return HttpClient.create()
-                .tcpConfiguration { tcpClient: TcpClient ->
-                    tcpClient.proxy { proxy: ProxyProvider.TypeSpec ->
-                        proxy.type(ProxyProvider.Proxy.HTTP)
-                                .host(proxyConfig.httpProxyHost)
-                                .port(proxyConfig.httpProxyPort.toInt())
-                                .nonProxyHosts(proxyConfig.httpNonProxyHosts)
-                    }
-                }
-    }
-
-    @Bean
-    @Primary
-    fun reactorClientHttpConnector(httpClient: HttpClient): ReactorClientHttpConnector {
-        return ReactorClientHttpConnector(httpClient)
-    }
-
     @Bean()
-    protected fun webClient(reactorClientHttpConnector: ReactorClientHttpConnector): WebClient {
+    protected fun webClient(): WebClient {
+        val reactorClientHttpConnector = ReactorClientHttpConnector(HttpClient.create()
+                .tcpConfiguration { tcpClient: TcpClient ->
+                    resolveProxieSettings(tcpClient)
+                })
 
         return WebClient.builder()
                 .clientConnector(reactorClientHttpConnector)
@@ -53,6 +38,19 @@ class K9LookupClient {
                 .filter(logRequest())
                 .filter(ServerBearerExchangeFilterFunction())
                 .build()
+    }
+
+    private fun resolveProxieSettings(tcpClient: TcpClient): TcpClient? {
+        return if (proxyConfig.httpProxyHost == "localhost" && proxyConfig.httpProxyPort.toInt() == 8080) {
+            tcpClient
+        } else {
+            tcpClient.proxy { proxy: ProxyProvider.TypeSpec ->
+                proxy.type(ProxyProvider.Proxy.HTTP)
+                        .host(proxyConfig.httpProxyHost)
+                        .port(proxyConfig.httpProxyPort.toInt())
+                        .nonProxyHosts(proxyConfig.httpNonProxyHosts)
+            }
+        }
     }
 
     private fun logRequest(): ExchangeFilterFunction {
