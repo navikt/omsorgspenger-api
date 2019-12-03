@@ -17,7 +17,6 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class SecurityConfig(
-        @Qualifier("jwtDecoder") private val reactiveJwtDecoder: ReactiveJwtDecoder,
         private val webClient: WebClient,
         private val audienceValidator: AudienceValidator
 ) {
