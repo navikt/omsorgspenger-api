@@ -11,5 +11,6 @@ https:
   proxyPort: 8080
 
 nav.no:
-  k9_lookup_url: 'http://localhost:8080/child-lookup'
+  gateways:
+    k9_lookup_url: 'http://localhost:8080/child-lookup'
   cors-addresses: 'http://localhost:**'
