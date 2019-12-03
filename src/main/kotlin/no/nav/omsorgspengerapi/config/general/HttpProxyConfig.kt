@@ -29,10 +29,10 @@ class HttpProxyConfig {
 
     @PostConstruct
     fun log() {
-        httpNonProxyHosts = httpNonProxyHosts.replace("*", "\\*")
         log.info("http.proxyHost={}", httpProxyHost)
         log.info("http.proxyPort={}", httpProxyPort)
         log.info("http.nonProxyHosts={}", httpNonProxyHosts)
+        httpNonProxyHosts = httpNonProxyHosts.replace("*", "\\*")
         log.info("https.proxyHost={}", httpsProxyHost)
         log.info("https.proxyHost={}", httpsProxyPort)
 
