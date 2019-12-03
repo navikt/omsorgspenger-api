@@ -1,5 +1,6 @@
 package no.nav.omsorgspengerapi.config.general
 
+import io.netty.handler.ssl.SslContextBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
@@ -12,6 +13,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import reactor.netty.tcp.ProxyProvider
+import reactor.netty.tcp.SslProvider
 import reactor.netty.tcp.TcpClient
 
 
@@ -24,7 +26,13 @@ class K9LookupClient {
 
     @Bean
     fun httpClient(proxyConfig: HttpProxyConfig): HttpClient {
+        val sslContext = SslContextBuilder
+                .forClient()
+                .sslProvider(io.netty.handler.ssl.SslProvider.JDK)
+                .build()
+
         return HttpClient.create()
+                .secure {ssl: SslProvider.SslContextSpec -> ssl.sslContext(sslContext) }
                 .tcpConfiguration { tcpClient: TcpClient ->
                     tcpClient.proxy { proxy: ProxyProvider.TypeSpec ->
                         proxy.type(ProxyProvider.Proxy.HTTP)
