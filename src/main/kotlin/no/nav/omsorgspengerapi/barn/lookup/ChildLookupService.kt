@@ -21,7 +21,7 @@ class ChildLookupService(
     lateinit var baseUrl: URI
 
     companion object {
-        private val logger: Logger = LoggerFactory.getLogger(ChildLookupService::class.java)
+        private val log: Logger = LoggerFactory.getLogger(ChildLookupService::class.java)
         private val attributes = listOf(
                 "barn[].aktør_id",
                 "barn[].fornavn",
@@ -32,7 +32,7 @@ class ChildLookupService(
     }
 
     fun lookupChild(): Flux<ChildLookupDTO> {
-
+        log.info("ChildLookupService BaseUrl: {}", baseUrl)
         return client
                 .get()
                 .uri {uri: UriBuilder -> uri
