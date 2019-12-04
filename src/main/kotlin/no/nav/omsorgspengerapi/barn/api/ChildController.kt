@@ -15,7 +15,7 @@ class ChildController(private val childLookupService: ChildLookupService) {
         return childLookupService.lookupChild()
     }
 
-    @GetMapping("/child-lookup")
+    @GetMapping("/child-lookup/meg")
     fun mockChildLookup(): List<ChildLookupDTO> {
         return listOf<ChildLookupDTO>(
                 ChildLookupDTO(LocalDate.now().minusYears(20), "Mock", "Mocki", "Mockesen", "123456")
