@@ -38,10 +38,6 @@ class SecurityConfig(
                 }
                 .oauth2ResourceServer().jwt().jwtDecoder(jwtDecoder(webClient))
 
-        http
-                .headers()
-                .hsts().disable()
-
         return http.build()
     }
 
