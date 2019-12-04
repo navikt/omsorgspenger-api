@@ -2,8 +2,10 @@ package no.nav.omsorgspengerapi.barn.lookup
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonRootName
 import java.time.LocalDate
 
+@JsonRootName("barn")
 data class ChildLookupDTO (
         @JsonProperty("fødselsdato") @JsonFormat(pattern = "yyyy-MM-dd") val fodselsdato: LocalDate,
         @JsonProperty("fornavn") val fornavn: String,
