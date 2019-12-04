@@ -15,6 +15,8 @@ import reactor.netty.http.client.HttpClient
 
 import reactor.netty.tcp.ProxyProvider
 import reactor.netty.tcp.TcpClient
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 
 @Configuration
@@ -58,7 +60,7 @@ class WebClientConfig(private val proxyConfig: HttpProxyConfig) {
 
     private fun logRequest(): ExchangeFilterFunction {
         return ExchangeFilterFunction { clientRequest: ClientRequest, next: ExchangeFunction ->
-            log.info("Utgående kall: {} {}", clientRequest.method(), clientRequest.url())
+            log.info("Utgående kall: {} {}", clientRequest.method(), URLDecoder.decode(clientRequest.url().toString(), StandardCharsets.UTF_8))
             log.info("Headers: {}", clientRequest.headers().filter { it.key != "x-nav-apiKey" })
             log.info("Attributes: {}", clientRequest.attributes())
 
