@@ -1,4 +1,7 @@
 nav.no:
+  authorization:
+    api-gw-header: x-nav-apiKey
+    api-gw-key: mock-key
   gateways:
     k9_lookup_url: 'http://localhost:8080/child-lookup'
   cors-addresses: 'http://localhost:**'

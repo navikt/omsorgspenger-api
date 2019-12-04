@@ -22,6 +22,9 @@ spring:
     property-naming-strategy: SNAKE_CASE
 
 nav.no:
+  authorization:
+    api-gw-header: x-nav-apiKey
+    api-gw-key: ${API_GATEWAY_API_KEY}
   gateways:
     k9_lookup_url: ${K9_OPPSLAG_REGISTER_URL}
   cors-addresses:

@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 
 data class ChildLookupDTO (
-        @JsonFormat(pattern = "yyyy-MM-dd") val fodselsdato: LocalDate,
-        @JsonProperty val fornavn: String,
-        @JsonProperty val mellomnavn: String? = null,
-        @JsonProperty val etternavn: String,
-        @JsonProperty val aktoerId: String
+        @JsonProperty("fødselsdato") @JsonFormat(pattern = "yyyy-MM-dd") val fodselsdato: LocalDate,
+        @JsonProperty("fornavn") val fornavn: String,
+        @JsonProperty("mellomnavn") val mellomnavn: String? = null,
+        @JsonProperty("etternavn") val etternavn: String,
+        @JsonProperty("aktør_id") val aktoerId: String
 )

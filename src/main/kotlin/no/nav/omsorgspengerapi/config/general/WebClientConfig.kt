@@ -4,7 +4,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Primary
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 
 import org.springframework.security.oauth2.server.resource.web.reactive.function.client.ServerBearerExchangeFilterFunction
@@ -19,17 +18,18 @@ import reactor.netty.tcp.TcpClient
 
 
 @Configuration
-class K9LookupClient(private val proxyConfig: HttpProxyConfig) {
+class WebClientConfig(private val proxyConfig: HttpProxyConfig) {
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(K9LookupClient::class.java)
+        private val log: Logger = LoggerFactory.getLogger(WebClientConfig::class.java)
     }
 
     @Bean()
     protected fun webClient(): WebClient {
+        // Configure clientConnector
         val reactorClientHttpConnector = ReactorClientHttpConnector(HttpClient.create()
                 .tcpConfiguration { tcpClient: TcpClient ->
-                    resolveProxieSettings(tcpClient)
+                    resolveProxieSettings(tcpClient) // Resolve proxy settings.
                 })
 
         return WebClient.builder()
@@ -40,6 +40,9 @@ class K9LookupClient(private val proxyConfig: HttpProxyConfig) {
                 .build()
     }
 
+    /**
+     * Resolves and configures a TCP CLient with proxy settings
+     */
     private fun resolveProxieSettings(tcpClient: TcpClient): TcpClient? {
         return if (proxyConfig.httpProxyHost == "localhost" && proxyConfig.httpProxyPort.toInt() == 8080) {
             tcpClient
@@ -56,7 +59,7 @@ class K9LookupClient(private val proxyConfig: HttpProxyConfig) {
     private fun logRequest(): ExchangeFilterFunction {
         return ExchangeFilterFunction { clientRequest: ClientRequest, next: ExchangeFunction ->
             log.info("Utgående kall: {} {}", clientRequest.method(), clientRequest.url())
-            log.info("Headers: {}", clientRequest.headers())
+            log.info("Headers: {}", clientRequest.headers().filter { it.key != "x-nav-apiKey" })
             log.info("Attributes: {}", clientRequest.attributes())
 
             next.exchange(clientRequest)

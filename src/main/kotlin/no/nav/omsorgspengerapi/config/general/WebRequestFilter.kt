@@ -33,7 +33,7 @@ class WebRequestFilter : WebFilter {
         }
 
         val requestId = UUID.randomUUID()
-        log.info("Genererer requestId: {}", requestId)
+        log.info("Generating requestId: {}", requestId)
 
         exchange.response.headers.add("X-Request-Id", "generated-${requestId}")
 
