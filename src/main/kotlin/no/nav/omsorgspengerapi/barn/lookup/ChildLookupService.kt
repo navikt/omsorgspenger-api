@@ -39,7 +39,8 @@ class ChildLookupService(
                         .scheme(baseUrl.scheme)
                         .host(baseUrl.host)
                         .port(baseUrl.port)
-                        .path("${baseUrl.path}/meg")
+                        .path(baseUrl.path)
+                        .path("/meg")
                         .queryParam("a", attributes)
                         .build()
                 }
@@ -47,7 +48,6 @@ class ChildLookupService(
                 .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
                 .retrieve()
                 .bodyToFlux(ChildLookupDTO::class.java)
+                .doOnError { err: Throwable -> log.error("Got error upstream: {}, StackTrace: {}", err.message, err) }
     }
-
-    //fun toChildV1() =
 }
