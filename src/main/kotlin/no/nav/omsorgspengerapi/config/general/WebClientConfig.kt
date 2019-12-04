@@ -58,6 +58,7 @@ class WebClientConfig(private val proxyConfig: HttpProxyConfig) {
 
     private fun logRequest(): ExchangeFilterFunction {
         return ExchangeFilterFunction { clientRequest: ClientRequest, next: ExchangeFunction ->
+            log.info("Calling --> {}", "${clientRequest.url().host}/${clientRequest.url().path}?${clientRequest.url().query}")
             log.info("Utgående kall: {} {}", clientRequest.method(), clientRequest.url())
             log.info("Headers: {}", clientRequest.headers().filter { it.key != "x-nav-apiKey" })
             log.info("Attributes: {}", clientRequest.attributes())

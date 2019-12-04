@@ -33,11 +33,7 @@ class ChildLookupService(
         return client
                 .get()
                 .uri(baseUrl)
-                .attribute("barn[].aktør_id", "")
-                .attribute("barn[].fornavn", "")
-                .attribute("barn[].mellomnavn", "")
-                .attribute("barn[].etternavn", "")
-                .attribute("barn[].fødselsdato", "")
+                .attributes { attributter }
                 .header("X-Correlation-ID", tracer.currentSpan().context().traceIdString())
                 .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
                 .retrieve()
