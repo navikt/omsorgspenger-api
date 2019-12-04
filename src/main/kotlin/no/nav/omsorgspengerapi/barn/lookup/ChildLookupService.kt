@@ -39,7 +39,7 @@ class ChildLookupService(
                         .scheme(baseUrl.scheme)
                         .host(baseUrl.host)
                         .port(baseUrl.port)
-                        .path(baseUrl.path)
+                        .path("${baseUrl.path}/meg")
                         .queryParam("a", attributes)
                         .build()
                 }
