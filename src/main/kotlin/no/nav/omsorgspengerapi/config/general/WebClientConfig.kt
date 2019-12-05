@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 
 import org.springframework.security.oauth2.server.resource.web.reactive.function.client.ServerBearerExchangeFilterFunction
@@ -26,8 +27,8 @@ class WebClientConfig(private val proxyConfig: HttpProxyConfig) {
         private val log: Logger = LoggerFactory.getLogger(WebClientConfig::class.java)
     }
 
-    @Bean()
-    protected fun webClient(): WebClient {
+    @Bean(name = ["proxyClient"])
+    protected fun proxyClient(): WebClient {
         // Configure clientConnector
         val reactorClientHttpConnector = ReactorClientHttpConnector(HttpClient.create()
                 .tcpConfiguration { tcpClient: TcpClient ->
@@ -37,6 +38,15 @@ class WebClientConfig(private val proxyConfig: HttpProxyConfig) {
         return WebClient.builder()
                 .clientConnector(reactorClientHttpConnector)
                 .defaultHeader("Accept", "application/json")
+                .filter(logRequest())
+                .filter(ServerBearerExchangeFilterFunction())
+                .build()
+    }
+
+    @Bean(name = ["noProxyClient"])
+    @Primary
+    protected fun noProxyClient(): WebClient {
+        return WebClient.builder()
                 .filter(logRequest())
                 .filter(ServerBearerExchangeFilterFunction())
                 .build()

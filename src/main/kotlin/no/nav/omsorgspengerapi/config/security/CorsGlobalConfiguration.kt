@@ -21,9 +21,9 @@ class CorsGlobalConfiguration : WebFluxConfigurer {
         log.info("CORS --> allowed origins: ${corsAddresses}")
 
         corsRegistry
-//                .addMapping("/**")
-//                .allowedOrigins(*corsAddresses.toTypedArray())
-//                .allowedMethods("*")
-//                .maxAge(3600)
+                .addMapping("/**")
+                .allowedOrigins(*corsAddresses.toTypedArray())
+                .allowedMethods("*")
+                .maxAge(3600)
     }
 }
