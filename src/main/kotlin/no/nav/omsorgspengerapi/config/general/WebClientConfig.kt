@@ -27,7 +27,7 @@ class WebClientConfig(private val proxyConfig: HttpProxyConfig) {
         private val log: Logger = LoggerFactory.getLogger(WebClientConfig::class.java)
     }
 
-    @Bean(name = ["proxyClient"])
+    @Bean()
     protected fun proxyClient(): WebClient {
         // Configure clientConnector
         val reactorClientHttpConnector = ReactorClientHttpConnector(HttpClient.create()
@@ -38,15 +38,6 @@ class WebClientConfig(private val proxyConfig: HttpProxyConfig) {
         return WebClient.builder()
                 .clientConnector(reactorClientHttpConnector)
                 .defaultHeader("Accept", "application/json")
-                .filter(logRequest())
-                .filter(ServerBearerExchangeFilterFunction())
-                .build()
-    }
-
-    @Bean(name = ["noProxyClient"])
-    @Primary
-    protected fun noProxyClient(): WebClient {
-        return WebClient.builder()
                 .filter(logRequest())
                 .filter(ServerBearerExchangeFilterFunction())
                 .build()

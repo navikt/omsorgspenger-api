@@ -9,7 +9,7 @@ nav.no:
 http:
   proxyHost: localhost
   proxyPort: 8080
-  nonProxyHosts: localhost
+  nonProxyHosts: localhost,127.0.0.1,login.microsoftonline.com
 https:
   proxyHost: localhost
   proxyPort: 8080

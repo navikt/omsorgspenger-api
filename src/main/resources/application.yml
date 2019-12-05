@@ -51,7 +51,7 @@ management:
 http:
   proxyHost:
   proxyPort:
-  nonProxyHosts:
+  nonProxyHosts: ${NO_PROXY}
 https:
   proxyHost:
   proxyPort:
