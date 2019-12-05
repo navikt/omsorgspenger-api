@@ -48,10 +48,10 @@ management:
       prometheus:
         enabled: true
 
+no-proxy: ${NO_PROXY}
 http:
   proxyHost:
   proxyPort:
-  nonProxyHosts: ${NO_PROXY}
 https:
   proxyHost:
   proxyPort:
