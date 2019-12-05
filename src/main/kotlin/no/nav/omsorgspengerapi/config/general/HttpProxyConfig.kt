@@ -15,7 +15,7 @@ class HttpProxyConfig {
     @Value("\${http.proxyPort}")
     lateinit var httpProxyPort: Integer
 
-    @Value("\${no-proxy}")
+    @Value("\${http.no-proxy}")
     lateinit var httpNonProxyHosts: String
     @Value("\${https.proxyHost}")
     lateinit var httpsProxyHost: String
@@ -34,7 +34,5 @@ class HttpProxyConfig {
         log.info("NO_PROXY={}", httpNonProxyHosts)
         log.info("https.proxyHost={}", httpsProxyHost)
         log.info("https.proxyHost={}", httpsProxyPort)
-
-
     }
 }

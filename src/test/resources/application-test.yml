@@ -2,10 +2,10 @@ spring:
   profiles:
     active: test
 
-no-proxy: localhost
 http:
   proxyHost: localhost
   proxyPort: 8080
+  no-proxy: localhost
 https:
   proxyHost: localhost
   proxyPort: 8080
