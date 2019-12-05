@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
-import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.net.URI
 
 @Service
@@ -31,7 +31,7 @@ class ChildLookupService(
 
     }
 
-    fun lookupChild(): Flux<ChildLookupDTO> {
+    fun lookupChild(): Mono<ChildLookupResponse> {
         log.info("ChildLookupService BaseUrl: {}", baseUrl)
         return client
                 .get()
@@ -47,7 +47,7 @@ class ChildLookupService(
                 .header("X-Correlation-ID", tracer.currentSpan().context().traceIdString())
                 .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
                 .retrieve()
-                .bodyToFlux(ChildLookupDTO::class.java)
+                .bodyToMono(ChildLookupResponse::class.java)
                 .doOnError { err: Throwable -> log.error("Got error upstream: {}, StackTrace: {}", err.message, err) }
     }
 }
