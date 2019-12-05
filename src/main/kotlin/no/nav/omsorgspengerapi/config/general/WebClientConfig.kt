@@ -53,7 +53,7 @@ class WebClientConfig(private val proxyConfig: HttpProxyConfig) {
                 proxy.type(ProxyProvider.Proxy.HTTP)
                         .host(proxyConfig.httpProxyHost)
                         .port(proxyConfig.httpProxyPort.toInt())
-                        //.nonProxyHosts(proxyConfig.httpNonProxyHosts)
+                        .nonProxyHosts(proxyConfig.httpNonProxyHosts)
             }
         }
     }
