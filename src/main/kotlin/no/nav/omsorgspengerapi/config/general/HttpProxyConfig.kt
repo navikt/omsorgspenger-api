@@ -31,7 +31,7 @@ class HttpProxyConfig {
     fun log() {
         log.info("http.proxyHost={}", httpProxyHost)
         log.info("http.proxyPort={}", httpProxyPort)
-        httpNonProxyHosts = httpProxyHost.replace("*", "\\*")
+        httpNonProxyHosts = httpNonProxyHosts.replace("*", "\\*")
         log.info("http.nonProxyHosts={}", httpNonProxyHosts)
         log.info("https.proxyHost={}", httpsProxyHost)
         log.info("https.proxyHost={}", httpsProxyPort)
