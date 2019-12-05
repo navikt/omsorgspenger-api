@@ -5,7 +5,7 @@ spring:
 http:
   proxyHost: localhost
   proxyPort: 8080
-  no-proxy: localhost
+  nonProxyHosts: localhost
 https:
   proxyHost: localhost
   proxyPort: 8080

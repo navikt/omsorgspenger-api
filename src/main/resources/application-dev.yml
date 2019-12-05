@@ -6,10 +6,10 @@ nav.no:
     k9_lookup_url: 'http://localhost:8080/child-lookup'
   cors-addresses: 'http://localhost:**'
 
-no-proxy: localhost,127.0.0.1,login.microsoftonline.com
 http:
   proxyHost: localhost
   proxyPort: 8080
+  nonProxyHosts: localhost,127.0.0.1,login.microsoftonline.com
 https:
   proxyHost: localhost
   proxyPort: 8080
