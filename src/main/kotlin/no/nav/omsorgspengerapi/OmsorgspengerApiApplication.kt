@@ -6,11 +6,9 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.web.reactive.config.EnableWebFlux
 
 @SpringBootApplication
-@EnableWebFlux
 @EnableWebFluxSecurity
 class OmsorgspengerApiApplication
 
 fun main(args: Array<String>) {
 	runApplication<OmsorgspengerApiApplication>(*args)
-
 }
