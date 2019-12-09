@@ -1,5 +1,6 @@
-package no.nav.omsorgspengerapi.config.general
+package no.nav.omsorgspengerapi.config.general.webClient
 
+import no.nav.omsorgspengerapi.config.general.HttpProxyConfig
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean

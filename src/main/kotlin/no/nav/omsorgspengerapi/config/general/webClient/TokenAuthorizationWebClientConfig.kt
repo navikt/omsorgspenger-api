@@ -1,8 +1,5 @@
-package no.nav.omsorgspengerapi.config.security
+package no.nav.omsorgspengerapi.config.general.webClient
 
-import no.nav.omsorgspengerapi.config.general.WebClientConfig
-import no.nav.omsorgspengerapi.config.general.logOutgoingRequest
-import no.nav.omsorgspengerapi.config.general.resolveProxySettings
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean

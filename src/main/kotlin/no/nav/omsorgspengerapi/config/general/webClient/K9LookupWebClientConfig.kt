@@ -1,6 +1,5 @@
-package no.nav.omsorgspengerapi.barn.lookup
+package no.nav.omsorgspengerapi.config.general.webClient
 
-import no.nav.omsorgspengerapi.config.general.logOutgoingRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
