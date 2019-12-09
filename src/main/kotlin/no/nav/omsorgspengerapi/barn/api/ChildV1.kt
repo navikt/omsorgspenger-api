@@ -2,8 +2,7 @@ package no.nav.omsorgspengerapi.barn.api
 
 data class ChildV1(
         val navn: String?,
-        val fodselsnummer: String?,
-        val alternativId: String?,
+        val fodselsdato: String?,
         val aktoerId: String?
 ) {
     override fun toString(): String {

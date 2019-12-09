@@ -30,8 +30,7 @@ class ChildService (private val childLookupService: ChildLookupService) {
 
 private fun ChildLookupDTO.toChildV1(): ChildV1 = ChildV1(
         navn = fulltNavn(),
-        fodselsnummer = fodselsdato.toString(),
-        alternativId = null,
+        fodselsdato = fodselsdato.toString(),
         aktoerId = aktoerId
 )
 
