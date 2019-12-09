@@ -31,7 +31,6 @@ class TokenAuthorizationWebClientConfig(private val webClientConfig: WebClientCo
         return WebClient.builder()
                 .clientConnector(reactorClientHttpConnector)
                 .defaultHeader("Accept", "application/json")
-                .filter(logOutgoingRequest(log))
                 .filter(ServerBearerExchangeFilterFunction())
                 .build()
     }
