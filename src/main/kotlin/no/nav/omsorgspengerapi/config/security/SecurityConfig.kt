@@ -17,7 +17,7 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class SecurityConfig(
-        @Qualifier("proxyClient") private val webClient: WebClient,
+        @Qualifier("tokenAuthorizationClient") private val webClient: WebClient,
         private val audienceValidator: AudienceValidator
 ) {
 

@@ -4,21 +4,17 @@ import brave.Tracer
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
-import java.net.URI
 
 @Service
 class ChildLookupService(
+        @Qualifier("k9LookuoClient") private val client: WebClient,
         private val apiGatewayApiKey: ApiGatewayApiKey,
-        private val client: WebClient,
         private val tracer: Tracer) {
-
-    @Value("\${nav.no.gateways.k9_lookup_url}")
-    lateinit var baseUrl: URI
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(ChildLookupService::class.java)
@@ -28,18 +24,12 @@ class ChildLookupService(
                 "barn[].mellomnavn",
                 "barn[].etternavn",
                 "barn[].fødselsdato")
-
     }
 
     fun lookupChild(): Mono<ChildLookupResponse> {
-        log.info("ChildLookupService BaseUrl: {}", baseUrl)
         return client
                 .get()
                 .uri {uri: UriBuilder -> uri
-                        .scheme(baseUrl.scheme)
-                        .host(baseUrl.host)
-                        .port(baseUrl.port)
-                        .path(baseUrl.path)
                         .path("/meg")
                         .queryParam("a", attributes)
                         .build()
