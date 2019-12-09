@@ -29,8 +29,16 @@ class ChildService (private val childLookupService: ChildLookupService) {
 }
 
 private fun ChildLookupDTO.toChildV1(): ChildV1 = ChildV1(
-        navn = "${fornavn} ${mellomnavn} ${etternavn}",
+        navn = fulltNavn(),
         fodselsnummer = fodselsdato.toString(),
         alternativId = null,
         aktoerId = aktoerId
 )
+
+private fun ChildLookupDTO.fulltNavn(): String {
+    return if (mellomnavn == null) {
+        "${fornavn} ${etternavn}"
+    } else {
+        "${fornavn} ${mellomnavn} ${etternavn}"
+    }
+}

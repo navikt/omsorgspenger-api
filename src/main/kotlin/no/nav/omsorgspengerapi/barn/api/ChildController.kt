@@ -28,7 +28,6 @@ class ChildController(private val childService: ChildService) {
                 ChildLookupDTO(
                         fodselsdato = LocalDate.now().minusYears(20),
                         fornavn = "Mock",
-                        mellomnavn = "Mocki",
                         etternavn = "Mockesen",
                         aktoerId = "123456"
                 ),
