@@ -21,23 +21,4 @@ class ChildController(private val childService: ChildService) {
     fun getChild(): Flux<ChildV1> {
         return childService.getChildren()
     }
-
-    @GetMapping("/child-lookup/meg")
-    fun mockChildLookup(): Mono<ChildLookupResponse> {
-        return Mono.just(ChildLookupResponse(children = listOf(
-                ChildLookupDTO(
-                        fodselsdato = LocalDate.now().minusYears(20),
-                        fornavn = "Mock",
-                        etternavn = "Mockesen",
-                        aktoerId = "123456"
-                ),
-                ChildLookupDTO(
-                        fodselsdato = LocalDate.now().minusYears(20),
-                        fornavn = "Mock2",
-                        mellomnavn = "Mocki2",
-                        etternavn = "Mockesen2",
-                        aktoerId = "123457"
-                )
-        )))
-    }
 }
