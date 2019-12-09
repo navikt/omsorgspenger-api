@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
-import reactor.core.publisher.Mono
+import reactor.core.publisher.Flux
 
 @Service
 class ChildLookupService(
@@ -26,18 +26,19 @@ class ChildLookupService(
                 "barn[].fødselsdato")
     }
 
-    fun lookupChild(): Mono<ChildLookupResponse> {
+    fun lookupChildren(): Flux<ChildLookupDTO> {
         return client
                 .get()
-                .uri {uri: UriBuilder -> uri
-                        .path("/meg")
-                        .queryParam("a", attributes)
-                        .build()
+                .uri { uri: UriBuilder ->
+                    uri
+                            .path("/meg")
+                            .queryParam("a", attributes)
+                            .build()
                 }
                 .header("X-Correlation-ID", tracer.currentSpan().context().traceIdString())
                 .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
                 .retrieve()
                 .bodyToMono(ChildLookupResponse::class.java)
-                .doOnError { err: Throwable -> log.error("Got error upstream: {}, StackTrace: {}", err.message, err) }
+                .flatMapMany { Flux.fromIterable<ChildLookupDTO>(it.children) }
     }
 }
