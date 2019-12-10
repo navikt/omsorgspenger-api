@@ -16,4 +16,5 @@ nav.no:
     api-gw-key: mock-key
   gateways:
     k9_lookup_url: 'http://localhost:8080/child-lookup'
+    k9_dokument_url: 'http://localhost:8080/dokument'
   cors-addresses: 'http://localhost:**'

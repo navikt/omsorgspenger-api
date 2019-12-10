@@ -1,6 +1,7 @@
 package no.nav.omsorgspengerapi.barn.lookup
 
 import brave.Tracer
+import no.nav.omsorgspengerapi.common.NavHeaders
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -35,7 +36,7 @@ class ChildLookupService(
                             .queryParam("a", attributes)
                             .build()
                 }
-                .header("X-Correlation-ID", tracer.currentSpan().context().traceIdString())
+                .header(NavHeaders.XCorrelationId, tracer.currentSpan().context().traceIdString())
                 .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
                 .retrieve()
                 .bodyToMono(ChildLookupResponse::class.java)

@@ -20,6 +20,11 @@ spring:
           jwk-set-uri: https://login.microsoftonline.com/navtestb2c.onmicrosoft.com/discovery/v2.0/keys?p=b2c_1a_idporten_ver1
   jackson:
     property-naming-strategy: SNAKE_CASE
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 8MB
+      max-request-size: 24MB # Maximum of 24MB, each file max 8 MB
 
 nav.no:
   authorization:
@@ -27,6 +32,7 @@ nav.no:
     api-gw-key: ${API_GATEWAY_API_KEY}
   gateways:
     k9_lookup_url: ${K9_OPPSLAG_REGISTER_URL}
+    k9_dokument_url: ${K9_DOKUMENT_BASE_URL}
   cors-addresses:
   security:
     login-service-client-id: 0090b6e1-ffcc-4c37-bc21-049f7d1f0fe5
