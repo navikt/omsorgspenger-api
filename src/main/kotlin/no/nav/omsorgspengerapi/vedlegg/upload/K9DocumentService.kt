@@ -2,7 +2,8 @@ package no.nav.omsorgspengerapi.vedlegg.upload
 
 import brave.Tracer
 import no.nav.omsorgspengerapi.common.NavHeaders
-import no.nav.omsorgspengerapi.vedlegg.api.Attachment
+import no.nav.omsorgspengerapi.vedlegg.api.AttachmentFile
+import no.nav.omsorgspengerapi.vedlegg.api.AttachmentJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -19,16 +20,17 @@ import reactor.core.publisher.Mono
 
 
 @Service
-class AttachmentUploadService(
+class K9DocumentService(
         @Qualifier("k9DocumentClient") private val client: WebClient,
         private val tracer: Tracer
 ) {
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(AttachmentUploadService::class.java)
+        private val log: Logger = LoggerFactory.getLogger(K9DocumentService::class.java)
     }
 
-    fun upladAttachment(attachment: Attachment): Mono<AttachmentId> {
+
+    fun upladAttachment(attachment: AttachmentFile): Mono<AttachmentId> {
         return client
                 .post()
                 .uri { uri: UriBuilder ->
@@ -44,12 +46,28 @@ class AttachmentUploadService(
                 .bodyToMono(AttachmentId::class.java)
     }
 
-    private fun Attachment.toMultiPartBody(): MultiValueMap<String, HttpEntity<*>> {
+    fun getAttachmentAsJson(attachmentId: String): Mono<AttachmentJson> {
+        return client
+                .get()
+                .uri { uri: UriBuilder ->
+                    uri
+                            .path("/v1")
+                            .path("/dokument")
+                            .path("/${attachmentId}")
+                            .build()
+                }
+                .header(NavHeaders.XCorrelationId, tracer.currentSpan().context().traceIdString())
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .retrieve()
+                .bodyToMono(AttachmentJson::class.java)
+    }
+
+    private fun AttachmentFile.toMultiPartBody(): MultiValueMap<String, HttpEntity<*>> {
         val partBuilder = MultipartBodyBuilder()
         partBuilder
                 .asyncPart("content", content, DataBuffer::class.java)
                 .filename(title)
-                .contentType(contentType)
+                .contentType(MediaType.valueOf(contentType))
 
         partBuilder.part("title", title)
         return partBuilder.build()

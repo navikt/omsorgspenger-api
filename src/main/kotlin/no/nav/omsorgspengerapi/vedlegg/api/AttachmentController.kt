@@ -6,11 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.codec.multipart.FilePart
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ServerWebExchange
+import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 import javax.validation.Valid
 
@@ -24,12 +20,12 @@ class AttachmentController(private val attachmentService: AttachmentService) {
 
     @PostMapping("/vedlegg", consumes = ["multipart/form-data"])
     @ResponseStatus(HttpStatus.CREATED)
-    fun uploadAttachment(@Valid @RequestPart("file") filePart: FilePart, webExchange: ServerWebExchange): Mono<AttachmentId>? {
+    fun uploadAttachment(@Valid @RequestPart("file") filePart: FilePart): Mono<AttachmentId>? {
         log.info("File uploaded")
 
-        val attachment = Attachment(
+        val attachment = AttachmentFile(
                 content = filePart.content(),
-                contentType = filePart.headers().contentType!!,
+                contentType = filePart.headers().contentType.toString(),
                 title = filePart.filename()
         )
         log.info("Got attachment: {}", attachment)
@@ -43,5 +39,11 @@ class AttachmentController(private val attachmentService: AttachmentService) {
                     log.error("Failed to upload attachment.", error.cause)
                     error
                 }
+    }
+
+    @GetMapping("/vedlegg/{vedleggId}")
+    fun getAttachment(@PathVariable("vedleggId") attachmentId: String): Mono<AttachmentJson> {
+        log.info("Fetching attachment with id: {}", attachmentId)
+        return attachmentService.getAttachmentJson(attachmentId = attachmentId)
     }
 }

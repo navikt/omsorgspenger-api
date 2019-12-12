@@ -23,7 +23,6 @@ class K9DokumentWebClientConfig {
     protected fun k9LookuoClient(): WebClient {
         return WebClient.builder()
                 .baseUrl(baseUrl.toString())
-                .defaultHeader("Accept", "application/json")
                 .filter(logOutgoingRequest(log))
                 .filter(ServerBearerExchangeFilterFunction())
                 .build()
