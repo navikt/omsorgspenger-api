@@ -40,5 +40,9 @@ class AttachmentService(private val k9DocumentService: K9DocumentService) {
                 }
     }
 
+    fun deleteAttachment(attachmentId: String): Mono<Void> {
+        return k9DocumentService.deleteDocument(attachmentId)
+    }
+
     private fun AttachmentFile.isSupportedContentType(): Boolean = supportedContentTypes.contains(contentType)
 }

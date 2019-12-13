@@ -45,4 +45,11 @@ class AttachmentController(private val attachmentService: AttachmentService) {
         log.info("Fetching attachment with id: {}", attachmentId)
         return attachmentService.getAttachmentJson(attachmentId = attachmentId)
     }
+
+    @DeleteMapping("/vedlegg/{vedleggId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteAttachment(@PathVariable("vedleggId") attachmentId: String): Mono<Void> {
+        log.info("Deleting attachment with id: {}", attachmentId)
+        return attachmentService.deleteAttachment(attachmentId)
+    }
 }

@@ -70,11 +70,34 @@ class K9DocumentService(
                 .exchange()
                 .doOnNext {res: ClientResponse ->
                     val statusCode = res.statusCode()
-                    if (statusCode.is4xxClientError) {
+                    if (statusCode.value() == 404) {
                         Mono.error<DocumentJson>((DocumentNotFoundException("Document with id $documentId was not found")))
                     }
                 }
                 .flatMap { it.bodyToMono(DocumentJson::class.java) }
+                .retryWhen(WebClientConfig.retry)
+    }
+
+    fun deleteDocument(documentId: String): Mono<Void> {
+        return client
+                .delete()
+                .uri { uri: UriBuilder ->
+                    uri
+                            .path("/v1")
+                            .path("/dokument")
+                            .path("/${documentId}")
+                            .build()
+                }
+                .header(NavHeaders.XCorrelationId, tracer.currentSpan().context().traceIdString())
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .exchange()
+                .doOnNext { res: ClientResponse ->
+                    val statusCode = res.statusCode()
+                    if (statusCode.value() == 404) {
+                        Mono.error<DocumentJson>((DocumentNotFoundException("Document with id $documentId was not found")))
+                    }
+                }
+                .flatMap { it.bodyToMono(Void::class.java) }
                 .retryWhen(WebClientConfig.retry)
     }
 
