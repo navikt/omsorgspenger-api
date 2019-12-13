@@ -2,11 +2,13 @@ package no.nav.omsorgspengerapi.barn.lookup
 
 import brave.Tracer
 import no.nav.omsorgspengerapi.common.NavHeaders
+import no.nav.omsorgspengerapi.config.general.webClient.WebClientConfig
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Flux
@@ -38,8 +40,14 @@ class ChildLookupService(
                 }
                 .header(NavHeaders.XCorrelationId, tracer.currentSpan().context().traceIdString())
                 .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
-                .retrieve()
-                .bodyToMono(ChildLookupResponse::class.java)
-                .flatMapMany { Flux.fromIterable<ChildLookupDTO>(it.children) }
+                .exchange()
+                .doOnNext {res: ClientResponse ->
+                    val statusCode = res.statusCode()
+                    if (statusCode.is5xxServerError) {
+                        Flux.error<ChildLookupDTO>(ChildLookupUpstreamException("Failed to lookup child"))
+                    }
+                }
+                .flatMapMany { it.bodyToFlux(ChildLookupDTO::class.java) }
+                .retryWhen(WebClientConfig.retry)
     }
 }
