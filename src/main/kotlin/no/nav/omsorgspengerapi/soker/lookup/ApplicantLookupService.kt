@@ -1,11 +1,15 @@
 package no.nav.omsorgspengerapi.soker.lookup
 
 import brave.Tracer
+import no.nav.omsorgspengerapi.config.general.webClient.WebClientConfig
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
+import no.nav.omsorgspengerapi.vedlegg.document.DocumentJson
+import no.nav.omsorgspengerapi.vedlegg.exception.DocumentNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
@@ -37,7 +41,14 @@ class ApplicantLookupService(
                 }
                 .header("X-Correlation-ID", tracer.currentSpan().context().traceIdString())
                 .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
-                .retrieve()
-                .bodyToMono(ApplicanLookupDTO::class.java)
+                .exchange()
+                .doOnNext {res: ClientResponse ->
+                    val statusCode = res.statusCode()
+                    if (statusCode.is5xxServerError) {
+                        Mono.error<ApplicantLookupService>(ApplicantLookupUpstreamException("Failed to lookup applicant"))
+                    }
+                }
+                .flatMap { it.bodyToMono(ApplicanLookupDTO::class.java) }
+                .retryWhen(WebClientConfig.retry)
     }
 }
