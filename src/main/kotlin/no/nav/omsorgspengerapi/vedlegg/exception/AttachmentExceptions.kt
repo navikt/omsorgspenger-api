@@ -1,5 +1,7 @@
 package no.nav.omsorgspengerapi.vedlegg.exception
 
 
-class AttachmentContentTypeNotSupported(message: String) : Exception(message)
-class AttachmentNotFoundException(message: String) : Exception(message)
+class DocumentContentTypeNotSupported(message: String) : RuntimeException(message)
+class DocumentNotFoundException(message: String) : RuntimeException(message)
+
+class DocumentUploadFailedException(message: String): RuntimeException(message)

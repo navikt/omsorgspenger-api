@@ -1,9 +1,10 @@
-package no.nav.omsorgspengerapi.vedlegg.upload
+package no.nav.omsorgspengerapi.vedlegg.document
 
 import brave.Tracer
 import no.nav.omsorgspengerapi.common.NavHeaders
-import no.nav.omsorgspengerapi.vedlegg.api.AttachmentFile
-import no.nav.omsorgspengerapi.vedlegg.api.AttachmentJson
+import no.nav.omsorgspengerapi.config.general.webClient.WebClientConfig
+import no.nav.omsorgspengerapi.vedlegg.exception.DocumentNotFoundException
+import no.nav.omsorgspengerapi.vedlegg.exception.DocumentUploadFailedException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.stereotype.Service
 import org.springframework.util.MultiValueMap
+import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
@@ -30,7 +32,7 @@ class K9DocumentService(
     }
 
 
-    fun uploadDocument(attachment: AttachmentFile): Mono<AttachmentId> {
+    fun uploadDocument(document: DocumentFile): Mono<DocumentId> {
         return client
                 .post()
                 .uri { uri: UriBuilder ->
@@ -41,12 +43,19 @@ class K9DocumentService(
                 }
                 .header(NavHeaders.XCorrelationId, tracer.currentSpan().context().traceIdString())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE)
-                .bodyValue(attachment.toMultiPartBody())
-                .retrieve()
-                .bodyToMono(AttachmentId::class.java)
+                .bodyValue(document.toMultiPartBody())
+                .exchange()
+                .doOnNext {res: ClientResponse ->
+                    val statusCode = res.statusCode()
+                    if (statusCode.is4xxClientError) {
+                        Mono.error<DocumentId>((DocumentUploadFailedException("Failed to upload document")))
+                    }
+                }
+                .flatMap { it.bodyToMono(DocumentId::class.java) }
+                .retryWhen(WebClientConfig.retry)
     }
 
-    fun getDocumentAsJson(documentId: String): Mono<AttachmentJson> {
+    fun getDocumentAsJson(documentId: String): Mono<DocumentJson> {
         return client
                 .get()
                 .uri { uri: UriBuilder ->
@@ -58,11 +67,18 @@ class K9DocumentService(
                 }
                 .header(NavHeaders.XCorrelationId, tracer.currentSpan().context().traceIdString())
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .retrieve()
-                .bodyToMono(AttachmentJson::class.java)
+                .exchange()
+                .doOnNext {res: ClientResponse ->
+                    val statusCode = res.statusCode()
+                    if (statusCode.is4xxClientError) {
+                        Mono.error<DocumentJson>((DocumentNotFoundException("Document with id $documentId was not found")))
+                    }
+                }
+                .flatMap { it.bodyToMono(DocumentJson::class.java) }
+                .retryWhen(WebClientConfig.retry)
     }
 
-    private fun AttachmentFile.toMultiPartBody(): MultiValueMap<String, HttpEntity<*>> {
+    private fun DocumentFile.toMultiPartBody(): MultiValueMap<String, HttpEntity<*>> {
         val partBuilder = MultipartBodyBuilder()
         partBuilder
                 .asyncPart("content", content, DataBuffer::class.java)

@@ -37,6 +37,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-sleuth
     implementation("org.springframework.cloud:spring-cloud-starter-sleuth:2.1.6.RELEASE")
 
+    // https://mvnrepository.com/artifact/io.projectreactor.addons/reactor-extra
+    implementation("io.projectreactor.addons:reactor-extra:3.3.1.RELEASE")
+
 
     // https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
     implementation("net.logstash.logback:logstash-logback-encoder:6.2")

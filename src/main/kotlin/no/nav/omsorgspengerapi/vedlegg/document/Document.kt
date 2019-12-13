@@ -1,10 +1,10 @@
-package no.nav.omsorgspengerapi.vedlegg.api
+package no.nav.omsorgspengerapi.vedlegg.document
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.core.io.buffer.DataBuffer
 import reactor.core.publisher.Flux
 
-data class AttachmentFile(
+data class DocumentFile(
         val content: Flux<DataBuffer>,
         val contentType: String,
         val title: String
@@ -14,7 +14,7 @@ data class AttachmentFile(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as AttachmentFile
+        other as DocumentFile
 
         if (content != other.content) return false
         if (contentType != other.contentType) return false
@@ -31,7 +31,7 @@ data class AttachmentFile(
     }
 }
 
-data class AttachmentJson(
+data class DocumentJson(
         val content: ByteArray,
         @JsonProperty("content_type") val contentType: String,
         val title: String
@@ -41,7 +41,7 @@ data class AttachmentJson(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as AttachmentJson
+        other as DocumentJson
 
         if (!content.contentEquals(other.content)) return false
         if (contentType != other.contentType) return false
@@ -58,4 +58,4 @@ data class AttachmentJson(
     }
 }
 
-data class AttachmentId(val id: String)
+data class DocumentId(val id: String)

@@ -1,7 +1,7 @@
 package no.nav.omsorgspengerapi.vedlegg.api
 
 import no.nav.omsorgspengerapi.common.OmsorgspengerAPIError
-import no.nav.omsorgspengerapi.vedlegg.exception.AttachmentNotFoundException
+import no.nav.omsorgspengerapi.vedlegg.exception.DocumentNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -19,8 +19,8 @@ class AttachmentExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(AttachmentNotFoundException::class)
-    fun handleAttachmentNotFound(ex: AttachmentNotFoundException, request: ServerHttpRequest): OmsorgspengerAPIError {
+    @ExceptionHandler(DocumentNotFoundException::class)
+    fun handleAttachmentNotFound(ex: DocumentNotFoundException, request: ServerHttpRequest): OmsorgspengerAPIError {
         log.warn(ex.message, ex)
         return OmsorgspengerAPIError(
                 message = ex.message,

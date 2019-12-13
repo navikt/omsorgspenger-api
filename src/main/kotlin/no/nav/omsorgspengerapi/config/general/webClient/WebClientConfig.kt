@@ -13,8 +13,10 @@ import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.tcp.ProxyProvider
 import reactor.netty.tcp.TcpClient
+import reactor.retry.Retry
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
+import java.time.Duration
 
 
 @Configuration
@@ -22,6 +24,19 @@ class WebClientConfig(val proxyConfig: HttpProxyConfig) {
 
     companion object {
         val log: Logger = LoggerFactory.getLogger(WebClientConfig::class.java)
+
+        /**
+         * Retry function configured with exponential backoff, with at most 3 retries and max 2 seconds of backoff.
+         * Retries are performed after a backoff interval of firstBackoff * (2 ^ n) where n is the next iteration number.
+         * Example:
+         * * 1st. Retry: 400 ms
+         * * 2nd. Retry: 800 ms
+         * * 3rd. Retry: 1 600 ms
+         */
+        val retry = Retry.any<Any>()
+                .retryMax(3)
+                .exponentialBackoff(Duration.ofMillis(200), Duration.ofSeconds(2))
+                .doOnRetry { log.info(it.toString()) }
     }
 
     /**
@@ -52,7 +67,7 @@ fun logOutgoingRequest(logger: Logger): ExchangeFilterFunction {
 /**
  * Resolves and configures a TCP CLient with proxy settings
  */
- fun WebClientConfig.resolveProxySettings(tcpClient: TcpClient): TcpClient {
+fun WebClientConfig.resolveProxySettings(tcpClient: TcpClient): TcpClient {
     return if (proxyConfig.httpProxyHost == "localhost" && proxyConfig.httpProxyPort.toInt() == 8080) {
         tcpClient
     } else {
