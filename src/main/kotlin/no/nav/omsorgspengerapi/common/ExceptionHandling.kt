@@ -1,5 +1,6 @@
 package no.nav.omsorgspengerapi.common
 
+import no.nav.omsorgspengerapi.soknad.api.Violation
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes
 import org.springframework.web.reactive.function.server.ServerRequest
 import java.time.LocalDateTime
@@ -9,7 +10,8 @@ data class OmsorgspengerAPIError(
         val error: String? = "no error available",
         val message: String? = "no message available",
         val path: String? = "no path available",
-        val status: Int? = 500) {
+        val status: Int? = 500,
+        val violations: MutableSet<Violation>? = mutableSetOf()) {
 
     companion object {
         fun fromDefaultAttributeMap(defaultErrorAttributes: Map<String, Any>): OmsorgspengerAPIError {
@@ -29,7 +31,8 @@ data class OmsorgspengerAPIError(
                 "error", error,
                 "message", message,
                 "path", path,
-                "status", status
+                "status", status,
+                "violations", violations
         )
     }
 }
