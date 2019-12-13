@@ -30,7 +30,7 @@ class K9DocumentService(
     }
 
 
-    fun upladAttachment(attachment: AttachmentFile): Mono<AttachmentId> {
+    fun uploadDocument(attachment: AttachmentFile): Mono<AttachmentId> {
         return client
                 .post()
                 .uri { uri: UriBuilder ->
@@ -46,14 +46,14 @@ class K9DocumentService(
                 .bodyToMono(AttachmentId::class.java)
     }
 
-    fun getAttachmentAsJson(attachmentId: String): Mono<AttachmentJson> {
+    fun getDocumentAsJson(documentId: String): Mono<AttachmentJson> {
         return client
                 .get()
                 .uri { uri: UriBuilder ->
                     uri
                             .path("/v1")
                             .path("/dokument")
-                            .path("/${attachmentId}")
+                            .path("/${documentId}")
                             .build()
                 }
                 .header(NavHeaders.XCorrelationId, tracer.currentSpan().context().traceIdString())

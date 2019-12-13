@@ -21,12 +21,12 @@ class AttachmentService(private val k9DocumentService: K9DocumentService) {
         return if (!attachment.isSupportedContentType()) {
             Mono.error<AttachmentId>(AttachmentContentTypeNotSupported("Attachment with type '${attachment.contentType} ' is not supported. Valid types: $supportedContentTypes"))
         } else {
-            k9DocumentService.upladAttachment(attachment)
+            k9DocumentService.uploadDocument(attachment)
         }
     }
 
     fun getAttachmentJson(attachmentId: String): Mono<AttachmentJson> {
-        return k9DocumentService.getAttachmentAsJson(attachmentId)
+        return k9DocumentService.getDocumentAsJson(attachmentId)
                 .onErrorMap { (AttachmentNotFoundException("Attachment with id $attachmentId was not found")) }
     }
 
