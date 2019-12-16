@@ -45,7 +45,7 @@ class ApplicantLookupService(
                 .doOnNext {res: ClientResponse ->
                     val statusCode = res.statusCode()
                     if (statusCode.is5xxServerError) {
-                        Mono.error<ApplicantLookupService>(ApplicantLookupUpstreamException("Failed to lookup applicant"))
+                        Mono.error<ApplicanLookupDTO>(ApplicantLookupUpstreamException("Failed to lookup applicant"))
                     }
                 }
                 .flatMap { it.bodyToMono(ApplicanLookupDTO::class.java) }
