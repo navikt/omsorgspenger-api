@@ -16,6 +16,7 @@ nav.no:
   authorization:
     api-gw-header: x-nav-apiKey
     api-gw-key: mock-key
+    soknad-til-prosessering-scope: mock-scope
   gateways:
     k9_lookup_url: 'http://localhost:8080/lookup'
     k9_dokument_url: 'http://localhost:8132'
