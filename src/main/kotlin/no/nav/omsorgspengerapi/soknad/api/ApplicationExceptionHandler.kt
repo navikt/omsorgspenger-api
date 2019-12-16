@@ -1,7 +1,6 @@
 package no.nav.omsorgspengerapi.soknad.api
 
 import no.nav.omsorgspengerapi.common.OmsorgspengerAPIError
-import no.nav.omsorgspengerapi.soknad.ApplicationController
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.ExceptionHandler

@@ -1,7 +1,5 @@
-package no.nav.omsorgspengerapi.soknad
+package no.nav.omsorgspengerapi.soknad.api
 
-import no.nav.omsorgspengerapi.soknad.api.ApplicationV1
-import no.nav.omsorgspengerapi.soknad.api.validate
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.PostMapping
