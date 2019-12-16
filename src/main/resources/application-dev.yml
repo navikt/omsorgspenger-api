@@ -1,10 +1,13 @@
 nav.no:
+  security:
+    login-service-client-id: 0090b6e1-ffcc-4c37-bc21-049f7d1f0fe5
   authorization:
     api-gw-header: x-nav-apiKey
     api-gw-key: mock-key
   gateways:
     k9_lookup_url: 'http://localhost:8080/lookup'
     k9_dokument_url: 'http://localhost:8132'
+    omsorgspengersoknad_mottak_url: 'http://localhost:8083'
   cors-addresses: 'http://localhost:**'
 
 http:

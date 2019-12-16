@@ -45,17 +45,13 @@ spec:
       value: https://omsorgspengesoknad.nav.no, https://omsorgspengesoknad.nais.oera.no
     - name: ISSUER
       value: https://login.microsoftonline.com/8b7dfc8b-b52e-4741-bde4-d83ea366f94f/v2.0/
-    - name: COOKIE_NAME
-      value: selvbetjening-idtoken
     - name: JWKS_URI
       value: https://login.microsoftonline.com/navnob2c.onmicrosoft.com/discovery/v2.0/keys?p=b2c_1a_idporten
     - name: K9_OPPSLAG_REGISTER_URL
       value: https://api-gw.oera.no/helse-reverse-proxy/k9-selvbetjening-oppslag
-    - name: TOKEN_URL
-      value: https://api-gw.oera.no/helse-reverse-proxy/security-token-service/rest/v1/sts/token
     - name: K9_DOKUMENT_BASE_URL
       value: https://k9-dokument.nais.oera.no
-    - name: AZURE_CLIENT_ID
-      value: c7138cc4-8cef-41bf-99e0-2d3884a106f0
-    - name: AZURE_V2_DISCOVERY_ENDPOINT
-      value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration
+    - name: OMSORGSPENGERSOKNAD_MOTTAK_BASE_URL
+      value: https://api-gw.oera.noo/helse-reverse-proxy/omsorgspengersoknad-mottak
+    - name: LOGIN_SERVICE_CLIENT_ID
+      value: 45104d6a-f5bc-4e8c-b352-4bbfc9381f25
