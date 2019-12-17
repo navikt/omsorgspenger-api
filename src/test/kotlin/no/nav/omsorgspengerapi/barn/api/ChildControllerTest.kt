@@ -16,8 +16,10 @@ import reactor.core.publisher.Flux
 @ExtendWith(MockitoExtension::class)
 @WebFluxTest(ChildController::class)
 @WithMockUser()
-open class ChildControllerTest(
-        @Autowired val client: WebTestClient) {
+open class ChildControllerTest {
+
+    @Autowired
+    lateinit var client: WebTestClient
 
     @MockBean
     lateinit var childService: ChildService
