@@ -7,6 +7,7 @@ import no.nav.omsorgspengerapi.soker.api.ApplicantLookupException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
@@ -40,14 +41,9 @@ class ApplicantLookupService(
                 }
                 .header("X-Correlation-ID", tracer.currentSpan().context().traceIdString())
                 .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
-                .exchange()
-                .doOnNext {res: ClientResponse ->
-                    val statusCode = res.statusCode()
-                    if (statusCode.is5xxServerError) {
-                        Mono.error<ApplicanLookupDTO>(ApplicantLookupException("Failed to lookup applicant"))
-                    }
-                }
-                .flatMap { it.bodyToMono(ApplicanLookupDTO::class.java) }
+                .retrieve()
+                .onStatus(HttpStatus::isError) { clientResponse: ClientResponse? -> Mono.error(ApplicantLookupException("Failed to lookup applicant")) }
+                .bodyToMono(ApplicanLookupDTO::class.java)
                 .retryWhen(WebClientConfig.retry)
     }
 }
