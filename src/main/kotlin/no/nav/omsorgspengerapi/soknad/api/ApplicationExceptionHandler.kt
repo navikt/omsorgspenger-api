@@ -6,6 +6,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import java.lang.RuntimeException
 
 @RestControllerAdvice(assignableTypes = [ApplicationController::class])
 class ApplicationExceptionHandler {
@@ -22,3 +23,5 @@ class ApplicationExceptionHandler {
         )
     }
 }
+
+class ApplicationValidationException(message: String, val violations: MutableSet<Violation>): RuntimeException(message)
