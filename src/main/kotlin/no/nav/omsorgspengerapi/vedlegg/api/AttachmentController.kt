@@ -34,10 +34,6 @@ class AttachmentController(private val attachmentService: AttachmentService) {
                     log.info("Got attachmentId: {}", attachmentId)
                     attachmentId
                 }
-                .onErrorMap { error: Throwable ->
-                    log.error("Failed to upload attachment.", error.cause)
-                    error
-                }
     }
 
     @GetMapping("/vedlegg/{vedleggId}")

@@ -1,6 +1,7 @@
 package no.nav.omsorgspengerapi.soknad.api
 
 import no.nav.omsorgspengerapi.barn.api.ChildV1
+import no.nav.omsorgspengerapi.vedlegg.document.DocumentJson
 import java.net.URL
 import java.time.format.DateTimeFormatter
 
@@ -170,6 +171,34 @@ private fun ChildV1.validate(relasjonTilBarnet: String?): MutableSet<Violation> 
     }
 
     return violations
+}
+
+fun MutableList<DocumentJson>.validateAttachment(attachmentUrls: List<URL>) {
+    if (size != attachmentUrls.size) {
+        throw ApplicationValidationException(message = "", violations = mutableSetOf(
+                Violation(
+                        parameterName = "vedlegg",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Mottok referanse til ${attachmentUrls.size} vedlegg, men fant kun $size vedlegg.",
+                        invalidValue = attachmentUrls
+                )
+        ))
+    }
+    validerTotalStorrelse()
+}
+
+private fun MutableList<DocumentJson>.validerTotalStorrelse() {
+    val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
+
+    val totalSize: Int = map { attach -> attach.content.size }.sum()
+    if (totalSize > MAX_VEDLEGG_SIZE) {
+        throw ApplicationValidationException("Total size of attachments to big.", mutableSetOf(Violation(
+                parameterName = "content",
+                parameterType = ParameterType.ENTITY,
+                reason = "Total file size cannot be more than $MAX_VEDLEGG_SIZE",
+                invalidValue = totalSize
+        )))
+    }
 }
 
 fun String.erKunSiffer() = matches(KUN_SIFFER)

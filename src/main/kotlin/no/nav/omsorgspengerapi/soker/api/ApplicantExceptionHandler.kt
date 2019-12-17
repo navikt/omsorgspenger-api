@@ -1,7 +1,6 @@
 package no.nav.omsorgspengerapi.soker.api
 
 import no.nav.omsorgspengerapi.common.OmsorgspengerAPIError
-import no.nav.omsorgspengerapi.soker.lookup.ApplicantLookupUpstreamException
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -12,8 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 class ApplicantExceptionHandler {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(ApplicantLookupUpstreamException::class)
-    fun handleApplicantLookupUpstreamException(ex: ApplicantLookupUpstreamException, request: ServerHttpRequest): OmsorgspengerAPIError {
+    @ExceptionHandler(ApplicantLookupException::class)
+    fun handleApplicantLookupUpstreamException(ex: ApplicantLookupException, request: ServerHttpRequest): OmsorgspengerAPIError {
         return OmsorgspengerAPIError(
                 message = ex.message,
                 status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -22,3 +21,5 @@ class ApplicantExceptionHandler {
         )
     }
 }
+
+class ApplicantLookupException(message: String): RuntimeException(message)

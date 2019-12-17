@@ -1,6 +1,5 @@
 package no.nav.omsorgspengerapi.barn.api
 
-import no.nav.omsorgspengerapi.barn.lookup.ChildLookupUpstreamException
 import no.nav.omsorgspengerapi.common.OmsorgspengerAPIError
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -18,8 +17,8 @@ class ChildExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(ChildLookupUpstreamException::class)
-    fun handleChildLookupFailedException(ex: ChildLookupUpstreamException, request: ServerHttpRequest): OmsorgspengerAPIError {
+    @ExceptionHandler(ChildLookupException::class)
+    fun handleChildLookupFailedException(ex: ChildLookupException, request: ServerHttpRequest): OmsorgspengerAPIError {
         log.error(ex.message, ex)
 
         return OmsorgspengerAPIError(
@@ -30,3 +29,5 @@ class ChildExceptionHandler {
         )
     }
 }
+
+class ChildLookupException(message: String): RuntimeException(message)

@@ -1,7 +1,6 @@
 package no.nav.omsorgspengerapi.vedlegg.api
 
 import no.nav.omsorgspengerapi.common.OmsorgspengerAPIError
-import no.nav.omsorgspengerapi.vedlegg.exception.DocumentNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -29,16 +28,9 @@ class AttachmentExceptionHandler {
                 path = request.path.toString()
         )
     }
-
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(Exception::class)
-    fun handleInternalServerError(ex: Exception, request: ServerHttpRequest): OmsorgspengerAPIError {
-        log.error(ex.message, ex)
-        return OmsorgspengerAPIError(
-                message = "Something unexpected has happened.",
-                status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                error = ex.javaClass.name,
-                path = request.path.toString()
-        )
-    }
 }
+
+class DocumentContentTypeNotSupported(message: String) : RuntimeException(message)
+class DocumentNotFoundException(message: String) : RuntimeException(message)
+class DocumentUploadFailedException(message: String): RuntimeException(message)
+class DocumentDeletionFailedException(message: String): RuntimeException(message)
