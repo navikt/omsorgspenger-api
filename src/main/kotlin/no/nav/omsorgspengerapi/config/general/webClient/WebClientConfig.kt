@@ -7,13 +7,11 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.security.oauth2.server.resource.web.reactive.function.client.ServerBearerExchangeFilterFunction
-import org.springframework.web.reactive.function.client.ClientRequest
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction
-import org.springframework.web.reactive.function.client.ExchangeFunction
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.*
 import reactor.netty.tcp.ProxyProvider
 import reactor.netty.tcp.TcpClient
 import reactor.retry.Retry
+import reactor.retry.RetryContext
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import java.time.Duration
@@ -33,11 +31,17 @@ class WebClientConfig(val proxyConfig: HttpProxyConfig) {
          * * 2nd. Retry: 800 ms
          * * 3rd. Retry: 1 600 ms
          */
-        val retry = Retry.any<Any>()
+        val retry = Retry.onlyIf<Any>(this::is5xxServerError)
                 .retryMax(3)
                 .exponentialBackoff(Duration.ofMillis(200), Duration.ofSeconds(2))
                 .doOnRetry { log.info(it.toString()) }
+
+        private fun is5xxServerError(retryContext: RetryContext<Any>): Boolean {
+            return retryContext.exception() is WebClientResponseException &&
+                    (retryContext.exception() as WebClientResponseException).statusCode.is5xxServerError
+        }
     }
+
 
     /**
      * Default webClient.
