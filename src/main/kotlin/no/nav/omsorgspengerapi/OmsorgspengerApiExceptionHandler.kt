@@ -32,16 +32,4 @@ class OmsorgspengerApiExceptionHandler {
                 path = request.path.toString()
         )
     }
-
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(Exception::class)
-    fun handleInternalServerError(ex: Exception, request: ServerHttpRequest): OmsorgspengerAPIError {
-        log.error(ex.message, ex)
-        return OmsorgspengerAPIError(
-                message = "Something unexpected has happened.",
-                status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                error = ex.javaClass.name,
-                path = request.path.toString()
-        )
-    }
 }
