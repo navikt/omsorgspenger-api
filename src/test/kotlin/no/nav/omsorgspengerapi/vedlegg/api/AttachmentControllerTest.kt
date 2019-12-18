@@ -1,5 +1,6 @@
 package no.nav.omsorgspengerapi.vedlegg.api
 
+import no.nav.omsorgspengerapi.any
 import no.nav.omsorgspengerapi.common.OmsorgspengerAPIError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -176,11 +177,5 @@ class AttachmentControllerTest {
                 .header("Content-Type", fileType.toString())
 
         return bodyBuilder.build()
-    }
-
-    // TODO: Move to common testUtil for re-usability
-    private fun <T> any(type: Class<T>): T {
-        Mockito.any(type)
-        return null as T
     }
 }
