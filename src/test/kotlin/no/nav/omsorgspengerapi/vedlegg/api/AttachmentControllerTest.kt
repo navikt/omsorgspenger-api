@@ -37,7 +37,7 @@ class AttachmentControllerTest {
     lateinit var client: WebTestClient
 
     @Test
-    fun WhenUploadingAnAttachmentExpectAttachmentId() {
+    fun `when uploading an attachment, expect attachment id`() {
 
         val filePart = ClassPathResource("./images/spring-kotlin-59kb.png")
                 .toMultipartBody(MimeTypeUtils.IMAGE_PNG)
@@ -55,7 +55,7 @@ class AttachmentControllerTest {
     }
 
     @Test
-    fun whenUploadingAnBigAttachmentExpectBadRequest() {
+    fun `when uploading a big attachment, expect bad request`() {
 
         val filePart = ClassPathResource("./images/554kb.jpeg")
                 .toMultipartBody(MimeTypeUtils.IMAGE_JPEG)
