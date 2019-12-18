@@ -4,6 +4,7 @@ import no.nav.omsorgspengerapi.common.OmsorgspengerAPIError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
@@ -12,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.security.test.context.support.WithMockUser
@@ -103,6 +105,66 @@ class AttachmentControllerTest {
                 .returnResult().responseBody
 
         assertThat(actualError).isEqualToIgnoringGivenFields(expectedError, "timestamp")
+    }
+
+    @Test
+    fun `when getting an attachment, expect an attachment with json response`() {
+        val file = ClassPathResource("./files/spring-kotlin-59kb.png").file
+        val expectedAttachment = AttachmentJson(
+                content = file.readBytes(),
+                contentType = MimeTypeUtils.IMAGE_PNG_VALUE,
+                title = file.nameWithoutExtension
+        )
+        `when`(attachmentService.getAttachmentJson(ArgumentMatchers.anyString()))
+                .thenReturn(Mono.just(expectedAttachment))
+
+        val actualAttachment = client.get()
+                .uri("/vedlegg/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk
+                .expectBody(AttachmentJson::class.java)
+                .returnResult().responseBody
+
+        assertThat(actualAttachment).isEqualTo(expectedAttachment)
+    }
+
+    @Test
+    fun `when attachment is not found, expect not found`() {
+
+        val errorMessage = "Attachment with id 1 was not found"
+
+        `when`(attachmentService.getAttachmentJson(ArgumentMatchers.anyString()))
+                .thenReturn(Mono.error(DocumentNotFoundException(errorMessage)))
+
+        val actualError = client.get()
+                .uri("/vedlegg/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNotFound
+                .expectBody(DocumentNotFoundException::class.java)
+                .returnResult().responseBody
+
+        assertThat(actualError).hasMessage(errorMessage)
+    }
+
+    @Test
+    fun `when attachment retrieval fails, expect internal server error`() {
+
+        val errorMessage = "Failed to retrieve attachment, due to upstream issues"
+
+        `when`(attachmentService.getAttachmentJson(ArgumentMatchers.anyString()))
+                .thenReturn(Mono.error(DocumentRetrievalFailedException(errorMessage)))
+
+        val actualError = client.get()
+                .uri("/vedlegg/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+                .expectBody(DocumentRetrievalFailedException::class.java)
+                .returnResult().responseBody
+
+        assertThat(actualError).hasMessage(errorMessage)
     }
 
     private fun ClassPathResource.toMultipartBody(fileType: MimeType): MultiValueMap<String, HttpEntity<*>> {

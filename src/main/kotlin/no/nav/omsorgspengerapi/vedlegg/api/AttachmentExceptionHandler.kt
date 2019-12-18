@@ -30,6 +30,18 @@ class AttachmentExceptionHandler {
         )
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(DocumentRetrievalFailedException::class)
+    fun handleDocumentRetrievalFailedException(ex: DocumentRetrievalFailedException, request: ServerHttpRequest): OmsorgspengerAPIError {
+        log.warn(ex.message, ex)
+        return OmsorgspengerAPIError(
+                message = ex.message,
+                status = HttpStatus.NOT_FOUND.value(),
+                error = ex.javaClass.name,
+                path = request.path.toString()
+        )
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DocumentContentTypeNotSupported::class)
     fun handleDocumentContentTypeNotSupported(ex: DocumentContentTypeNotSupported, request: ServerHttpRequest): OmsorgspengerAPIError {
@@ -57,4 +69,5 @@ class AttachmentExceptionHandler {
 class DocumentContentTypeNotSupported(message: String) : RuntimeException(message)
 class DocumentNotFoundException(message: String) : RuntimeException(message)
 class DocumentUploadFailedException(message: String) : RuntimeException(message)
+class DocumentRetrievalFailedException(message: String) : RuntimeException(message)
 class DocumentDeletionFailedException(message: String) : RuntimeException(message)
