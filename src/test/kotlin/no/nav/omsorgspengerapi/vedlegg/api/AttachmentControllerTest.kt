@@ -39,7 +39,7 @@ class AttachmentControllerTest {
     @Test
     fun `when uploading an attachment, expect attachment id`() {
 
-        val filePart = ClassPathResource("./images/spring-kotlin-59kb.png")
+        val filePart = ClassPathResource("./files/spring-kotlin-59kb.png")
                 .toMultipartBody(MimeTypeUtils.IMAGE_PNG)
 
         `when`(attachmentService.saveAttachment(any(AttachmentFile::class.java)))
@@ -57,7 +57,7 @@ class AttachmentControllerTest {
     @Test
     fun `when uploading a big attachment, expect bad request`() {
 
-        val filePart = ClassPathResource("./images/554kb.jpeg")
+        val filePart = ClassPathResource("./files/554kb.jpeg")
                 .toMultipartBody(MimeTypeUtils.IMAGE_JPEG)
 
         val expectedError = OmsorgspengerAPIError(
