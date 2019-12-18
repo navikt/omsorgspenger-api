@@ -55,6 +55,30 @@ class AttachmentControllerTest {
     }
 
     @Test
+    fun `when uploading an unsupported attachment, expect bad request`() {
+
+        val filePart = ClassPathResource("./files/unsupported-file.txt")
+                .toMultipartBody(MimeTypeUtils.TEXT_PLAIN)
+
+        val errorMessage = "Attachment with type '${MimeTypeUtils.TEXT_PLAIN_VALUE} ' is not supported."
+        `when`(attachmentService.saveAttachment(any(AttachmentFile::class.java)))
+                .thenReturn(Mono.error<AttachmentId>(DocumentContentTypeNotSupported(errorMessage)))
+
+        val actualError = client.mutateWith(csrf())
+                .post()
+                .uri("/vedlegg")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .bodyValue(filePart)
+                .exchange()
+                .expectStatus().isBadRequest
+                .expectBody(DocumentContentTypeNotSupported::class.java)
+                .returnResult().responseBody
+
+        assertThat(actualError)
+                .hasMessage(errorMessage)
+    }
+
+    @Test
     fun `when uploading a big attachment, expect bad request`() {
 
         val filePart = ClassPathResource("./files/554kb.jpeg")

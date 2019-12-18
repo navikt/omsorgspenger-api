@@ -31,6 +31,18 @@ class AttachmentExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DocumentContentTypeNotSupported::class)
+    fun handleDocumentContentTypeNotSupported(ex: DocumentContentTypeNotSupported, request: ServerHttpRequest): OmsorgspengerAPIError {
+        log.warn(ex.message, ex)
+        return OmsorgspengerAPIError(
+                message = ex.message,
+                status = HttpStatus.NOT_FOUND.value(),
+                error = ex.javaClass.name,
+                path = request.path.toString()
+        )
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DecodingException::class)
     fun handleDecodingException(ex: DecodingException, request: ServerHttpRequest): OmsorgspengerAPIError {
         return OmsorgspengerAPIError(
