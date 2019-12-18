@@ -1,5 +1,7 @@
 package no.nav.omsorgspengerapi.vedlegg.api
 
+import no.nav.omsorgspengerapi.common.OmsorgspengerAPIError
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
@@ -14,6 +16,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.util.MimeType
 import org.springframework.util.MimeTypeUtils
@@ -24,16 +27,17 @@ import java.util.*
 @ExtendWith(MockitoExtension::class)
 @WebFluxTest(AttachmentController::class)
 @WithMockUser()
-internal class AttachmentControllerTest {
-
-    @Autowired
-    lateinit var client: WebTestClient
+@ActiveProfiles("test")
+class AttachmentControllerTest {
 
     @MockBean
     lateinit var attachmentService: AttachmentService
 
+    @Autowired
+    lateinit var client: WebTestClient
+
     @Test
-    internal fun `When uploading an attachment, expect attachmentId`() {
+    fun WhenUploadingAnAttachmentExpectAttachmentId() {
 
         val filePart = ClassPathResource("./images/spring-kotlin-59kb.png")
                 .toMultipartBody(MimeTypeUtils.IMAGE_PNG)
@@ -50,6 +54,33 @@ internal class AttachmentControllerTest {
                 .expectStatus().isCreated
     }
 
+    @Test
+    fun whenUploadingAnBigAttachmentExpectBadRequest() {
+
+        val filePart = ClassPathResource("./images/554kb.jpeg")
+                .toMultipartBody(MimeTypeUtils.IMAGE_JPEG)
+
+        val expectedError = OmsorgspengerAPIError(
+                error = "org.springframework.core.codec.DecodingException",
+                message = "Failure while parsing part[1]; nested exception is org.springframework.core.io.buffer.DataBufferLimitException: Part[1] exceeded the in-memory limit of 200000 bytes",
+                violations = mutableSetOf(),
+                path = "/vedlegg",
+                status = 400
+        )
+
+        val actualError = client.mutateWith(csrf())
+                .post()
+                .uri("/vedlegg")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .bodyValue(filePart)
+                .exchange()
+                .expectStatus().isBadRequest
+                .expectBody(OmsorgspengerAPIError::class.java)
+                .returnResult().responseBody
+
+        assertThat(actualError).isEqualToIgnoringGivenFields(expectedError, "timestamp")
+    }
+
     private fun ClassPathResource.toMultipartBody(fileType: MimeType): MultiValueMap<String, HttpEntity<*>> {
         val bodyBuilder = MultipartBodyBuilder()
         bodyBuilder
@@ -62,7 +93,7 @@ internal class AttachmentControllerTest {
     }
 
     // TODO: Move to common testUtil for re-usability
-    private fun <T> any(type : Class<T>): T {
+    private fun <T> any(type: Class<T>): T {
         Mockito.any(type)
         return null as T
     }
