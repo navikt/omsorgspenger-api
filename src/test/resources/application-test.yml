@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: test
+  codec:
+    max-in-memory-size: 200000 # 200 KB
 
 http:
   proxyHost: localhost

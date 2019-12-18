@@ -25,6 +25,8 @@ spring:
       enabled: true
       max-file-size: 8MB
       max-request-size: 24MB # Maximum of 24MB, each file max 8 MB
+  codec:
+    max-in-memory-size: 24000000 # 24 MB
 
 nav.no:
   authorization:
