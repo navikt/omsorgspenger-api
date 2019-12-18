@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.security.oauth2.server.resource.web.reactive.function.client.ServerBearerExchangeFilterFunction
 import org.springframework.web.reactive.function.client.*
+import reactor.core.publisher.Mono
 import reactor.netty.tcp.ProxyProvider
 import reactor.netty.tcp.TcpClient
 import reactor.retry.Retry
@@ -15,6 +16,7 @@ import reactor.retry.RetryContext
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import java.time.Duration
+import java.util.function.Function
 
 
 @Configuration
@@ -42,7 +44,6 @@ class WebClientConfig(val proxyConfig: HttpProxyConfig) {
         }
     }
 
-
     /**
      * Default webClient.
      * Will be used if a Qualifier is not provided.
@@ -61,10 +62,13 @@ class WebClientConfig(val proxyConfig: HttpProxyConfig) {
 
 fun logOutgoingRequest(logger: Logger): ExchangeFilterFunction {
     return ExchangeFilterFunction { clientRequest: ClientRequest, next: ExchangeFunction ->
-        logger.info("Utgående kall: {} {}", clientRequest.method(), URLDecoder.decode(clientRequest.url().toString(), StandardCharsets.UTF_8))
+        logger.info("Upstream request: {} {}", clientRequest.method(), URLDecoder.decode(clientRequest.url().toString(), StandardCharsets.UTF_8))
         logger.info("Headers: {}", clientRequest.headers().filter { it.key != "x-nav-apiKey" })
 
-        next.exchange(clientRequest)
+        val response = next.exchange(clientRequest)
+        response.subscribe { logger.info("Upstream response: ${it.rawStatusCode()} from ${clientRequest.url()}")}
+
+        response
     }
 }
 
