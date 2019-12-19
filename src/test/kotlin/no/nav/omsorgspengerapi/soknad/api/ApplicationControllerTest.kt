@@ -1,24 +1,23 @@
 package no.nav.omsorgspengerapi.soknad.api
 
-import no.nav.omsorgspengerapi.any
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
+import io.mockk.slot
 import no.nav.omsorgspengerapi.barn.api.ChildV1
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.doNothing
-import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
+import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 import java.net.URL
 
-@ExtendWith(MockitoExtension::class)
+@ExtendWith(SpringExtension::class)
 @WebFluxTest(ApplicationController::class)
 @WithMockUser()
 internal class ApplicationControllerTest {
@@ -26,14 +25,14 @@ internal class ApplicationControllerTest {
     @Autowired
     lateinit var client: WebTestClient
 
-    @MockBean
+    @MockkBean
     lateinit var applicationService: ApplicationService
 
     @Test
-    internal fun `When registering application expect status 200`() {
+    internal fun `When registering application expect status NO CONTENT`() {
         val application = stubApplicationV1()
 
-        `when`(applicationService.sendSoknad(application)).thenReturn(Mono.just(Unit))
+        every { applicationService.sendSoknad(capture(slot())) } returns Mono.just(Unit)
 
         // https://docs.spring.io/spring-security/site/docs/current/reference/html/test-webflux.html#csrf-support
         client.mutateWith(csrf()) // Adds a valid csrf token in the request.
@@ -42,7 +41,7 @@ internal class ApplicationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(application)
                 .exchange()
-                .expectStatus().isOk
+                .expectStatus().isNoContent
                 .expectBody()
                 .isEmpty
     }
@@ -57,11 +56,10 @@ internal class ApplicationControllerTest {
                 invalidValue = null
         )
         val errorMessage = "Failed to validate received application."
-        `when`(applicationService.sendSoknad(any(ApplicationV1::class.java)))
-                .thenThrow(ApplicationValidationException(
-                        message = errorMessage,
-                        violations = mutableSetOf(expectedViolation)
-                ))
+        every { applicationService.sendSoknad(capture(slot())) } throws ApplicationValidationException(
+                message = errorMessage,
+                violations = mutableSetOf(expectedViolation)
+        )
 
         // https://docs.spring.io/spring-security/site/docs/current/reference/html/test-webflux.html#csrf-support
         val actualError = client.mutateWith(csrf()) // Adds a valid csrf token in the request.

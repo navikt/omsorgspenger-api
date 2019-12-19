@@ -1,17 +1,14 @@
 package no.nav.omsorgspengerapi.vedlegg.api
 
-import no.nav.omsorgspengerapi.any
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
+import io.mockk.slot
 import no.nav.omsorgspengerapi.common.OmsorgspengerAPIError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
-import org.mockito.Mockito.`when`
-import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
@@ -20,6 +17,7 @@ import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.util.MimeType
 import org.springframework.util.MimeTypeUtils
@@ -27,13 +25,13 @@ import org.springframework.util.MultiValueMap
 import reactor.core.publisher.Mono
 import java.util.*
 
-@ExtendWith(MockitoExtension::class)
+@ExtendWith(SpringExtension::class)
 @WebFluxTest(AttachmentController::class)
 @WithMockUser()
 @ActiveProfiles("test")
 class AttachmentControllerTest {
 
-    @MockBean
+    @MockkBean
     lateinit var attachmentService: AttachmentService
 
     @Autowired
@@ -45,8 +43,7 @@ class AttachmentControllerTest {
         val filePart = ClassPathResource("./files/spring-kotlin-59kb.png")
                 .toMultipartBody(MimeTypeUtils.IMAGE_PNG)
 
-        `when`(attachmentService.saveAttachment(any(AttachmentFile::class.java)))
-                .thenReturn(Mono.just(AttachmentId(UUID.randomUUID().toString())))
+        every { attachmentService.saveAttachment(capture(slot())) } returns Mono.just(AttachmentId(UUID.randomUUID().toString()))
 
         client.mutateWith(csrf())
                 .post()
@@ -64,8 +61,8 @@ class AttachmentControllerTest {
                 .toMultipartBody(MimeTypeUtils.TEXT_PLAIN)
 
         val errorMessage = "Attachment with type '${MimeTypeUtils.TEXT_PLAIN_VALUE} ' is not supported."
-        `when`(attachmentService.saveAttachment(any(AttachmentFile::class.java)))
-                .thenReturn(Mono.error<AttachmentId>(DocumentContentTypeNotSupported(errorMessage)))
+
+        every { attachmentService.saveAttachment(capture(slot())) } returns Mono.error<AttachmentId>(DocumentContentTypeNotSupported(errorMessage))
 
         val actualError = client.mutateWith(csrf())
                 .post()
@@ -116,8 +113,8 @@ class AttachmentControllerTest {
                 contentType = MimeTypeUtils.IMAGE_PNG_VALUE,
                 title = file.nameWithoutExtension
         )
-        `when`(attachmentService.getAttachmentJson(ArgumentMatchers.anyString()))
-                .thenReturn(Mono.just(expectedAttachment))
+
+        every { attachmentService.getAttachmentJson(capture(slot())) } returns Mono.just(expectedAttachment)
 
         val actualAttachment = client.get()
                 .uri("/vedlegg/1")
@@ -135,8 +132,7 @@ class AttachmentControllerTest {
 
         val errorMessage = "Attachment with id 1 was not found"
 
-        `when`(attachmentService.getAttachmentJson(ArgumentMatchers.anyString()))
-                .thenReturn(Mono.error(DocumentNotFoundException(errorMessage)))
+        every { attachmentService.getAttachmentJson(capture(slot())) } returns Mono.error(DocumentNotFoundException(errorMessage))
 
         val actualError = client.get()
                 .uri("/vedlegg/1")
@@ -154,8 +150,7 @@ class AttachmentControllerTest {
 
         val errorMessage = "Failed to retrieve attachment, due to upstream issues"
 
-        `when`(attachmentService.getAttachmentJson(ArgumentMatchers.anyString()))
-                .thenReturn(Mono.error(DocumentRetrievalFailedException(errorMessage)))
+        every { attachmentService.getAttachmentJson(capture(slot())) } returns Mono.error(DocumentRetrievalFailedException(errorMessage))
 
         val actualError = client.get()
                 .uri("/vedlegg/1")
