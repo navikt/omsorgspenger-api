@@ -4,6 +4,7 @@ import brave.Tracer
 import no.nav.omsorgspengerapi.common.NavHeaders
 import no.nav.omsorgspengerapi.config.general.webClient.WebClientConfig
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
+import no.nav.omsorgspengerapi.soker.api.ApplicantLookupException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -40,8 +41,8 @@ class ApplicantLookupService(
                 .header(NavHeaders.XCorrelationId, tracer.currentSpan().context().traceIdString())
                 .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
                 .retrieve()
-                //.onStatus(HttpStatus::isError) { clientResponse: ClientResponse? -> Mono.error(ApplicantLookupException("Failed to lookup applicant")) }
                 .bodyToMono(ApplicanLookupDTO::class.java)
                 .retryWhen(WebClientConfig.retry)
+                .onErrorMap { ApplicantLookupException("Failed to lookup applicant") }
     }
 }

@@ -63,6 +63,10 @@ dependencies {
     testImplementation("com.ninja-squad:springmockk:1.1.3")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.springframework.security:spring-security-test")
+
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-contract-wiremock
+    testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:2.2.0.RELEASE")
+
 }
 
 tasks.withType<Test> {
