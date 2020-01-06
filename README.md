@@ -5,39 +5,44 @@
 # Innholdsoversikt
 * [1. Kontekst](#1-kontekst)
 * [2. Funksjonelle Krav](#2-funksjonelle-krav)
-* [3. Kvalitetsattributter](#3-kvalitetsattributter-ikke-funksjonelle-krav)
-* [4. Begrensninger](#4-begrensninger)
-* [5. Prinsipper](#5-prinsipper)
-* [6. Programvarearkitektur](#6-programvarearkitektur)
-* [7. Kode](#7-kode)
-* [8. Data](#8-data)
-* [9. Infrastrukturarkitektur](#9-infrastrukturarkitektur)
-* [10. Distribusjon av tjenesten (deployment)](#10-distribusjon-av-tjenesten-deployment)
-* [11. Utviklingsmiljø](#11-utviklingsmilj)
-* [11. Drift og støtte](#12-drift-og-sttte)
+* [3. Begrensninger](#3-begrensninger)
+* [4. Prinsipper](#4-prinsipper)
+* [5. Programvarearkitektur](#5-programvarearkitektur)
+* [6. Kode](#6-kode)
+* [7. Data](#7-data)
+* [8. Infrastrukturarkitektur](#8-infrastrukturarkitektur)
+* [9. Distribusjon av tjenesten (deployment)](#9-distribusjon-av-tjenesten-deployment)
+* [10. Utviklingsmiljø](#10-utviklingsmilj)
+* [11. Drift og støtte](#11-drift-og-sttte)
 
 # 1. Kontekst
-API for søknad om omsorgspenger.
+API for søknad om utvidet rett til omsorgspenger.
 
 # 2. Funksjonelle Krav
+Denne tjenesten understøtter søknadsprosessen, samt eksponerer endepunkt for innsending av søknad om utvidet rett til omsorgspenger.
 
-# 3. Kvalitetsattributter (ikke funksjonelle krav)
 
-# 4. Begrensninger
 
-# 5. Prinsipper
+# 3. Begrensninger
 
-# 6. Programvarearkitektur
+# 4. Prinsipper
 
-# 7. Kode
+# 5. Programvarearkitektur
 
-# 8. Data
+# 6. Kode
 
-# 9. Infrastrukturarkitektur
+# 7. Data
 
-# 10. Distribusjon av tjenesten (deployment)
+# 8. Infrastrukturarkitektur
 
-# 11. Utviklingsmiljø
+# 9. Distribusjon av tjenesten (deployment)
+Distribusjon av tjenesten er gjort med bruk av Github Actions.
+[Omsorgspenger-API CI / CD](https://github.com/navikt/omsorgspenger-api/actions)
+
+Push til dev-* brancher vil teste, bygge og deploye til dev/staging miljø.
+Push/merge til master branche vil teste, bygge og deploye til produksjonsmiljø.
+
+# 10. Utviklingsmiljø
 ## Bygge Prosjekt
 For å bygge kode, kjør:
 
@@ -52,4 +57,9 @@ For å kjøre kode, kjør:
 ./gradlew bootRun
 ```
 
-# 12. Drift og støtte
+# 11. Drift og støtte
+## Logging
+[Kibana](https://tinyurl.com/ydkqetfo)
+
+# Metrics
+n/a
