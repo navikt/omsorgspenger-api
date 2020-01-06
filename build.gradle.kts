@@ -9,7 +9,10 @@ plugins {
 
 group = "no.nav"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
 
 configurations {
     compileOnly {
@@ -39,7 +42,6 @@ dependencies {
 
     // https://mvnrepository.com/artifact/io.projectreactor.addons/reactor-extra
     implementation("io.projectreactor.addons:reactor-extra:3.3.1.RELEASE")
-
 
     // https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
     implementation("net.logstash.logback:logstash-logback-encoder:6.2")
@@ -76,6 +78,6 @@ tasks.withType<Test> {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 }
