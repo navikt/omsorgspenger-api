@@ -33,6 +33,12 @@ class SecurityConfig(
         http
                 .authorizeExchange { exchanges ->
                     exchanges
+                            .pathMatchers("/v3/api-docs/**",
+                                    "/configuration/ui",
+                                    "/swagger-resources/**",
+                                    "/configuration/security",
+                                    "/swagger-ui.html",
+                                    "/webjars/**").permitAll()
                             .pathMatchers("/actuator/**").permitAll()
                             .anyExchange().authenticated()
                 }
