@@ -103,6 +103,8 @@ internal class ApplicationControllerTest {
                 legeerklaring = listOf(
                         URL("http://localhost:8080/vedlegg/3"),
                         URL("http://localhost:8080/vedlegg/4")
+                ),
+                utenlandsopphold = listOf(
                 )
         )
     }

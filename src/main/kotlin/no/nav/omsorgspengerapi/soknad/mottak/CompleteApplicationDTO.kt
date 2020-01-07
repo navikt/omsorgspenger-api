@@ -22,5 +22,7 @@ data class CompleteApplicationDTO(
         val samvarsavtale: List<AttachmentFile>?,
         val medlemskap: Medlemskap,
         val harForstattRettigheterOgPlikter: Boolean,
-        val harBekreftetOpplysninger: Boolean
+        val harBekreftetOpplysninger: Boolean,
+        val utenlandsOppholdUtland: List<Utenlandsopphold>
+
 )
