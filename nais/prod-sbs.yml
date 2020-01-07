@@ -52,7 +52,7 @@ spec:
     - name: K9_DOKUMENT_BASE_URL
       value: https://k9-dokument.nais.oera.no
     - name: OMSORGSPENGERSOKNAD_MOTTAK_BASE_URL
-      value: https://api-gw.oera.noo/helse-reverse-proxy/omsorgspengersoknad-mottak
+      value: https://api-gw.oera.noo/helse-reverse-proxy/omsorgspenger-mottak
     - name: SENDE_SOKNAD_TIL_PROSESSERING_SCOPES
       value: 4dc7783f-ee44-4707-ae5c-1d824d19f59c/.default
     - name: LOGIN_SERVICE_CLIENT_ID
