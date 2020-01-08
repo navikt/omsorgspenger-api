@@ -86,6 +86,16 @@ internal fun ApplicationV1.validate() {
                     )
             )
         }
+        if (utenlandsopphold.landnavn.isEmpty()) {
+            violations.add(
+                    Violation(
+                            parameterName = "Utenlandsopphold[$index]",
+                            parameterType = ParameterType.ENTITY,
+                            reason = "Landnavn er ikke satt",
+                            invalidValue = "landnavn"
+                    )
+            )
+        }
     }
 
     if (samvarsavtale != null) {

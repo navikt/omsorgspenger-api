@@ -2,6 +2,7 @@ package no.nav.omsorgspengerapi.soknad.api
 
 import no.nav.omsorgspengerapi.barn.api.ChildV1
 import no.nav.omsorgspengerapi.soknad.mottak.Utenlandsopphold
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.net.URL
@@ -56,7 +57,7 @@ internal class ApplicationValidatorTest {
                 invalidValue = "fraOgMed eller tilOgMed"
         )
 
-        org.assertj.core.api.Assertions.assertThat(exception.violations).contains(forventetViolation)
+        assertThat(exception.violations).contains(forventetViolation)
     }
 
     @Test
@@ -81,12 +82,8 @@ internal class ApplicationValidatorTest {
                         skalBoIUtlandetNeste12Mnd = false
                 ),
                 samvarsavtale = listOf(
-                        URL("http://localhost:8080/vedlegg/1"),
-                        URL("http://localhost:8080/vedlegg/2")
                 ),
                 legeerklaring = listOf(
-                        URL("http://localhost:8080/vedlegg/3"),
-                        URL("http://localhost:8080/vedlegg/4")
                 ),
                 utenlandsopphold = listOf(
                         Utenlandsopphold(
@@ -105,6 +102,51 @@ internal class ApplicationValidatorTest {
                 invalidValue = "landkode"
         )
 
-        org.assertj.core.api.Assertions.assertThat(exception.violations).contains(forventetViolation)
+        assertThat(exception.violations).contains(forventetViolation)
+    }
+
+    @Test
+    internal fun `Mangler landnavn`() {
+        val søknad = ApplicationV1(
+                newVersion = false,
+                sprak = "nb",
+                erYrkesaktiv = true,
+                kroniskEllerFunksjonshemming = true,
+                delerOmsorg = false,
+                sammeAddresse = true,
+                harBekreftetOpplysninger = true,
+                harForstattRettigheterOgPlikter = true,
+                relasjonTilBarnet = ApplicantChildRelations.FAR,
+                barn = ChildV1(
+                        navn = "Ole Dole Doffen",
+                        fodselsdato = "2009-02-23",
+                        aktoerId = "123456"
+                ),
+                medlemskap = Medlemskap(
+                        harBoddIUtlandetSiste12Mnd = false,
+                        skalBoIUtlandetNeste12Mnd = false
+                ),
+                samvarsavtale = listOf(
+                ),
+                legeerklaring = listOf(
+                ),
+                utenlandsopphold = listOf(
+                        Utenlandsopphold(
+                                LocalDate.of(2020, 1, 1),
+                                LocalDate.of(2020, 1, 2),
+                                "NO", "")
+
+                )
+        )
+        val exception = Assertions.assertThrows(ApplicationValidationException::class.java) { søknad.validate() }
+
+        val forventetViolation = Violation(
+                parameterType = ParameterType.ENTITY,
+                parameterName = "Utenlandsopphold[0]",
+                reason = "Landnavn er ikke satt",
+                invalidValue = "landnavn"
+        )
+
+        assertThat(exception.violations).contains(forventetViolation)
     }
 }
