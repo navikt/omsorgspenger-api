@@ -88,7 +88,7 @@ internal class ApplicationControllerTest {
                 harForstattRettigheterOgPlikter = true,
                 relasjonTilBarnet = ApplicantChildRelations.FAR,
                 barn = ChildV1(
-                        navn = "Ole Dole Doffen",
+                        navn = "Ole Doffen",
                         fodselsdato = "2009-02-23",
                         aktoerId = "123456"
                 ),
