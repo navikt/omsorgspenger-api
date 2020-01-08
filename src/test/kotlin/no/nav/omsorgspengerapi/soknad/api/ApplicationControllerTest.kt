@@ -47,7 +47,7 @@ internal class ApplicationControllerTest {
     }
 
     @Test
-    internal fun `When registering an invalid application, expect bad request`() {
+    internal fun `When a violation is thrown, expect bad request`() {
 
         val expectedViolation = Violation(
                 parameterType = ParameterType.ENTITY,

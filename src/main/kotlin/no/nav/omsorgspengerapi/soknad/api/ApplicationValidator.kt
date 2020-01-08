@@ -65,13 +65,13 @@ internal fun ApplicationV1.validate() {
     }
 
     utenlandsopphold.mapIndexed { index, utenlandsopphold ->
-        val fraDataErForTilDato = utenlandsopphold.fraOgMed.before(utenlandsopphold.tilOgMed)
+        val fraDataErForTilDato = utenlandsopphold.fraOgMed.isBefore(utenlandsopphold.tilOgMed)
         if (!fraDataErForTilDato) {
             violations.add(
                     Violation(
                             parameterName = "Utenlandsopphold[$index]",
                             parameterType = ParameterType.ENTITY,
-                            reason = "tilOgMed før fraOgMed",
+                            reason = "Til dato kan ikke være før fra dato",
                             invalidValue = "fraOgMed eller tilOgMed"
                     )
             )

@@ -1,10 +1,10 @@
 package no.nav.omsorgspengerapi.soknad.mottak
 
-import java.util.*
+import java.time.LocalDate
 
 data class Utenlandsopphold(
-        val fraOgMed: Date,
-        val tilOgMed: Date,
+        val fraOgMed: LocalDate,
+        val tilOgMed: LocalDate,
         val landkode: String,
         val landnavn: String
 ) {
