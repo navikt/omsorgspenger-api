@@ -1,6 +1,7 @@
 # This workflow trigger on push to any branch.
 name: CI / CD
 on:
+  deployment:
   push:
     paths-ignore:
       - '**.md'
