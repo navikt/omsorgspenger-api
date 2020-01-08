@@ -1,6 +1,7 @@
 package no.nav.omsorgspengerapi.soknad.api
 
 import no.nav.omsorgspengerapi.barn.api.ChildV1
+import no.nav.omsorgspengerapi.soknad.mottak.Utenlandsopphold
 import java.net.URL
 
 data class ApplicationV1(
@@ -16,7 +17,8 @@ data class ApplicationV1(
         val samvarsavtale: List<URL>?,
         val medlemskap: Medlemskap,
         val harForstattRettigheterOgPlikter: Boolean,
-        val harBekreftetOpplysninger: Boolean
+        val harBekreftetOpplysninger: Boolean,
+        val utenlandsopphold: List<Utenlandsopphold>
 )
 
 class Medlemskap(

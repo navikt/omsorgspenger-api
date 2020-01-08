@@ -64,6 +64,40 @@ internal fun ApplicationV1.validate() {
         }
     }
 
+    utenlandsopphold.mapIndexed { index, utenlandsopphold ->
+        val fraDataErForTilDato = utenlandsopphold.fraOgMed.isBefore(utenlandsopphold.tilOgMed)
+        if (!fraDataErForTilDato) {
+            violations.add(
+                    Violation(
+                            parameterName = "Utenlandsopphold[$index]",
+                            parameterType = ParameterType.ENTITY,
+                            reason = "Til dato kan ikke være før fra dato",
+                            invalidValue = "fraOgMed eller tilOgMed"
+                    )
+            )
+        }
+        if (utenlandsopphold.landkode.isEmpty()) {
+            violations.add(
+                    Violation(
+                            parameterName = "Utenlandsopphold[$index]",
+                            parameterType = ParameterType.ENTITY,
+                            reason = "Landkode er ikke satt",
+                            invalidValue = "landkode"
+                    )
+            )
+        }
+        if (utenlandsopphold.landnavn.isEmpty()) {
+            violations.add(
+                    Violation(
+                            parameterName = "Utenlandsopphold[$index]",
+                            parameterType = ParameterType.ENTITY,
+                            reason = "Landnavn er ikke satt",
+                            invalidValue = "landnavn"
+                    )
+            )
+        }
+    }
+
     if (samvarsavtale != null) {
         samvarsavtale.mapIndexed { index, url ->
             val path = url.path
@@ -115,7 +149,7 @@ internal fun ApplicationV1.validate() {
                 ))
     }
 
-    // Ser om det er noen valideringsfeil
+// Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
         throw ApplicationValidationException("Failed to validate received application.", violations)
     }
