@@ -98,7 +98,7 @@ jobs:
         with:
           cluster: ${{ github.environment }}
           team: dusseldorf
-          resources: ${{ "nais/ " + github.environment + ".yml" }}
+          resources: nais/dev-sbs.yml
 
 
   deploy-dev-sbs:
