@@ -68,7 +68,7 @@ jobs:
 
   deploy:
     name: Deploy environment
-    if: github.event.deployment.payload.triggered # Deploy if triggered by cli
+    if: github.event.deployment.payload.triggered == true # Deploy if triggered by cli
     needs: build-code-and-push-docker # Depends on build-code-and-push-docker job
     runs-on: ubuntu-latest
     steps:
