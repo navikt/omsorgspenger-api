@@ -24,8 +24,8 @@ jobs:
       - name: Test Code
         run: ./gradlew clean test
       - name: debug deployment webhook
-          run: |
-            echo “deployment - ${{ github.event.deployment }}”
+        run: |
+          echo “deployment - ${{ github.event.deployment }}”
 
   build-code-and-push-docker:
     name: Build code and push docker image
