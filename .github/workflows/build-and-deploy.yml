@@ -26,7 +26,7 @@ jobs:
 
   build-code-and-push-docker:
     name: Build code and push docker image
-    if: startsWith(github.ref, 'refs/heads/dev-') || startsWith(github.ref, 'refs/heads/master') || github.payload.triggered # Build and push docker if branch is either master or dev-*
+    if: startsWith(github.ref, 'refs/heads/dev-') || startsWith(github.ref, 'refs/heads/master') || github.event.deployment.payload.triggered # Build and push docker if branch is either master or dev-*
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -68,7 +68,7 @@ jobs:
 
   deploy:
     name: Deploy environment
-    if: github.event.deployment.payload.triggered == true # Deploy if triggered by cli
+    if: github.event.deployment.payload.triggered # Deploy if triggered by cli
     needs: build-code-and-push-docker # Depends on build-code-and-push-docker job
     runs-on: ubuntu-latest
     steps:
