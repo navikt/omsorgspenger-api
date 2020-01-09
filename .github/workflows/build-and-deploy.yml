@@ -23,9 +23,6 @@ jobs:
           java-version: 11
       - name: Test Code
         run: ./gradlew clean test
-      - name: debug deployment webhook
-        run: |
-          echo "deployment - ${{ toJSON(github) }}"
 
   build-code-and-push-docker:
     name: Build code and push docker image
@@ -71,7 +68,7 @@ jobs:
 
   deploy:
     name: Deploy environment
-    if: github.payload.triggered # Deploy if triggered by cli
+    if: github.event.deployment.payload.triggered # Deploy if triggered by cli
     needs: build-code-and-push-docker # Depends on build-code-and-push-docker job
     runs-on: ubuntu-latest
     steps:
@@ -92,14 +89,14 @@ jobs:
           cp docker_tag/.docker_tag .
       - name: debug
         run: ls -la
-      - name: deploy to dev-sbs
+      - name: deploy to environment
         uses: navikt/deployment-cli/action@0.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           cluster: ${{ github.environment }}
           team: dusseldorf
-          resources: nais/dev-sbs.yml
+          resources: join('nais/', github.environment , '.yml')
 
 
   deploy-dev-sbs:
