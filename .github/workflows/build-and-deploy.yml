@@ -94,9 +94,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          cluster: ${{ github.environment }}
+          cluster: ${{ github.event.deployment.environment }}
           team: dusseldorf
-          resources: join('nais/', github.environment , '.yml')
+          resources: ${{  join('nais/', github.event.deployment.environment , '.yml') }}
 
 
   deploy-dev-sbs:
