@@ -1,6 +1,7 @@
 # This workflow trigger on push to any branch.
 name: CI / CD
 on:
+  deployment:
   push:
     paths-ignore:
       - '**.md'
@@ -25,7 +26,7 @@ jobs:
 
   build-code-and-push-docker:
     name: Build code and push docker image
-    if: startsWith(github.ref, 'refs/heads/dev-') ||startsWith(github.ref, 'refs/heads/master') # Build and push docker if branch is either master or dev-*
+    if: startsWith(github.ref, 'refs/heads/dev-') || startsWith(github.ref, 'refs/heads/master') || github.event.deployment.payload.triggered # Build and push docker if branch is either master or dev-*
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -64,6 +65,39 @@ jobs:
         with:
           name: docker_tag
           path: .docker_tag
+
+  deploy:
+    name: Deploy environment
+    if: github.event.deployment.payload.triggered # Deploy if triggered by cli
+    needs: build-code-and-push-docker # Depends on build-code-and-push-docker job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+        # Download the image and tag file to use for the deployment cli.
+      - name: Download image file
+        uses: actions/download-artifact@v1
+        with:
+          name: docker_image
+      - name: Download tag file
+        uses: actions/download-artifact@v1
+        with:
+          name: docker_tag
+      - name: unpack
+        run: |
+          cp docker_image/.docker_image .
+          cp docker_tag/.docker_tag .
+      - name: debug
+        run: ls -la
+      - name: deploy to environment
+        uses: navikt/deployment-cli/action@0.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          cluster: ${{ github.event.deployment.environment }}
+          team: dusseldorf
+          resources: ${{  format('nais/{0}.yml', github.event.deployment.environment) }}
+
 
   deploy-dev-sbs:
     name: Deploy to dev-sbs
