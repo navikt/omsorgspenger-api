@@ -28,25 +28,30 @@ paths:
       - "Søknad"
       summary: "Send inn en søknad."
       description: ""
-      operationId: "addPet"
+      operationId: "sendSoknad"
       consumes:
-      - "application/json"
-      produces:
       - "application/json"
       parameters:
       - in: "body"
-        name: "body"
+        name: "søknad"
         description: "En søknadsobjekt for innsending"
         required: true
         schema:
           $ref: "#/definitions/Soknad"
       responses:
-        405:
-          description: "Invalid input"
+        204:
+          description: "No Content"
+        400:
+          $ref: "#/definitions/OmsorgspengerAPIError"
+        401:
+          $ref: "#/definitions/OmsorgspengerAPIError"
+        403:
+          $ref: "#/definitions/OmsorgspengerAPIError"
+        500:
+          $ref: "#/definitions/OmsorgspengerAPIError"
       security:
         - selbetjening-idtoken: []
         
-  
   /soker:
     get:
       tags:
@@ -95,10 +100,23 @@ securityDefinitions:
     type: "apiKey"
     name: "Authorization"
     in: "header"
-      
+
 definitions:
   Soknad:
     type: "object"
+    required:
+      - new_version
+      - sprak
+      - kronisk_eller_funksjonshemming
+      - er_yrkesaktiv
+      - barn
+      - deler_omsorg
+      - samme_adresse
+      - medlemskap
+      - legeerklaring
+      - samvarsavtale
+      - har_bekreftet_opplysninger
+      - har_forstatt_rettigheter_og_plikter
     properties:
       new_version:
         type: "boolean"
@@ -109,47 +127,128 @@ definitions:
       kronisk_eller_funksjonshemming:
         type: "boolean"
         example: false
+      er_yrkesaktiv: 
+        type: "boolean"
+        example: true
+      barn:
+          $ref: "#/definitions/Barn"
+      deler_omsorg:
+        type: "boolean"
+        example: true
+      samme_adresse:
+        type: "boolean"
+        example: false
+      medlemskap:
+        $ref: "#/definitions/Medlemskap"
+      legeerklaring:
+        type: array
+        items:
+          type: "string"
+          format: "hostname"
+          example: "https://omsorgspenger-api/vedlegg/da61256a-51b1-41b7-b9b6-e5ce1705fae9"
+      samvarsavtale:
+        type: array
+        items:
+          type: "string"
+          format: "hostname"
+          example: "https://omsorgspenger-api/vedlegg/da61256a-51b1-41b7-b9b6-e5ce1705fae9"
+      har_bekreftet_opplysninger:
+        type: "boolean"
+        example: true
+      har_forstatt_rettigheter_og_plikter:
+        type: "boolean"
   
   Søker:
     type: "object"
+    required:
+      - fornavn
+      - etternavn
+      - fødselsdato
+      - aktør_id
     properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
+      fornavn:
         type: "string"
+      mellomnavn:
+        type: "string"
+      etternavn:
+        type: "string"
+      fødselsdato:
+        type: "string"
+        format: "date"
+        pattern: "YYYY-MM-DD"
+        example: "1993-02-23"
+      aktør_id:
+        type: "string"
+  
   Barn:
     type: "object"
     properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
+      navn:
         type: "string"
-      firstName:
+        example: "Ola Nordmann"
+        description: "Full navn"
+      fodselsdato:
         type: "string"
-      lastName:
+        format: "date"
+        pattern: "YYYY-MM-DD"
+        example: "2013-02-23"
+      fodselsnummer:
         type: "string"
-      email:
+        description: "Gyldig norsk fødselsnummer"
+      alternativId:
         type: "string"
-      password:
+      aktoerId:
         type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-  ApiResponse:
+  
+  Medlemskap:
     type: "object"
     properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
+      har_bodd_i_utlandet_siste_12_mnd:
+        type: "boolean"
+        example: false
+      skal_bo_i_utlandet_neste_12_mnd:
+        type: "boolean"
+        example: false
+      fra_og_med:
         type: "string"
+        format: "date"
+        pattern: "YYYY-MM-DD"
+        example: "2020-01-23"
+      til_og_med:
+        type: "string"
+        format: "date"
+        pattern: "YYYY-MM-DD"
+        example: "2020-01-23"
+
+  ParameterType:
+    type: "string"
+    enum: [QUERY, PATH, HEADER, ENTITY, FORM]
+
+  Violation:
+    type: "object"
+    properties:
+      parameterName:
+        type: "string"
+      parameterType:
+        $ref: "#/definitions/ParameterType"
+      reason:
+        type: "string"
+      invalidValue:
+        type: "string"
+
+  OmsorgspengerAPIError:
+    type: "object"
+    properties:
       message:
         type: "string"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+      status:
+        type: "integer"
+        format: "int32"
+      error:
+        type: "string"
+      path:
+        type: "string"
+      violations:
+        type: array
+        items:
+          $ref: "#/definitions/Violation"
