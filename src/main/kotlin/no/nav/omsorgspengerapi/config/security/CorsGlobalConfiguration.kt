@@ -22,7 +22,7 @@ class CorsGlobalConfiguration : WebFluxConfigurer {
 
         corsRegistry
                 .addMapping("/**")
-                .allowedOrigins(*corsAddresses.toTypedArray())
+                .allowedOrigins("http://localhost:8080", "http://localhost:9001")
                 .allowedMethods("*")
                 .maxAge(3600)
     }
