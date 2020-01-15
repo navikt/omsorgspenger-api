@@ -1,4 +1,4 @@
-swagger: "2.0"
+openapi: 3.0.0
 info:
   description: "API for innsending av søknad om omsorgspenger."
   version: "1.0.0"
@@ -8,19 +8,22 @@ info:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 
-host: "omsorgsorgspengesoknad-api-q.nav.no"
-basePath: "/"
+servers:
+  - url: http://localhost:8080
+    description: Lokal Miljø
+  - url: https://omsorgspengesoknad-api-q.nav.no
+    description: Q / Staging Miljø
+
 tags:
 - name: "Søknad"
-  description: "Innsending av søknad om omsorgspenger"
+  description: "Endepunkt for innsending av søknad om omsorgspenger"
 - name: "Søker"
-  description: "Informasjon om søker (innlogget bruker)"
+  description: "Endepunkt for innhenting av informasjon om søker (innlogget bruker)"
 - name: "Barn"
-  description: "Informasjon om søkers barn (innlogget bruker)"
+  description: "Endepunkt for innhenting av informasjon om søkers barn (innlogget bruker)"
+- name: "Vedlegg"
+  description: "Endepunkter for å laste opp, hente og slette vedlegg."
 
-schemes:
-- "https"
-- "http"
 paths:
   /soknad:
     post:
@@ -29,28 +32,27 @@ paths:
       summary: "Send inn en søknad."
       description: ""
       operationId: "sendSoknad"
-      consumes:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "søknad"
-        description: "En søknadsobjekt for innsending"
+      requestBody:
         required: true
-        schema:
-          $ref: "#/definitions/Soknad"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Soknad"
+            examples:
+              SoknadsExample:
+                $ref: "#/components/examples/SoknadsExample"
+
       responses:
         204:
           description: "No Content"
         400:
-          $ref: "#/definitions/OmsorgspengerAPIError"
+          $ref: "#/components/responses/BadRequest"
         401:
-          $ref: "#/definitions/OmsorgspengerAPIError"
-        403:
-          $ref: "#/definitions/OmsorgspengerAPIError"
+          $ref: "#/components/responses/UnAuthorized"
         500:
-          $ref: "#/definitions/OmsorgspengerAPIError"
+          $ref: "#/components/responses/InternalServerError"
       security:
-        - selbetjening-idtoken: []
+        - selvbetjenings-idtoken: []
         
   /soker:
     get:
@@ -59,19 +61,15 @@ paths:
       summary: "Returnerer innlogget søkers opplysninger"
       description: "Returnerer innlogget søkers opplysninger"
       operationId: "hentSøker"
-      produces:
-      - "application/json"
-      parameters: []
       responses:
         200:
-          description: "successful operation"
-          schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Soker"
       security:
-        - selbetjening-idtoken: []
+        - selvbetjenings-idtoken: []
   
   /barn:
     get:
@@ -80,175 +78,353 @@ paths:
       summary: "Hent barn"
       description: "Hent barn for innlogget søker."
       operationId: "hentBarn"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
-        required: true
-        schema:
-          $ref: "#/definitions/Barn"
       responses:
-        default:
-          description: "successful operation"
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Barn"
       security:
-        - selbetjening-idtoken: []
+        - selvbetjenings-idtoken: []
 
-securityDefinitions:
-  selbetjening-idtoken:
-    type: "apiKey"
-    name: "Authorization"
-    in: "header"
+  /vedlegg:
+    post:
+      tags:
+        - "Vedlegg"
+      summary: "Endepunkt for opplasting av vedlegg."
+      description: ""
+      operationId: "lastOppVedlegg"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: "object"
+              properties:
+                file:
+                  type: "string"
+                  format: binary
+            encoding: # The same level as schema
+              file: # Property name (see above)
+                contentType: image/png, image/jpeg, text/pdf
+      responses:
+        200:
+          $ref: "#/components/responses/VedleggsId_OK"
 
-definitions:
-  Soknad:
-    type: "object"
-    required:
-      - new_version
-      - sprak
-      - kronisk_eller_funksjonshemming
-      - er_yrkesaktiv
-      - barn
-      - deler_omsorg
-      - samme_adresse
-      - medlemskap
-      - legeerklaring
-      - samvarsavtale
-      - har_bekreftet_opplysninger
-      - har_forstatt_rettigheter_og_plikter
-    properties:
-      new_version:
-        type: "boolean"
-        default: "false"
-      sprak:
-        type: "string"
-        example: "nb"
-      kronisk_eller_funksjonshemming:
-        type: "boolean"
-        example: false
-      er_yrkesaktiv: 
-        type: "boolean"
-        example: true
-      barn:
-          $ref: "#/definitions/Barn"
-      deler_omsorg:
-        type: "boolean"
-        example: true
-      samme_adresse:
-        type: "boolean"
-        example: false
-      medlemskap:
-        $ref: "#/definitions/Medlemskap"
-      legeerklaring:
-        type: array
-        items:
+    get:
+      tags:
+        - "Vedlegg"
+      responses:
+        204:
+          description: "No Content"
+    delete:
+      tags:
+        - "Vedlegg"
+      responses:
+        204:
+          description: "No Content"
+
+
+components:
+  responses:
+      BadRequest:
+        description: "Enten valideringsfeil eller feil format på data"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OmsorgspengerAPIError"
+            example:
+              message: "Feilet med å validere søknad"
+              status: 400
+              error: "ApplicationValidationException"
+              path: "/soknad"
+              violations:
+                - parameterName: "kronisk_eller_funksjonshemning"
+                  parameterType: "ENTITY"
+                  reason: "kronisk_eller_funksjonshemning"
+                  invalidValue: null
+      
+      UnAuthorized:
+        description: "Unauthorized. Idtoken er enten utgått eller ikke gyldig."
+
+      InternalServerError:
+        description: "Noe uventet har forekommet."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OmsorgspengerAPIError"
+            example:
+              message: "Internal server error"
+              status: 400
+              error: "ApplicationValidationException"
+              path: "/soknad"
+              violations:
+                - parameterName: "kronisk_eller_funksjonshemning"
+                  parameterType: "ENTITY"
+                  reason: "kronisk_eller_funksjonshemning"
+                  invalidValue: null
+
+      VedleggsId_OK:
+        description: "OK"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VedleggsId"
+
+  schemas:
+    Soknad:
+      type: "object"
+      required:
+        - new_version
+        - sprak
+        - kronisk_eller_funksjonshemming
+        - er_yrkesaktiv
+        - barn
+        - deler_omsorg
+        - samme_adresse
+        - medlemskap
+        - legeerklaring
+        - samvarsavtale
+        - har_bekreftet_opplysninger
+        - har_forstatt_rettigheter_og_plikter
+      properties:
+        new_version:
+          type: "boolean"
+          default: "false"
+        sprak:
           type: "string"
-          format: "hostname"
-          example: "https://omsorgspenger-api/vedlegg/da61256a-51b1-41b7-b9b6-e5ce1705fae9"
-      samvarsavtale:
-        type: array
-        items:
+          example: "nb"
+        kronisk_eller_funksjonshemming:
+          type: "boolean"
+          example: false
+        er_yrkesaktiv: 
+          type: "boolean"
+          example: true
+        barn:
+            $ref: "#/components/schemas/Barn"
+        deler_omsorg:
+          type: "boolean"
+          example: true
+        samme_adresse:
+          type: "boolean"
+          example: false
+        medlemskap:
+          $ref: "#/components/schemas/Medlemskap"
+        legeerklaring:
+          type: array
+          items:
+            type: "string"
+            format: "hostname"
+            example: "https://omsorgspenger-api/vedlegg/da61256a-51b1-41b7-b9b6-e5ce1705fae9"
+        samvarsavtale:
+          type: array
+          items:
+            type: "string"
+            format: "hostname"
+            example: "https://omsorgspenger-api/vedlegg/da61256a-51b1-41b7-b9b6-e5ce1705fae9"
+        har_bekreftet_opplysninger:
+          type: "boolean"
+          example: true
+        har_forstatt_rettigheter_og_plikter:
+          type: "boolean"
+  
+    SoknadTilProsessering:
+      type: "object"
+      required:
+        - new_version
+        - sprak
+        - kronisk_eller_funksjonshemming
+        - er_yrkesaktiv
+        - barn
+        - deler_omsorg
+        - samme_adresse
+        - medlemskap
+        - legeerklaring
+        - samvarsavtale
+        - har_bekreftet_opplysninger
+        - har_forstatt_rettigheter_og_plikter
+      properties:
+        new_version:
+          type: "boolean"
+          default: "false"
+        sprak:
           type: "string"
-          format: "hostname"
-          example: "https://omsorgspenger-api/vedlegg/da61256a-51b1-41b7-b9b6-e5ce1705fae9"
-      har_bekreftet_opplysninger:
-        type: "boolean"
-        example: true
-      har_forstatt_rettigheter_og_plikter:
-        type: "boolean"
-  
-  Søker:
-    type: "object"
-    required:
-      - fornavn
-      - etternavn
-      - fødselsdato
-      - aktør_id
-    properties:
-      fornavn:
-        type: "string"
-      mellomnavn:
-        type: "string"
-      etternavn:
-        type: "string"
-      fødselsdato:
-        type: "string"
-        format: "date"
-        pattern: "YYYY-MM-DD"
-        example: "1993-02-23"
-      aktør_id:
-        type: "string"
-  
-  Barn:
-    type: "object"
-    properties:
-      navn:
-        type: "string"
-        example: "Ola Nordmann"
-        description: "Full navn"
-      fodselsdato:
-        type: "string"
-        format: "date"
-        pattern: "YYYY-MM-DD"
-        example: "2013-02-23"
-      fodselsnummer:
-        type: "string"
-        description: "Gyldig norsk fødselsnummer"
-      alternativId:
-        type: "string"
-      aktoerId:
-        type: "string"
-  
-  Medlemskap:
-    type: "object"
-    properties:
-      har_bodd_i_utlandet_siste_12_mnd:
-        type: "boolean"
-        example: false
-      skal_bo_i_utlandet_neste_12_mnd:
-        type: "boolean"
-        example: false
-      fra_og_med:
-        type: "string"
-        format: "date"
-        pattern: "YYYY-MM-DD"
-        example: "2020-01-23"
-      til_og_med:
-        type: "string"
-        format: "date"
-        pattern: "YYYY-MM-DD"
-        example: "2020-01-23"
+          example: "nb"
+        mottatt:
+          type: "string"
+          format: "date-time"
+          pattern: ""
+        soker:
+          type: "object"
+          $ref: "#/components/schemas/Soker"
+        kronisk_eller_funksjonshemming:
+          type: "boolean"
+          example: false
+        er_yrkesaktiv: 
+          type: "boolean"
+          example: true
+        barn:
+            $ref: "#/components/schemas/Barn"
+        deler_omsorg:
+          type: "boolean"
+          example: true
+        samme_adresse:
+          type: "boolean"
+          example: false
+        medlemskap:
+          $ref: "#/components/schemas/Medlemskap"
+        legeerklaring:
+          type: array
+          items:
+            type: "string"
+            format: "hostname"
+            example: "https://omsorgspenger-api/vedlegg/da61256a-51b1-41b7-b9b6-e5ce1705fae9"
+        samvarsavtale:
+          type: array
+          items:
+            type: "string"
+            format: "hostname"
+            example: "https://omsorgspenger-api/vedlegg/da61256a-51b1-41b7-b9b6-e5ce1705fae9"
+        har_bekreftet_opplysninger:
+          type: "boolean"
+          example: true
+        har_forstatt_rettigheter_og_plikter:
+          type: "boolean"
 
-  ParameterType:
-    type: "string"
-    enum: [QUERY, PATH, HEADER, ENTITY, FORM]
+    Soker:
+      type: "object"
+      required:
+        - fornavn
+        - etternavn
+        - fødselsdato
+        - aktør_id
+      properties:
+        fornavn:
+          type: "string"
+        mellomnavn:
+          type: "string"
+        etternavn:
+          type: "string"
+        fødselsdato:
+          type: "string"
+          format: "date"
+          pattern: "YYYY-MM-DD"
+          example: "1993-02-23"
+        aktør_id:
+          type: "string"
+    
+    Barn:
+      type: "object"
+      properties:
+        navn:
+          type: "string"
+          example: "Ola Nordmann"
+          description: "Full navn"
+        fodselsdato:
+          type: "string"
+          format: "date"
+          pattern: "YYYY-MM-DD"
+          example: "2013-02-23"
+        fodselsnummer:
+          type: "string"
+          description: "Gyldig norsk fødselsnummer"
+        alternativId:
+          type: "string"
+        aktoerId:
+          type: "string"
+    
+    Medlemskap:
+      type: "object"
+      properties:
+        har_bodd_i_utlandet_siste_12_mnd:
+          type: "boolean"
+          example: false
+        skal_bo_i_utlandet_neste_12_mnd:
+          type: "boolean"
+          example: false
+        fra_og_med:
+          type: "string"
+          format: "date"
+          pattern: "YYYY-MM-DD"
+          example: "2020-01-23"
+        til_og_med:
+          type: "string"
+          format: "date"
+          pattern: "YYYY-MM-DD"
+          example: "2020-01-23"
 
-  Violation:
-    type: "object"
-    properties:
-      parameterName:
-        type: "string"
-      parameterType:
-        $ref: "#/definitions/ParameterType"
-      reason:
-        type: "string"
-      invalidValue:
-        type: "string"
+    ParameterType:
+      type: "string"
+      enum: [QUERY, PATH, HEADER, ENTITY, FORM]
 
-  OmsorgspengerAPIError:
-    type: "object"
-    properties:
-      message:
-        type: "string"
-      status:
-        type: "integer"
-        format: "int32"
-      error:
-        type: "string"
-      path:
-        type: "string"
-      violations:
-        type: array
-        items:
-          $ref: "#/definitions/Violation"
+    Violation:
+      type: "object"
+      properties:
+        parameterName:
+          type: "string"
+        parameterType:
+          $ref: "#/components/schemas/ParameterType"
+        reason:
+          type: "string"
+        invalidValue:
+          type: "string"
+
+    OmsorgspengerAPIError:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+        status:
+          type: "integer"
+          format: "int32"
+        error:
+          type: "string"
+        path:
+          type: "string"
+        violations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Violation"
+
+    VedleggsId:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          example: "efc9e798-a237-4835-a859-18372c258c0d"
+
+  examples:
+    SoknadsExample:
+      value:
+        new_version: true
+        sprak: "nb"
+        kronisk_eller_funksjonshemming: true
+        er_yrkesaktiv: true
+        barn:
+          navn: "Ola Nordmann"
+          fodselsdato: "2013-02-23"
+          alternativId: null
+          fodselsnummer: "23029312345"
+          aktoerId: "123456"
+        deler_omsorg: false
+        samme_adresse: false
+        medlemskap:
+          har_bodd_i_utlandet_siste_12_mnd: true
+          skal_bo_i_utlandet_neste_12_mnd: false
+          fra_og_med: "2020-01-03"
+          til_og_med: "2020-01-23"
+        legeerklaring:
+          - "https://omsorgspenger-api/vedlegg/da61256a-51b1-41b7-b9b6-e5ce1705fae9"
+        samvarsavtale:
+          - "https://omsorgspenger-api/vedlegg/da61256a-51b1-41b7-b9b6-e5ce1705fae9"
+        har_bekreftet_opplysninger: true
+        har_forstatt_rettigheter_og_plikter: true
+    
+  securitySchemes:
+    selvbetjenings-idtoken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+# security:
+#   - selvbetjenings-idtoken: []
