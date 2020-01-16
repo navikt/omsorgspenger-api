@@ -27,6 +27,8 @@ repositories {
 dependencies {
     val springSecurityVersion = "5.2.1.RELEASE"
 
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
     // See here for more info about configuring security: https://docs.spring.io/spring-security/site/docs/current/reference/html/webflux-oauth2.html#webflux-oauth2-resource-server
     // https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-resource-server
     implementation("org.springframework.security:spring-security-oauth2-resource-server:$springSecurityVersion")

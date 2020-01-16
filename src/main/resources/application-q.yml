@@ -3,4 +3,13 @@ spring:
     active: q
 
 nav.no:
-  cors-addresses: ${CORS_ADDRESSES}
+  security:
+    cors:
+      apply-to-path-pattern: '/**'
+      allowed-origins:
+        - 'https://omsorgspengesoknad-q.nav.no'
+        - 'https://omsorgspengesoknad-api-q.nav.no'
+        - 'https://omsorgspengesoknad.nais.oera-q.local'
+      allowed-methods:
+        - '*'
+      max-age: 3600

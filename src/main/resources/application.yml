@@ -40,6 +40,14 @@ nav.no:
   cors-addresses:
   security:
     login-service-client-id: ${LOGIN_SERVICE_CLIENT_ID}
+    cors:
+      apply-to-path-pattern: '/**'
+      allowed-origins:
+        - 'http://localhost:8080'
+        - 'http://localhost:9001'
+      allowed-methods:
+        - '*'
+      max-age: 3600
 
 management:
   endpoint:

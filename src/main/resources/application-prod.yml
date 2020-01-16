@@ -10,4 +10,13 @@ spring:
           jwk-set-uri: https://login.microsoftonline.com/navnob2c.onmicrosoft.com/discovery/v2.0/keys?p=b2c_1a_idporten
 
 nav.no:
-  cors-addresses: ${CORS_ADDRESSES}
+  security:
+    cors:
+      apply-to-path-pattern: '/**'
+      allowed-origins:
+        - 'https://omsorgspengesoknad.nav.no'
+        - 'https://omsorgspengesoknad-api.nav.no'
+        - 'https://omsorgspengesoknad.nais.oera.no'
+      allowed-methods:
+        - '*'
+      max-age: 3600
