@@ -15,7 +15,6 @@ import java.net.URI
 
 
 @Configuration
-@EnableWebFlux
 class WebFluxConfiguration(private val objectMapper: ObjectMapper): WebFluxConfigurer {
 
     @Value("\${spring.codec.max-in-memory-size}")
