@@ -110,19 +110,53 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/VedleggsId_OK"
+          
+      security:
+        - selvbetjenings-idtoken: []
 
+  /velegg/{vedleggsId}:
     get:
       tags:
         - "Vedlegg"
+      summary: "Endepunkt for henting av vedlegg."
+      description: ""
+      operationId: "hentVedlegg"
+      parameters:
+        - in: path
+          name: vedleggsId
+          required: true
+          schema:
+            type: String
+          description: "Vedleggets unike id."
+      
       responses:
-        204:
-          description: "No Content"
+        200:
+          $ref: "#/components/responses/VedleggsJson_OK"
+      security:
+        - selvbetjenings-idtoken: []
+        
     delete:
       tags:
         - "Vedlegg"
+      summary: "Endepunkt for sletting av vedlegg."
+      description: ""
+      operationId: "slettVedlegg"
+      parameters:
+        - in: path
+          name: vedleggsId
+          required: true
+          schema:
+            type: String
+          description: "Vedleggets unike id."
+      
       responses:
         204:
           description: "No Content"
+        404:
+          $ref: "#/components/responses/NotFound"
+      
+      security:
+        - selvbetjenings-idtoken: []
 
 
 components:
@@ -147,6 +181,13 @@ components:
       UnAuthorized:
         description: "Unauthorized. Idtoken er enten utgått eller ikke gyldig."
 
+      NotFound:
+        description: "Ressurs ikke funnet."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OmsorgspengerAPIError"
+      
       InternalServerError:
         description: "Noe uventet har forekommet."
         content:
@@ -163,6 +204,13 @@ components:
                   parameterType: "ENTITY"
                   reason: "kronisk_eller_funksjonshemning"
                   invalidValue: null
+
+      VedleggsJson_OK:
+        description: "OK"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VedleggsJson"
 
       VedleggsId_OK:
         description: "OK"
@@ -392,6 +440,20 @@ components:
         id:
           type: "string"
           example: "efc9e798-a237-4835-a859-18372c258c0d"
+
+    VedleggsJson:
+      type: "object"
+      properties:
+        content:
+          type: string
+          format: base64
+          example: "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IG..."
+        content_type:
+          type: string
+          example: "image/png"
+        title:
+          type: string
+          example: "image/png"
 
   examples:
     SoknadsExample:
