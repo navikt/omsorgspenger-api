@@ -9,7 +9,7 @@ nav.no:
     k9_lookup_url: 'http://localhost:8080/lookup'
     k9_dokument_url: 'http://localhost:8132'
     omsorgspengersoknad_mottak_url: 'http://localhost:8083'
-  cors-addresses: 'http://localhost:**'
+  cors-addresses: '*'
 
 http:
   proxyHost: localhost
