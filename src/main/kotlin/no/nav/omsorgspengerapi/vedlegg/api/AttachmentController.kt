@@ -1,5 +1,8 @@
 package no.nav.omsorgspengerapi.vedlegg.api
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
+import no.nav.omsorgspengerapi.docs.SELVBETJENING_ID_TOKEN_SCHEME
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -11,6 +14,8 @@ import javax.validation.Valid
 
 @RestController
 @Validated
+@SecurityRequirement(name = SELVBETJENING_ID_TOKEN_SCHEME)
+@Tag(name = "Vedlegg", description = "Endepunkter for å laste opp, hente og slette vedlegg.")
 class AttachmentController(private val attachmentService: AttachmentService) {
 
     companion object {
