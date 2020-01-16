@@ -57,6 +57,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
 
     implementation("org.springdoc:springdoc-openapi-webflux-ui:1.2.26")
+    implementation("org.springdoc:springdoc-openapi-security:1.2.26")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
