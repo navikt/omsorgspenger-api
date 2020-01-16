@@ -18,7 +18,7 @@ data class OmsorgspengerAPIError(
             return OmsorgspengerAPIError(
                     timestamp = LocalDateTime.now(),
                     error = defaultErrorAttributes["error"] as String,
-                    message = defaultErrorAttributes["message"] as String,
+                    message = defaultErrorAttributes["message"] as? String,
                     path = defaultErrorAttributes["path"] as String,
                     status = defaultErrorAttributes["status"] as Int
             )
@@ -29,7 +29,7 @@ data class OmsorgspengerAPIError(
         return java.util.Map.of<String, Any>(
                 "timestamp", timestamp,
                 "error", error,
-                "message", message,
+                "message", message?: "",
                 "path", path,
                 "status", status,
                 "violations", violations
