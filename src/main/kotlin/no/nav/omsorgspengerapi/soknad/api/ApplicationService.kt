@@ -1,7 +1,7 @@
 package no.nav.omsorgspengerapi.soknad.api
 
 import no.nav.helse.soker.validate
-import no.nav.omsorgspengerapi.soker.api.ApplicantService
+import no.nav.omsorgspengerapi.soker.api.SøkerService
 import no.nav.omsorgspengerapi.soknad.mottak.ApplicationReceiverService
 import no.nav.omsorgspengerapi.vedlegg.api.AttachmentService
 import no.nav.omsorgspengerapi.vedlegg.document.DocumentJson
@@ -15,7 +15,7 @@ import java.net.URL
 @Service
 class ApplicationService(
         private val applicationReceiverService: ApplicationReceiverService,
-        private val applicantService: ApplicantService,
+        private val søkerService: SøkerService,
         private val attachmentService: AttachmentService
 ) {
     companion object {
@@ -24,7 +24,7 @@ class ApplicationService(
 
     fun sendSoknad(applicationV1: ApplicationV1): Mono<Unit> {
         log.info("Getting applicant...")
-        val applicant = applicantService.getApplicant()
+        val applicant = søkerService.getSøker()
         log.info("Applicant retrieved.")
 
         log.info("Validating applicant...")

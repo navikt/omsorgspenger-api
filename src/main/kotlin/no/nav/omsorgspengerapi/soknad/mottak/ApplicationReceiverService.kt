@@ -3,7 +3,7 @@ package no.nav.omsorgspengerapi.soknad.mottak
 import brave.Tracer
 import no.nav.omsorgspengerapi.config.general.webClient.WebClientConfig
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
-import no.nav.omsorgspengerapi.soker.api.ApplicantLookupException
+import no.nav.omsorgspengerapi.soker.api.SøkerOppslagException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -42,7 +42,7 @@ class ApplicationReceiverService(
                 .doOnNext {res: ClientResponse ->
                     val statusCode = res.statusCode()
                     if (statusCode.is5xxServerError) {
-                        Mono.error<Void>(ApplicantLookupException("Failed to send application"))
+                        Mono.error<Void>(SøkerOppslagException("Failed to send application"))
                     }
                 }
                 .flatMap { it.bodyToMono(Void::class.java) }

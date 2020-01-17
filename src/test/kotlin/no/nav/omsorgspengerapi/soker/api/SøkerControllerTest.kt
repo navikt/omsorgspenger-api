@@ -2,7 +2,7 @@ package no.nav.omsorgspengerapi.soker.api
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
-import no.nav.helse.soker.ApplicantV1
+import no.nav.helse.soker.Søker
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -16,38 +16,38 @@ import reactor.core.publisher.Mono
 import java.time.LocalDate
 
 @ExtendWith(SpringExtension::class)
-@WebFluxTest(ApplicantController::class)
+@WebFluxTest(SøkerController::class)
 @WithMockUser()
-internal class ApplicantControllerTest {
+internal class SøkerControllerTest {
 
     @Autowired
     lateinit var client: WebTestClient
 
     @MockkBean
-    lateinit var applicantService: ApplicantService
+    lateinit var søkerService: SøkerService
 
     @Test
-    internal fun `Expect an applicant when status OK`() {
-        val expectedApplicant = ApplicantV1(
+    internal fun `Forvent en søker, når status er OK`() {
+        val forventetSøker = Søker(
                 fornavn = "Bjarne",
                 mellomnavn = "Dahl",
                 etternavn = "Moen",
-                fodselsdato = LocalDate.now().minusYears(20),
-                aktoer_id = "123456"
+                fødselsdato = LocalDate.now().minusYears(20),
+                aktørId = "123456"
         )
 
-        every { applicantService.getApplicant() } returns Mono.just(expectedApplicant)
+        every { søkerService.getSøker() } returns Mono.just(forventetSøker)
 
-        val actualApplicant = client.get()
+        val søker = client.get()
                 .uri("/soker")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk
-                .expectBody(ApplicantV1::class.java)
+                .expectBody(Søker::class.java)
                 .returnResult().responseBody
 
-        assertThat(actualApplicant)
+        assertThat(søker)
                 .isNotNull
-                .isEqualTo(expectedApplicant)
+                .isEqualTo(forventetSøker)
     }
 }

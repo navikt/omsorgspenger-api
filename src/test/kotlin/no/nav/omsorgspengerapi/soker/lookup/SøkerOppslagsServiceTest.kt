@@ -7,10 +7,9 @@ import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import no.nav.helse.soker.ApplicantV1
 import no.nav.omsorgspengerapi.common.NavHeaders
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
-import no.nav.omsorgspengerapi.soker.api.ApplicantLookupException
+import no.nav.omsorgspengerapi.soker.api.SøkerOppslagException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -33,7 +32,7 @@ import java.util.*
 @ExtendWith(SpringExtension::class)
 @AutoConfigureWireMock(port = 8090)
 @ActiveProfiles("test")
-internal class ApplicantLookupServiceTest {
+internal class SøkerOppslagsServiceTest {
 
     @Autowired
     lateinit var apiGatewayApiKey: ApiGatewayApiKey
@@ -48,7 +47,7 @@ internal class ApplicantLookupServiceTest {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    lateinit var applicantLookupService: ApplicantLookupService
+    lateinit var søkerOppslagsService: SøkerOppslagsService
 
     private val traceId = UUID.randomUUID().toString()
 
@@ -70,12 +69,12 @@ internal class ApplicantLookupServiceTest {
     @BeforeEach
     internal fun setUp() {
         every { tracer.currentSpan().context().traceIdString() } returns traceId
-        applicantLookupService = ApplicantLookupService(client, apiGatewayApiKey, tracer)
+        søkerOppslagsService = SøkerOppslagsService(client, apiGatewayApiKey, tracer)
     }
 
     @Test
-    fun `Expect an applicant, upon status OK from upstream service`() {
-        val expectedApplicant = defaultApplicant()
+    fun `Forvent en søker når oppslagsstatus er OK`() {
+        val forventetSøker = defaultOppslagsSøker()
 
         stubFor(get(urlPathEqualTo("/meg"))
                 .withQueryParams(attributes)
@@ -85,20 +84,20 @@ internal class ApplicantLookupServiceTest {
                         aResponse()
                                 .withStatus(OK.value())
                                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                                .withBody(bodyToJsonString(expectedApplicant))
+                                .withBody(bodyToJsonString(forventetSøker))
                 )
         )
 
-        val actualApplicant = applicantLookupService.lookupApplicant()
+        val søker = søkerOppslagsService.slåOppSøker()
 
-        StepVerifier.create(actualApplicant)
-                .assertNext { expectedApplicant }
+        StepVerifier.create(søker)
+                .assertNext { forventetSøker }
                 .expectComplete()
                 .verify()
     }
 
     @Test
-    fun `Expect an applicantLookupException, upon status INTERNAL_SERVER_ERROR from upstream service`() {
+    fun `Forvent en søkerOppslagException, når oppslag av søker gir INTERNAL_SERVER_ERROR`() {
 
         stubFor(get(urlPathEqualTo("/meg"))
 
@@ -111,15 +110,15 @@ internal class ApplicantLookupServiceTest {
         )
 
 
-        val actualError = applicantLookupService.lookupApplicant()
+        val søkerOppslagExcception = søkerOppslagsService.slåOppSøker()
 
-        StepVerifier.create(actualError)
-                .expectError(ApplicantLookupException::class.java)
+        StepVerifier.create(søkerOppslagExcception)
+                .expectError(SøkerOppslagException::class.java)
                 .verify()
     }
 
     @Test
-    fun `Expect an applicantLookupException, upon status BAD_REQUEST from upstream service`() {
+    fun `Forvent en søkerOppslagException, når oppslag av søker gir BAD_REQUEST`() {
 
         stubFor(get(urlPathEqualTo("/meg"))
                 .withQueryParams(invalidAttributes)
@@ -131,26 +130,26 @@ internal class ApplicantLookupServiceTest {
                 )
         )
 
-        val actualError = applicantLookupService.lookupApplicant()
+        val actualError = søkerOppslagsService.slåOppSøker()
 
         StepVerifier.create(actualError)
-                .expectError(ApplicantLookupException::class.java)
+                .expectError(SøkerOppslagException::class.java)
                 .verify()
     }
 
-    private fun defaultApplicant(
+    private fun defaultOppslagsSøker(
             fornavn: String = "Ole",
             mellomnavn: String = "mock",
             etternavn: String = "Nordmann",
-            fodselsdato: LocalDate = LocalDate.now().minusYears(30),
-            aktoerId: String = "123456")
-            : ApplicantV1 = ApplicantV1(
+            fødselsdato: LocalDate = LocalDate.now().minusYears(30),
+            aktørId: String = "123456")
+            : SøkerOppslagsDTO = SøkerOppslagsDTO(
             fornavn = fornavn,
             mellomnavn = mellomnavn,
             etternavn = etternavn,
-            fodselsdato = fodselsdato,
-            aktoer_id = aktoerId
+            fødselsdato = fødselsdato,
+            aktørId = aktørId
     )
 
-    private fun bodyToJsonString(applicant: ApplicantV1) = objectMapper.writeValueAsString(applicant)
+    private fun bodyToJsonString(søker: SøkerOppslagsDTO) = objectMapper.writeValueAsString(søker)
 }

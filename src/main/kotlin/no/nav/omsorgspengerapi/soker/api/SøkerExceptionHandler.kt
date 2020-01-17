@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
-@RestControllerAdvice(assignableTypes = [ApplicantController::class])
-class ApplicantExceptionHandler {
+@RestControllerAdvice(assignableTypes = [SøkerController::class])
+class SøkerExceptionHandler {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(ApplicantLookupException::class)
-    fun handleApplicantLookupUpstreamException(ex: ApplicantLookupException, request: ServerHttpRequest): OmsorgspengerAPIError {
+    @ExceptionHandler(SøkerOppslagException::class)
+    fun handleSøkerOppslagException(ex: SøkerOppslagException, request: ServerHttpRequest): OmsorgspengerAPIError {
         return OmsorgspengerAPIError(
                 message = ex.message,
                 status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -22,4 +22,4 @@ class ApplicantExceptionHandler {
     }
 }
 
-class ApplicantLookupException(message: String): RuntimeException(message)
+class SøkerOppslagException(message: String) : RuntimeException(message)

@@ -1,6 +1,6 @@
 package no.nav.omsorgspengerapi.soknad.mottak
 
-import no.nav.helse.soker.ApplicantV1
+import no.nav.helse.soker.Søker
 import no.nav.omsorgspengerapi.barn.api.ChildV1
 import no.nav.omsorgspengerapi.soknad.api.ApplicantChildRelations
 import no.nav.omsorgspengerapi.soknad.api.Medlemskap
@@ -14,7 +14,7 @@ data class CompleteApplicationDTO(
         val erYrkesaktiv: Boolean,
         val kroniskEllerFunksjonshemming: Boolean,
         val barn: ChildV1,
-        val soker: ApplicantV1,
+        val soker: Søker,
         val sammeAddresse: Boolean?,
         val delerOmsorg: Boolean?,
         val relasjonTilBarnet: ApplicantChildRelations? = null,
