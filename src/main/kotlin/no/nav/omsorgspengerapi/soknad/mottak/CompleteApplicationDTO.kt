@@ -1,7 +1,7 @@
 package no.nav.omsorgspengerapi.soknad.mottak
 
 import no.nav.helse.soker.Søker
-import no.nav.omsorgspengerapi.barn.api.ChildV1
+import no.nav.omsorgspengerapi.barn.api.Barn
 import no.nav.omsorgspengerapi.soknad.api.ApplicantChildRelations
 import no.nav.omsorgspengerapi.soknad.api.Medlemskap
 import no.nav.omsorgspengerapi.vedlegg.api.AttachmentFile
@@ -13,7 +13,7 @@ data class CompleteApplicationDTO(
         val mottatt : ZonedDateTime,
         val erYrkesaktiv: Boolean,
         val kroniskEllerFunksjonshemming: Boolean,
-        val barn: ChildV1,
+        val barn: Barn,
         val soker: Søker,
         val sammeAddresse: Boolean?,
         val delerOmsorg: Boolean?,

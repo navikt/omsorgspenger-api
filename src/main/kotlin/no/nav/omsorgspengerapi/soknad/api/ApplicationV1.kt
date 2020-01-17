@@ -1,6 +1,6 @@
 package no.nav.omsorgspengerapi.soknad.api
 
-import no.nav.omsorgspengerapi.barn.api.ChildV1
+import no.nav.omsorgspengerapi.barn.api.Barn
 import no.nav.omsorgspengerapi.soknad.mottak.Utenlandsopphold
 import java.net.URL
 
@@ -9,7 +9,7 @@ data class ApplicationV1(
         val sprak: String,
         val erYrkesaktiv: Boolean,
         val kroniskEllerFunksjonshemming: Boolean,
-        val barn: ChildV1,
+        val barn: Barn,
         val sammeAddresse: Boolean?,
         val delerOmsorg: Boolean?,
         val relasjonTilBarnet: ApplicantChildRelations? = null,

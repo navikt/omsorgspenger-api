@@ -12,14 +12,14 @@ import reactor.core.publisher.Flux
 @RestController
 @SecurityRequirement(name = SELVBETJENING_ID_TOKEN_SCHEME)
 @Tag(name = "Barn", description = "Endepunkt for innhenting av informasjon om søkers barn (innlogget bruker)")
-class ChildController(private val childService: ChildService) {
+class BarnController(private val barnService: BarnService) {
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(ChildController::class.java)
+        private val log: Logger = LoggerFactory.getLogger(BarnController::class.java)
     }
 
     @GetMapping("/barn")
-    fun getChild(): Flux<ChildV1> {
-        return childService.getChildren()
+    fun getBarn(): Flux<Barn> {
+        return barnService.getBarn()
     }
 }

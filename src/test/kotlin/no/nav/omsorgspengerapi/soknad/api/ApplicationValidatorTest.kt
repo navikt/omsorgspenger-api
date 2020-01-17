@@ -1,6 +1,6 @@
 package no.nav.omsorgspengerapi.soknad.api
 
-import no.nav.omsorgspengerapi.barn.api.ChildV1
+import no.nav.omsorgspengerapi.barn.api.Barn
 import no.nav.omsorgspengerapi.soknad.mottak.Utenlandsopphold
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
@@ -23,10 +23,10 @@ internal class ApplicationValidatorTest {
                 harBekreftetOpplysninger = true,
                 harForstattRettigheterOgPlikter = true,
                 relasjonTilBarnet = ApplicantChildRelations.FAR,
-                barn = ChildV1(
+                barn = Barn(
                         navn = "Ole Dole Doffen",
-                        fodselsdato = "2009-02-23",
-                        aktoerId = "123456"
+                        fødselsdato = "2009-02-23",
+                        aktørId = "123456"
                 ),
                 medlemskap = Medlemskap(
                         harBoddIUtlandetSiste12Mnd = false,
@@ -72,10 +72,10 @@ internal class ApplicationValidatorTest {
                 harBekreftetOpplysninger = true,
                 harForstattRettigheterOgPlikter = true,
                 relasjonTilBarnet = ApplicantChildRelations.FAR,
-                barn = ChildV1(
+                barn = Barn(
                         navn = "Ole Dole Doffen",
-                        fodselsdato = "2009-02-23",
-                        aktoerId = "123456"
+                        fødselsdato = "2009-02-23",
+                        aktørId = "123456"
                 ),
                 medlemskap = Medlemskap(
                         harBoddIUtlandetSiste12Mnd = false,
@@ -117,10 +117,10 @@ internal class ApplicationValidatorTest {
                 harBekreftetOpplysninger = true,
                 harForstattRettigheterOgPlikter = true,
                 relasjonTilBarnet = ApplicantChildRelations.FAR,
-                barn = ChildV1(
+                barn = Barn(
                         navn = "Ole Dole Doffen",
-                        fodselsdato = "2009-02-23",
-                        aktoerId = "123456"
+                        fødselsdato = "2009-02-23",
+                        aktørId = "123456"
                 ),
                 medlemskap = Medlemskap(
                         harBoddIUtlandetSiste12Mnd = false,

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
-@RestControllerAdvice(assignableTypes = [ChildController::class])
+@RestControllerAdvice(assignableTypes = [BarnController::class])
 class ChildExceptionHandler {
 
     companion object {
@@ -17,8 +17,8 @@ class ChildExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(ChildLookupException::class)
-    fun handleChildLookupFailedException(ex: ChildLookupException, request: ServerHttpRequest): OmsorgspengerAPIError {
+    @ExceptionHandler(BarnOppslagException::class)
+    fun handleChildLookupFailedException(ex: BarnOppslagException, request: ServerHttpRequest): OmsorgspengerAPIError {
         log.error(ex.message, ex)
 
         return OmsorgspengerAPIError(
@@ -30,4 +30,4 @@ class ChildExceptionHandler {
     }
 }
 
-class ChildLookupException(message: String): RuntimeException(message)
+class BarnOppslagException(message: String) : RuntimeException(message)

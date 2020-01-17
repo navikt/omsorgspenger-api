@@ -3,7 +3,7 @@ package no.nav.omsorgspengerapi.soknad.api
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.slot
-import no.nav.omsorgspengerapi.barn.api.ChildV1
+import no.nav.omsorgspengerapi.barn.api.Barn
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -87,10 +87,10 @@ internal class ApplicationControllerTest {
                 harBekreftetOpplysninger = true,
                 harForstattRettigheterOgPlikter = true,
                 relasjonTilBarnet = ApplicantChildRelations.FAR,
-                barn = ChildV1(
+                barn = Barn(
                         navn = "Ole Doffen",
-                        fodselsdato = "2009-02-23",
-                        aktoerId = "123456"
+                        fødselsdato = "2009-02-23",
+                        aktørId = "123456"
                 ),
                 medlemskap = Medlemskap(
                         harBoddIUtlandetSiste12Mnd = false,

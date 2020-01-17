@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 
-data class ChildLookupDTO(
-        @JsonProperty("fødselsdato") @JsonFormat(pattern = "yyyy-MM-dd") val fodselsdato: LocalDate,
+data class BarnOppslagDTO(
+        @JsonFormat(pattern = "yyyy-MM-dd") val fødselsdato: LocalDate,
         val fornavn: String,
         val mellomnavn: String? = null,
         val etternavn: String,
-        @JsonProperty("aktør_id") val aktoerId: String
+        @JsonProperty("aktør_id") val aktørId: String
 )

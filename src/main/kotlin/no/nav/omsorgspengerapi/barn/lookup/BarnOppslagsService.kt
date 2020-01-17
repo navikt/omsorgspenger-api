@@ -1,7 +1,7 @@
 package no.nav.omsorgspengerapi.barn.lookup
 
 import brave.Tracer
-import no.nav.omsorgspengerapi.barn.api.ChildLookupException
+import no.nav.omsorgspengerapi.barn.api.BarnOppslagException
 import no.nav.omsorgspengerapi.common.NavHeaders
 import no.nav.omsorgspengerapi.config.general.webClient.WebClientConfig
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
@@ -17,14 +17,14 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Service
-class ChildLookupService(
+class BarnOppslagsService(
         @Qualifier("k9LookuoClient") private val client: WebClient,
         private val apiGatewayApiKey: ApiGatewayApiKey,
         private val tracer: Tracer) {
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(ChildLookupService::class.java)
-        private val attributes = listOf(
+        private val log: Logger = LoggerFactory.getLogger(BarnOppslagsService::class.java)
+        private val attributter = listOf(
                 "barn[].aktør_id",
                 "barn[].fornavn",
                 "barn[].mellomnavn",
@@ -32,20 +32,20 @@ class ChildLookupService(
                 "barn[].fødselsdato")
     }
 
-    fun lookupChildren(): Flux<ChildLookupDTO> = client
+    fun slåOppBarn(): Flux<BarnOppslagDTO> = client
             .get()
             .uri { uri: UriBuilder ->
                 uri
                         .path("/meg")
-                        .queryParam("a", attributes)
+                        .queryParam("a", attributter)
                         .build()
             }
             .header(NavHeaders.XCorrelationId, tracer.currentSpan().context().traceIdString())
             .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
             .retrieve()
             .onStatus(HttpStatus::isError) { clientResponse: ClientResponse ->
-                Mono.error(ChildLookupException("Failed to lookup child from upstream service."))
+                Mono.error(BarnOppslagException("Feilet med oppslag av barn."))
             }
-            .bodyToFlux(ChildLookupDTO::class.java)
+            .bodyToFlux(BarnOppslagDTO::class.java)
             .retryWhen(WebClientConfig.retry)
 }

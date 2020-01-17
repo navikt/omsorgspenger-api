@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import no.nav.omsorgspengerapi.barn.api.ChildLookupException
+import no.nav.omsorgspengerapi.barn.api.BarnOppslagException
 import no.nav.omsorgspengerapi.common.NavHeaders
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
 import org.junit.jupiter.api.BeforeEach
@@ -31,7 +31,7 @@ import java.util.*
 @ExtendWith(SpringExtension::class)
 @AutoConfigureWireMock(port = 8090)
 @ActiveProfiles("test")
-internal class ChildLookupServiceTest {
+internal class BarnOppslagsServiceTest {
 
     @Autowired
     lateinit var apiGatewayApiKey: ApiGatewayApiKey
@@ -46,7 +46,7 @@ internal class ChildLookupServiceTest {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    lateinit var childLookupService: ChildLookupService
+    lateinit var barnOppslagsService: BarnOppslagsService
 
     private val traceId = UUID.randomUUID().toString()
 
@@ -68,12 +68,12 @@ internal class ChildLookupServiceTest {
     @BeforeEach
     internal fun setUp() {
         every { tracer.currentSpan().context().traceIdString() } returns traceId
-        childLookupService = ChildLookupService(client, apiGatewayApiKey, tracer)
+        barnOppslagsService = BarnOppslagsService(client, apiGatewayApiKey, tracer)
     }
 
     @Test
-    fun `Expect a list of childeren, upon status OK from upstream service`() {
-        val expectedChild = defaultApplicant()
+    fun `Forvent en liste med barn, når oppslagsstatus er OK`() {
+        val forventetBarn = defaultBarn()
 
         WireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/meg"))
                 .withQueryParams(attributes)
@@ -83,20 +83,20 @@ internal class ChildLookupServiceTest {
                         WireMock.aResponse()
                                 .withStatus(HttpStatus.OK.value())
                                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                                .withBody(bodyToJsonString(expectedChild))
+                                .withBody(bodyToJsonString(forventetBarn))
                 )
         )
 
-        val actualApplicant = childLookupService.lookupChildren()
+        val barn = barnOppslagsService.slåOppBarn()
 
-        StepVerifier.create(actualApplicant)
-                .assertNext { expectedChild }
+        StepVerifier.create(barn)
+                .assertNext { forventetBarn }
                 .expectComplete()
                 .verify()
     }
 
     @Test
-    fun `Expect an childLookupException, upon status INTERNAL_SERVER_ERROR from upstream service`() {
+    fun `Forvent en BarnOppslagException, når oppslagsstatus er INTERNAL_SERVER_ERROR`() {
 
         WireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/meg"))
 
@@ -109,15 +109,15 @@ internal class ChildLookupServiceTest {
         )
 
 
-        val actualError = childLookupService.lookupChildren()
+        val feil = barnOppslagsService.slåOppBarn()
 
-        StepVerifier.create(actualError)
-                .expectError(ChildLookupException::class.java)
+        StepVerifier.create(feil)
+                .expectError(BarnOppslagException::class.java)
                 .verify()
     }
 
     @Test
-    fun `Expect an childLookupException, upon status BAD_REQUEST from upstream service`() {
+    fun `Forvent en BarnOppslagException, når oppslagsstatus er BAD_REQUEST`() {
 
         WireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/meg"))
                 .withQueryParams(invalidAttributes)
@@ -129,26 +129,26 @@ internal class ChildLookupServiceTest {
                 )
         )
 
-        val actualError = childLookupService.lookupChildren()
+        val feil = barnOppslagsService.slåOppBarn()
 
-        StepVerifier.create(actualError)
-                .expectError(ChildLookupException::class.java)
+        StepVerifier.create(feil)
+                .expectError(BarnOppslagException::class.java)
                 .verify()
     }
 
-    private fun defaultApplicant(
+    private fun defaultBarn(
             fornavn: String = "Ole",
             mellomnavn: String = "mock",
             etternavn: String = "Nordmann",
             fodselsdato: LocalDate = LocalDate.now().minusYears(30),
             aktoerId: String = "123456")
-            : ChildLookupDTO = ChildLookupDTO(
+            : BarnOppslagDTO = BarnOppslagDTO(
             fornavn = fornavn,
             mellomnavn = mellomnavn,
             etternavn = etternavn,
-            fodselsdato = fodselsdato,
-            aktoerId = aktoerId
+            fødselsdato = fodselsdato,
+            aktørId = aktoerId
     )
 
-    private fun bodyToJsonString(applicant: ChildLookupDTO) = objectMapper.writeValueAsString(applicant)
+    private fun bodyToJsonString(barnOppslagDTO: BarnOppslagDTO) = objectMapper.writeValueAsString(barnOppslagDTO)
 }

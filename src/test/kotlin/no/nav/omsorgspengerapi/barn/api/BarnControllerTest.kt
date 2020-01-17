@@ -14,33 +14,33 @@ import org.springframework.test.web.reactive.server.expectBodyList
 import reactor.core.publisher.Flux
 
 @ExtendWith(SpringExtension::class)
-@WebFluxTest(ChildController::class)
+@WebFluxTest(BarnController::class)
 @WithMockUser()
-open class ChildControllerTest {
+open class BarnControllerTest {
 
     @Autowired
     lateinit var client: WebTestClient
 
     @MockkBean
-    lateinit var childService: ChildService
+    lateinit var barnService: BarnService
 
     @Test
-    fun `Expect list of children when status OK`() {
-        val expectedChild = ChildV1(
+    fun `Forvent en liste med barn, når status er OK`() {
+        val forventetBarn = Barn(
                 navn = "Ole Dole Doffen",
-                fodselsdato = "2009-02-23",
-                aktoerId = "123456"
+                fødselsdato = "2009-02-23",
+                aktørId = "123456"
         )
 
-        every { childService.getChildren() } returns Flux.just(expectedChild)
+        every { barnService.getBarn() } returns Flux.just(forventetBarn)
 
         client.get()
                 .uri("/barn")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk
-                .expectBodyList<ChildV1>()
-                .contains(expectedChild)
+                .expectBodyList<Barn>()
+                .contains(forventetBarn)
 
     }
 }

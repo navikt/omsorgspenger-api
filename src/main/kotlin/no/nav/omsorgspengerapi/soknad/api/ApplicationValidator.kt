@@ -1,6 +1,6 @@
 package no.nav.omsorgspengerapi.soknad.api
 
-import no.nav.omsorgspengerapi.barn.api.ChildV1
+import no.nav.omsorgspengerapi.barn.api.Barn
 import no.nav.omsorgspengerapi.soknad.mottak.Utenlandsopphold
 import no.nav.omsorgspengerapi.vedlegg.document.DocumentJson
 import java.net.URL
@@ -158,16 +158,16 @@ internal fun ApplicationV1.validate() {
     }
 }
 
-private fun ChildV1.validate(relasjonTilBarnet: String?): MutableSet<Violation> {
+private fun Barn.validate(relasjonTilBarnet: String?): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
-    if (fodselsnummer != null && !fodselsnummer.erGyldigFodselsnummer()) {
+    if (fødselsnummer != null && !fødselsnummer.erGyldigFodselsnummer()) {
         violations.add(
                 Violation(
                         parameterName = "barn.fodselsnummer",
                         parameterType = ParameterType.ENTITY,
                         reason = "Ikke gyldig fødselsnummer.",
-                        invalidValue = fodselsnummer
+                        invalidValue = fødselsnummer
                 )
         )
     }
@@ -183,7 +183,7 @@ private fun ChildV1.validate(relasjonTilBarnet: String?): MutableSet<Violation> 
         )
     }
 
-    val kreverNavnPaaBarnet = fodselsnummer != null
+    val kreverNavnPaaBarnet = fødselsnummer != null
     if ((kreverNavnPaaBarnet || navn != null) && (navn == null || navn.erBlankEllerLengreEnn(100))) {
         violations.add(
                 Violation(
@@ -195,7 +195,7 @@ private fun ChildV1.validate(relasjonTilBarnet: String?): MutableSet<Violation> 
         )
     }
 
-    val kreverRelasjonPaaBarnet = aktoerId == null
+    val kreverRelasjonPaaBarnet = aktørId == null
     if ((kreverRelasjonPaaBarnet || relasjonTilBarnet != null) && (relasjonTilBarnet == null || relasjonTilBarnet.erBlankEllerLengreEnn(100))) {
         violations.add(
                 Violation(
