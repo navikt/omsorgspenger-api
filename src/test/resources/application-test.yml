@@ -4,6 +4,10 @@ spring:
   codec:
     max-in-memory-size: 200000 # 200 KB
 
+springdoc:
+  api-docs:
+    enabled: false
+
 http:
   proxyHost: localhost
   proxyPort: 8080

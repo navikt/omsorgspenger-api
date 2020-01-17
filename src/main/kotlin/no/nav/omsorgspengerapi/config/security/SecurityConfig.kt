@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod.OPTIONS
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
 import org.springframework.security.oauth2.jwt.Jwt
@@ -31,9 +32,19 @@ class SecurityConfig(
     @Bean
     internal fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http
+                .cors()
+                .and()
+                .csrf().disable()
                 .authorizeExchange { exchanges ->
                     exchanges
+                            .pathMatchers("/v3/api-docs/**",
+                                    "/configuration/ui",
+                                    "/swagger-resources/**",
+                                    "/configuration/security",
+                                    "/swagger-ui.html",
+                                    "/webjars/**").permitAll()
                             .pathMatchers("/actuator/**").permitAll()
+                            .pathMatchers(OPTIONS, "/**").permitAll()
                             .anyExchange().authenticated()
                 }
                 .oauth2ResourceServer().jwt().jwtDecoder(jwtDecoder(webClient))

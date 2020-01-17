@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.2.1.RELEASE"
+    id("org.springframework.boot") version "2.2.2.RELEASE"
     id("io.spring.dependency-management") version "1.0.8.RELEASE"
     kotlin("jvm") version "1.3.50"
     kotlin("plugin.spring") version "1.3.50"
@@ -26,6 +26,8 @@ repositories {
 
 dependencies {
     val springSecurityVersion = "5.2.1.RELEASE"
+
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     // See here for more info about configuring security: https://docs.spring.io/spring-security/site/docs/current/reference/html/webflux-oauth2.html#webflux-oauth2-resource-server
     // https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-resource-server
@@ -55,6 +57,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
+
+    implementation("org.springdoc:springdoc-openapi-webflux-ui:1.2.26")
+    implementation("org.springdoc:springdoc-openapi-security:1.2.26")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
         exclude(module = "junit")

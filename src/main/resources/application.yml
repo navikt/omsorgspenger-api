@@ -18,8 +18,6 @@ spring:
         jwt:
           issuer-uri: https://login.microsoftonline.com/d38f25aa-eab8-4c50-9f28-ebf92c1256f2/v2.0/
           jwk-set-uri: https://login.microsoftonline.com/navtestb2c.onmicrosoft.com/discovery/v2.0/keys?p=b2c_1a_idporten_ver1
-  jackson:
-    property-naming-strategy: SNAKE_CASE
   servlet:
     multipart:
       enabled: true
@@ -40,6 +38,14 @@ nav.no:
   cors-addresses:
   security:
     login-service-client-id: ${LOGIN_SERVICE_CLIENT_ID}
+    cors:
+      apply-to-path-pattern: '/**'
+      allowed-origins:
+        - 'http://localhost:8080'
+        - 'http://localhost:9001'
+      allowed-methods:
+        - '*'
+      max-age: 3600
 
 management:
   endpoint:
