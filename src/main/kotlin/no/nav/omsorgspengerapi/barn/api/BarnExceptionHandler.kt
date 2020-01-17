@@ -17,8 +17,8 @@ class ChildExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(BarnOppslagException::class)
-    fun handleChildLookupFailedException(ex: BarnOppslagException, request: ServerHttpRequest): OmsorgspengerAPIError {
+    @ExceptionHandler(BarnOppslagFeiletException::class)
+    fun handleBarnOppslagFeiletException(ex: BarnOppslagFeiletException, request: ServerHttpRequest): OmsorgspengerAPIError {
         log.error(ex.message, ex)
 
         return OmsorgspengerAPIError(
@@ -30,4 +30,4 @@ class ChildExceptionHandler {
     }
 }
 
-class BarnOppslagException(message: String) : RuntimeException(message)
+class BarnOppslagFeiletException(message: String) : RuntimeException(message)

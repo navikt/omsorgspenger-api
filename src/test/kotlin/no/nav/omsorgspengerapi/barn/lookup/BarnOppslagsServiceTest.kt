@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import no.nav.omsorgspengerapi.barn.api.BarnOppslagException
+import no.nav.omsorgspengerapi.barn.api.BarnOppslagFeiletException
 import no.nav.omsorgspengerapi.common.NavHeaders
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
 import org.junit.jupiter.api.BeforeEach
@@ -112,7 +112,7 @@ internal class BarnOppslagsServiceTest {
         val feil = barnOppslagsService.slåOppBarn()
 
         StepVerifier.create(feil)
-                .expectError(BarnOppslagException::class.java)
+                .expectError(BarnOppslagFeiletException::class.java)
                 .verify()
     }
 
@@ -132,7 +132,7 @@ internal class BarnOppslagsServiceTest {
         val feil = barnOppslagsService.slåOppBarn()
 
         StepVerifier.create(feil)
-                .expectError(BarnOppslagException::class.java)
+                .expectError(BarnOppslagFeiletException::class.java)
                 .verify()
     }
 

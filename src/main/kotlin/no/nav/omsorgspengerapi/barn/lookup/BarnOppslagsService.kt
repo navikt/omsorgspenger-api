@@ -1,7 +1,7 @@
 package no.nav.omsorgspengerapi.barn.lookup
 
 import brave.Tracer
-import no.nav.omsorgspengerapi.barn.api.BarnOppslagException
+import no.nav.omsorgspengerapi.barn.api.BarnOppslagFeiletException
 import no.nav.omsorgspengerapi.common.NavHeaders
 import no.nav.omsorgspengerapi.config.general.webClient.WebClientConfig
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
@@ -44,7 +44,7 @@ class BarnOppslagsService(
             .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
             .retrieve()
             .onStatus(HttpStatus::isError) { clientResponse: ClientResponse ->
-                Mono.error(BarnOppslagException("Feilet med oppslag av barn."))
+                Mono.error(BarnOppslagFeiletException("Feilet ved oppslag av barn."))
             }
             .bodyToFlux(BarnOppslagDTO::class.java)
             .retryWhen(WebClientConfig.retry)
