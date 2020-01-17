@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @SecurityRequirement(name = SELVBETJENING_ID_TOKEN_SCHEME)
 @Tag(name = "Søknad", description = "Endepunkt for innsending av søknad om omsorgspenger.")
-class ApplicationController(private val applicationService: ApplicationService) {
+class SøknadController(private val søknadService: SøknadService) {
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(ApplicationController::class.java)
+        private val log: Logger = LoggerFactory.getLogger(SøknadController::class.java)
     }
 
     @PostMapping("/soknad")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun sendApplication(@RequestBody application: ApplicationV1) {
-        log.info("Application received: {}", application)
+    fun mottaSøknad(@RequestBody søknad: Søknad) {
+        log.info("Innsendt søknad: {}", søknad)
 
-        log.info("Validating application...")
-        application.validate()
-        log.info("Application validated")
-        applicationService.sendSoknad(application)
+        log.info("Validerer søknad...")
+        søknad.valider()
+        log.info("Søknad validert")
+        søknadService.sendSoknad(søknad)
     }
 }

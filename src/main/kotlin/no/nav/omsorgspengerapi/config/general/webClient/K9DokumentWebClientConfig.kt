@@ -22,7 +22,7 @@ class K9DokumentWebClientConfig {
         private val log: Logger = LoggerFactory.getLogger(K9LookupWebClientConfig::class.java)
     }
 
-    @Bean("k9DocumentClient")
+    @Bean("k9DokumentKlient")
     protected fun k9LookuoClient(): WebClient {
         return WebClient.builder()
                 .baseUrl(baseUrl.toString())

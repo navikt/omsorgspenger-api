@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
 
-@RestControllerAdvice(assignableTypes = [AttachmentController::class])
-class AttachmentExceptionHandler {
+@RestControllerAdvice(assignableTypes = [VedleggController::class])
+class DokumentExceptionHandler {
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(AttachmentExceptionHandler::class.java)
+        private val log: Logger = LoggerFactory.getLogger(DokumentExceptionHandler::class.java)
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(DocumentNotFoundException::class)
-    fun handleAttachmentNotFound(ex: DocumentNotFoundException, request: ServerHttpRequest): OmsorgspengerAPIError {
+    @ExceptionHandler(VedleggIkkeFunnetException::class)
+    fun handleDokumentIkkeFunnetException(ex: VedleggIkkeFunnetException, request: ServerHttpRequest): OmsorgspengerAPIError {
         log.warn(ex.message, ex)
         return OmsorgspengerAPIError(
                 message = ex.message,
@@ -31,8 +31,8 @@ class AttachmentExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(DocumentRetrievalFailedException::class)
-    fun handleDocumentRetrievalFailedException(ex: DocumentRetrievalFailedException, request: ServerHttpRequest): OmsorgspengerAPIError {
+    @ExceptionHandler(VedleggHentingFeiletException::class)
+    fun handleDokumentHentingFeiletException(ex: VedleggHentingFeiletException, request: ServerHttpRequest): OmsorgspengerAPIError {
         log.warn(ex.message, ex)
         return OmsorgspengerAPIError(
                 message = ex.message,
@@ -43,8 +43,8 @@ class AttachmentExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(DocumentContentTypeNotSupported::class)
-    fun handleDocumentContentTypeNotSupported(ex: DocumentContentTypeNotSupported, request: ServerHttpRequest): OmsorgspengerAPIError {
+    @ExceptionHandler(VedleggtypeIkkeSupportertException::class)
+    fun handleDokumenttypeIkkeSupportertException(ex: VedleggtypeIkkeSupportertException, request: ServerHttpRequest): OmsorgspengerAPIError {
         log.warn(ex.message, ex)
         return OmsorgspengerAPIError(
                 message = ex.message,
@@ -66,8 +66,8 @@ class AttachmentExceptionHandler {
     }
 }
 
-class DocumentContentTypeNotSupported(message: String) : RuntimeException(message)
-class DocumentNotFoundException(message: String) : RuntimeException(message)
-class DocumentUploadFailedException(message: String) : RuntimeException(message)
-class DocumentRetrievalFailedException(message: String) : RuntimeException(message)
-class DocumentDeletionFailedException(message: String) : RuntimeException(message)
+class VedleggtypeIkkeSupportertException(message: String) : RuntimeException(message)
+class VedleggIkkeFunnetException(message: String) : RuntimeException(message)
+class VedleggOpplastingFeiletException(message: String) : RuntimeException(message)
+class VedleggHentingFeiletException(message: String) : RuntimeException(message)
+class VedleggSlettingFeiletException(message: String) : RuntimeException(message)

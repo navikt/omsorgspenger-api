@@ -26,24 +26,24 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @ExtendWith(SpringExtension::class)
-@WebFluxTest(AttachmentController::class)
+@WebFluxTest(VedleggController::class)
 @WithMockUser()
 @ActiveProfiles("test")
-class AttachmentControllerTest {
+class VedleggControllerTest {
 
     @MockkBean
-    lateinit var attachmentService: AttachmentService
+    lateinit var vedleggService: VedleggService
 
     @Autowired
     lateinit var client: WebTestClient
 
     @Test
-    fun `when uploading an attachment, expect attachment id`() {
+    fun `Ved opplasting av vedlegg, forvent vedleggid`() {
 
         val filePart = ClassPathResource("./files/spring-kotlin-59kb.png")
                 .toMultipartBody(MimeTypeUtils.IMAGE_PNG)
 
-        every { attachmentService.saveAttachment(capture(slot())) } returns Mono.just(AttachmentId(UUID.randomUUID().toString()))
+        every { vedleggService.lagreVedlegg(capture(slot())) } returns Mono.just(VedleggId(UUID.randomUUID().toString()))
 
         client.mutateWith(csrf())
                 .post()
@@ -55,14 +55,14 @@ class AttachmentControllerTest {
     }
 
     @Test
-    fun `when uploading an unsupported attachment, expect bad request`() {
+    fun `Ved opplasting av ugylid vedleggstype, forvent status BAD_REQUEST`() {
 
         val filePart = ClassPathResource("./files/unsupported-file.txt")
                 .toMultipartBody(MimeTypeUtils.TEXT_PLAIN)
 
-        val errorMessage = "Attachment with type '${MimeTypeUtils.TEXT_PLAIN_VALUE} ' is not supported."
+        val errorMessage = "Vedlegg med type '${MimeTypeUtils.TEXT_PLAIN_VALUE} ' er ikke supportert"
 
-        every { attachmentService.saveAttachment(capture(slot())) } returns Mono.error<AttachmentId>(DocumentContentTypeNotSupported(errorMessage))
+        every { vedleggService.lagreVedlegg(capture(slot())) } returns Mono.error<VedleggId>(VedleggtypeIkkeSupportertException(errorMessage))
 
         val actualError = client.mutateWith(csrf())
                 .post()
@@ -71,7 +71,7 @@ class AttachmentControllerTest {
                 .bodyValue(filePart)
                 .exchange()
                 .expectStatus().isBadRequest
-                .expectBody(DocumentContentTypeNotSupported::class.java)
+                .expectBody(VedleggtypeIkkeSupportertException::class.java)
                 .returnResult().responseBody
 
         assertThat(actualError)
@@ -79,7 +79,7 @@ class AttachmentControllerTest {
     }
 
     @Test
-    fun `when uploading a big attachment, expect bad request`() {
+    fun `Ved opplasting av for stor vedlegg, forvent status BAD_REQUEST`() {
 
         val filePart = ClassPathResource("./files/554kb.jpeg")
                 .toMultipartBody(MimeTypeUtils.IMAGE_JPEG)
@@ -106,67 +106,67 @@ class AttachmentControllerTest {
     }
 
     @Test
-    fun `when getting an attachment, expect an attachment with json response`() {
+    fun `Ved henting av vedlegg, forvent vedleggJson`() {
         val file = ClassPathResource("./files/spring-kotlin-59kb.png").file
-        val expectedAttachment = AttachmentJson(
+        val forventetVedlegg = VedleggJson(
                 content = file.readBytes(),
                 contentType = MimeTypeUtils.IMAGE_PNG_VALUE,
                 title = file.nameWithoutExtension
         )
 
-        every { attachmentService.getAttachmentJson(capture(slot())) } returns Mono.just(expectedAttachment)
+        every { vedleggService.hentVedleggSomJson(capture(slot())) } returns Mono.just(forventetVedlegg)
 
-        val actualAttachment = client.get()
+        val vedlegg = client.get()
                 .uri("/vedlegg/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk
-                .expectBody(AttachmentJson::class.java)
+                .expectBody(VedleggJson::class.java)
                 .returnResult().responseBody
 
-        assertThat(actualAttachment).isEqualTo(expectedAttachment)
+        assertThat(vedlegg).isEqualTo(forventetVedlegg)
     }
 
     @Test
-    fun `when attachment is not found, expect not found`() {
+    fun `Når vedlegg ikke blir funnet, forvent status NOT_FOUND`() {
 
         val errorMessage = "Attachment with id 1 was not found"
 
-        every { attachmentService.getAttachmentJson(capture(slot())) } returns Mono.error(DocumentNotFoundException(errorMessage))
+        every { vedleggService.hentVedleggSomJson(capture(slot())) } returns Mono.error(VedleggIkkeFunnetException(errorMessage))
 
         val actualError = client.get()
                 .uri("/vedlegg/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound
-                .expectBody(DocumentNotFoundException::class.java)
+                .expectBody(VedleggIkkeFunnetException::class.java)
                 .returnResult().responseBody
 
         assertThat(actualError).hasMessage(errorMessage)
     }
 
     @Test
-    fun `when attachment retrieval fails, expect internal server error`() {
+    fun `Når henting av vedlegg feiler, forvent status INTERNAL_SERVER_ERROR`() {
 
-        val errorMessage = "Failed to retrieve attachment, due to upstream issues"
+        val forventetFeilmelding = "Henting av vedlegg feilet"
 
-        every { attachmentService.getAttachmentJson(capture(slot())) } returns Mono.error(DocumentRetrievalFailedException(errorMessage))
+        every { vedleggService.hentVedleggSomJson(capture(slot())) } returns Mono.error(VedleggHentingFeiletException(forventetFeilmelding))
 
-        val actualError = client.get()
+        val feilmelding = client.get()
                 .uri("/vedlegg/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-                .expectBody(DocumentRetrievalFailedException::class.java)
+                .expectBody(VedleggHentingFeiletException::class.java)
                 .returnResult().responseBody
 
-        assertThat(actualError).hasMessage(errorMessage)
+        assertThat(feilmelding).hasMessage(forventetFeilmelding)
     }
 
     private fun ClassPathResource.toMultipartBody(fileType: MimeType): MultiValueMap<String, HttpEntity<*>> {
         val bodyBuilder = MultipartBodyBuilder()
         bodyBuilder
-                .part("file", this.file.readBytes())
+                .part("fil", this.file.readBytes())
                 .filename(this.file.name)
                 .header("Content-Disposition", "form-data; filename=${this.file.name}")
                 .header("Content-Type", fileType.toString())

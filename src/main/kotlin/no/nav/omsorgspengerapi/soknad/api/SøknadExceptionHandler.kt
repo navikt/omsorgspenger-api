@@ -6,14 +6,13 @@ import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import java.lang.RuntimeException
 
-@RestControllerAdvice(assignableTypes = [ApplicationController::class])
-class ApplicationExceptionHandler {
+@RestControllerAdvice(assignableTypes = [SøknadController::class])
+class SøknadExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ApplicationValidationException::class)
-    fun handleApplicationValidationException(ex: ApplicationValidationException, request: ServerHttpRequest): OmsorgspengerAPIError {
+    @ExceptionHandler(SøknadValideringException::class)
+    fun handleASøknadValideringExceptionn(ex: SøknadValideringException, request: ServerHttpRequest): OmsorgspengerAPIError {
         return OmsorgspengerAPIError(
                 message = ex.message,
                 status = HttpStatus.BAD_REQUEST.value(),
@@ -24,4 +23,4 @@ class ApplicationExceptionHandler {
     }
 }
 
-class ApplicationValidationException(message: String, val violations: MutableSet<Violation>): RuntimeException(message)
+class SøknadValideringException(message: String, val violations: MutableSet<Violation>) : RuntimeException(message)

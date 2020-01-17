@@ -1,22 +1,23 @@
 package no.nav.omsorgspengerapi.soknad.api
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.omsorgspengerapi.barn.api.Barn
-import no.nav.omsorgspengerapi.soknad.mottak.Utenlandsopphold
 import java.net.URL
+import java.time.LocalDate
 
-data class ApplicationV1(
-        val newVersion: Boolean,
-        val sprak: String,
+data class Søknad(
+        val nyVersjon: Boolean,
+        val språk: String,
         val erYrkesaktiv: Boolean,
         val kroniskEllerFunksjonshemming: Boolean,
         val barn: Barn,
         val sammeAddresse: Boolean?,
         val delerOmsorg: Boolean?,
-        val relasjonTilBarnet: ApplicantChildRelations? = null,
-        val legeerklaring: List<URL>,
-        val samvarsavtale: List<URL>?,
+        val relasjonTilBarnet: SøkerBarnRelasjon? = null,
+        val legeerklæring: List<URL>,
+        val samværsavtale: List<URL>?,
         val medlemskap: Medlemskap,
-        val harForstattRettigheterOgPlikter: Boolean,
+        val harForståttRettigheterOgPlikter: Boolean,
         val harBekreftetOpplysninger: Boolean,
         val utenlandsopphold: List<Utenlandsopphold>
 )
@@ -28,7 +29,14 @@ class Medlemskap(
         val utenlandsoppholdNeste12Mnd: List<Utenlandsopphold> = listOf()
 )
 
-enum class ApplicantChildRelations(relasjon: String) {
+data class Utenlandsopphold(
+        @JsonFormat(pattern = "yyyy-MM-dd") val fraOgMed: LocalDate,
+        @JsonFormat(pattern = "yyyy-MM-dd") val tilOgMed: LocalDate,
+        val landkode: String,
+        val landnavn: String
+)
+
+enum class SøkerBarnRelasjon(relasjon: String) {
     MOR("mor"),
     FAR("far"),
     ADOPTIVFORELDER("adoptivforelder"),

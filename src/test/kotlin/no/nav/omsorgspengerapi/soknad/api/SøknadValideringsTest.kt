@@ -1,7 +1,6 @@
 package no.nav.omsorgspengerapi.soknad.api
 
 import no.nav.omsorgspengerapi.barn.api.Barn
-import no.nav.omsorgspengerapi.soknad.mottak.Utenlandsopphold
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -9,20 +8,20 @@ import java.net.URL
 import java.time.LocalDate
 
 
-internal class ApplicationValidatorTest {
+internal class SøknadValideringsTest {
 
     @Test
     internal fun `Til dato kan ikke være før fra dato`() {
-        val søknad = ApplicationV1(
-                newVersion = false,
-                sprak = "nb",
+        val søknad = Søknad(
+                nyVersjon = false,
+                språk = "nb",
                 erYrkesaktiv = true,
                 kroniskEllerFunksjonshemming = true,
                 delerOmsorg = false,
                 sammeAddresse = true,
                 harBekreftetOpplysninger = true,
-                harForstattRettigheterOgPlikter = true,
-                relasjonTilBarnet = ApplicantChildRelations.FAR,
+                harForståttRettigheterOgPlikter = true,
+                relasjonTilBarnet = SøkerBarnRelasjon.FAR,
                 barn = Barn(
                         navn = "Ole Dole Doffen",
                         fødselsdato = "2009-02-23",
@@ -32,11 +31,11 @@ internal class ApplicationValidatorTest {
                         harBoddIUtlandetSiste12Mnd = false,
                         skalBoIUtlandetNeste12Mnd = false
                 ),
-                samvarsavtale = listOf(
+                samværsavtale = listOf(
                         URL("http://localhost:8080/vedlegg/1"),
                         URL("http://localhost:8080/vedlegg/2")
                 ),
-                legeerklaring = listOf(
+                legeerklæring = listOf(
                         URL("http://localhost:8080/vedlegg/3"),
                         URL("http://localhost:8080/vedlegg/4")
                 ),
@@ -48,7 +47,7 @@ internal class ApplicationValidatorTest {
 
                 )
         )
-        val exception = Assertions.assertThrows(ApplicationValidationException::class.java) { søknad.validate() }
+        val exception = Assertions.assertThrows(SøknadValideringException::class.java) { søknad.valider() }
 
         val forventetViolation = Violation(
                 parameterType = ParameterType.ENTITY,
@@ -62,16 +61,16 @@ internal class ApplicationValidatorTest {
 
     @Test
     internal fun `Mangler landkode`() {
-        val søknad = ApplicationV1(
-                newVersion = false,
-                sprak = "nb",
+        val søknad = Søknad(
+                nyVersjon = false,
+                språk = "nb",
                 erYrkesaktiv = true,
                 kroniskEllerFunksjonshemming = true,
                 delerOmsorg = false,
                 sammeAddresse = true,
                 harBekreftetOpplysninger = true,
-                harForstattRettigheterOgPlikter = true,
-                relasjonTilBarnet = ApplicantChildRelations.FAR,
+                harForståttRettigheterOgPlikter = true,
+                relasjonTilBarnet = SøkerBarnRelasjon.FAR,
                 barn = Barn(
                         navn = "Ole Dole Doffen",
                         fødselsdato = "2009-02-23",
@@ -81,9 +80,9 @@ internal class ApplicationValidatorTest {
                         harBoddIUtlandetSiste12Mnd = false,
                         skalBoIUtlandetNeste12Mnd = false
                 ),
-                samvarsavtale = listOf(
+                samværsavtale = listOf(
                 ),
-                legeerklaring = listOf(
+                legeerklæring = listOf(
                 ),
                 utenlandsopphold = listOf(
                         Utenlandsopphold(
@@ -93,7 +92,7 @@ internal class ApplicationValidatorTest {
 
                 )
         )
-        val exception = Assertions.assertThrows(ApplicationValidationException::class.java) { søknad.validate() }
+        val exception = Assertions.assertThrows(SøknadValideringException::class.java) { søknad.valider() }
 
         val forventetViolation = Violation(
                 parameterType = ParameterType.ENTITY,
@@ -107,16 +106,16 @@ internal class ApplicationValidatorTest {
 
     @Test
     internal fun `Mangler landnavn`() {
-        val søknad = ApplicationV1(
-                newVersion = false,
-                sprak = "nb",
+        val søknad = Søknad(
+                nyVersjon = false,
+                språk = "nb",
                 erYrkesaktiv = true,
                 kroniskEllerFunksjonshemming = true,
                 delerOmsorg = false,
                 sammeAddresse = true,
                 harBekreftetOpplysninger = true,
-                harForstattRettigheterOgPlikter = true,
-                relasjonTilBarnet = ApplicantChildRelations.FAR,
+                harForståttRettigheterOgPlikter = true,
+                relasjonTilBarnet = SøkerBarnRelasjon.FAR,
                 barn = Barn(
                         navn = "Ole Dole Doffen",
                         fødselsdato = "2009-02-23",
@@ -126,9 +125,9 @@ internal class ApplicationValidatorTest {
                         harBoddIUtlandetSiste12Mnd = false,
                         skalBoIUtlandetNeste12Mnd = false
                 ),
-                samvarsavtale = listOf(
+                samværsavtale = listOf(
                 ),
-                legeerklaring = listOf(
+                legeerklæring = listOf(
                 ),
                 utenlandsopphold = listOf(
                         Utenlandsopphold(
@@ -138,7 +137,7 @@ internal class ApplicationValidatorTest {
 
                 )
         )
-        val exception = Assertions.assertThrows(ApplicationValidationException::class.java) { søknad.validate() }
+        val exception = Assertions.assertThrows(SøknadValideringException::class.java) { søknad.valider() }
 
         val forventetViolation = Violation(
                 parameterType = ParameterType.ENTITY,

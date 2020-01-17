@@ -25,7 +25,7 @@ class OmsorgspengerSoknadMottakWebClientConfig {
         private val log: Logger = LoggerFactory.getLogger(OmsorgspengerSoknadMottakWebClientConfig::class.java)
     }
 
-    @Bean("applicationReceiverClient")
+    @Bean("søknadMottaksKlient")
     protected fun applicationReceiverClient(): WebClient {
         return WebClient.builder()
                 .clientConnector(ReactorClientHttpConnector(HttpClient.from(

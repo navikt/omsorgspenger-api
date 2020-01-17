@@ -18,28 +18,28 @@ import reactor.core.publisher.Mono
 import java.net.URL
 
 @ExtendWith(SpringExtension::class)
-@WebFluxTest(ApplicationController::class)
+@WebFluxTest(SøknadController::class)
 @WithMockUser()
-internal class ApplicationControllerTest {
+internal class SøknadControllerTest {
 
     @Autowired
     lateinit var client: WebTestClient
 
     @MockkBean
-    lateinit var applicationService: ApplicationService
+    lateinit var søknadService: SøknadService
 
     @Test
-    internal fun `When registering application expect status NO CONTENT`() {
-        val application = stubApplicationV1()
+    internal fun `Ved registrering av søknad, forvent status NO CONTENT`() {
+        val søknad = stubSøknad()
 
-        every { applicationService.sendSoknad(capture(slot())) } returns Mono.just(Unit)
+        every { søknadService.sendSoknad(capture(slot())) } returns Mono.just(Unit)
 
         // https://docs.spring.io/spring-security/site/docs/current/reference/html/test-webflux.html#csrf-support
         client.mutateWith(csrf()) // Adds a valid csrf token in the request.
                 .post()
                 .uri("/soknad")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(application)
+                .bodyValue(søknad)
                 .exchange()
                 .expectStatus().isNoContent
                 .expectBody()
@@ -47,46 +47,46 @@ internal class ApplicationControllerTest {
     }
 
     @Test
-    internal fun `When a violation is thrown, expect bad request`() {
+    internal fun `Når søknaden ikke blir validert, forvent BAD_REQUEST`() {
 
-        val expectedViolation = Violation(
+        val forventetViolation = Violation(
                 parameterType = ParameterType.ENTITY,
-                parameterName = "harForstattRettigheterOgPlikter",
+                parameterName = "harForståttRettigheterOgPlikter",
                 reason = "Må ha forstått rettigheter og plikter for å sende inn søknad.",
                 invalidValue = null
         )
-        val errorMessage = "Failed to validate received application."
-        every { applicationService.sendSoknad(capture(slot())) } throws ApplicationValidationException(
-                message = errorMessage,
-                violations = mutableSetOf(expectedViolation)
+        val forventetMelding = "Søknad ikke validert."
+        every { søknadService.sendSoknad(capture(slot())) } throws SøknadValideringException(
+                message = forventetMelding,
+                violations = mutableSetOf(forventetViolation)
         )
 
         // https://docs.spring.io/spring-security/site/docs/current/reference/html/test-webflux.html#csrf-support
-        val actualError = client.mutateWith(csrf()) // Adds a valid csrf token in the request.
+        val feilmelding = client.mutateWith(csrf()) // Adds a valid csrf token in the request.
                 .post()
                 .uri("/soknad")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(stubApplicationV1())
+                .bodyValue(stubSøknad())
                 .exchange()
                 .expectStatus().isBadRequest
-                .expectBody(ApplicationValidationException::class.java)
+                .expectBody(SøknadValideringException::class.java)
                 .returnResult().responseBody!!
 
-        assertThat(actualError).hasMessage(errorMessage)
-        assertThat(actualError.violations).contains(expectedViolation)
+        assertThat(feilmelding).hasMessage(forventetMelding)
+        assertThat(feilmelding.violations).contains(forventetViolation)
     }
 
-    private fun stubApplicationV1(): ApplicationV1 {
-        return ApplicationV1(
-                newVersion = false,
-                sprak = "nb",
+    private fun stubSøknad(): Søknad {
+        return Søknad(
+                nyVersjon = false,
+                språk = "nb",
                 erYrkesaktiv = true,
                 kroniskEllerFunksjonshemming = true,
                 delerOmsorg = false,
                 sammeAddresse = true,
                 harBekreftetOpplysninger = true,
-                harForstattRettigheterOgPlikter = true,
-                relasjonTilBarnet = ApplicantChildRelations.FAR,
+                harForståttRettigheterOgPlikter = true,
+                relasjonTilBarnet = SøkerBarnRelasjon.FAR,
                 barn = Barn(
                         navn = "Ole Doffen",
                         fødselsdato = "2009-02-23",
@@ -96,11 +96,11 @@ internal class ApplicationControllerTest {
                         harBoddIUtlandetSiste12Mnd = false,
                         skalBoIUtlandetNeste12Mnd = false
                 ),
-                samvarsavtale = listOf(
+                samværsavtale = listOf(
                         URL("http://localhost:8080/vedlegg/1"),
                         URL("http://localhost:8080/vedlegg/2")
                 ),
-                legeerklaring = listOf(
+                legeerklæring = listOf(
                         URL("http://localhost:8080/vedlegg/3"),
                         URL("http://localhost:8080/vedlegg/4")
                 ),

@@ -1,8 +1,7 @@
 package no.nav.omsorgspengerapi.soknad.api
 
 import no.nav.omsorgspengerapi.barn.api.Barn
-import no.nav.omsorgspengerapi.soknad.mottak.Utenlandsopphold
-import no.nav.omsorgspengerapi.vedlegg.document.DocumentJson
+import no.nav.omsorgspengerapi.vedlegg.document.DocumentJsonDTO
 import java.net.URL
 import java.time.format.DateTimeFormatter
 
@@ -21,36 +20,36 @@ enum class ParameterType {
 
 data class Violation(val parameterName: String, val parameterType: ParameterType, val reason: String, val invalidValue: Any? = null)
 
-internal fun ApplicationV1.validate() {
-    val violations: MutableSet<Violation> = this.barn.validate(relasjonTilBarnet = relasjonTilBarnet?.name)
+internal fun Søknad.valider() {
+    val violations: MutableSet<Violation> = this.barn.valider(relasjonTilBarnet = relasjonTilBarnet?.name)
 
     // legeerklaring
-    if (legeerklaring.isEmpty()) {
+    if (legeerklæring.isEmpty()) {
         violations.add(
                 Violation(
                         parameterName = "legeerklaring",
                         parameterType = ParameterType.ENTITY,
                         reason = "Det må sendes minst et vedlegg for legeerklaring.",
-                        invalidValue = legeerklaring
+                        invalidValue = legeerklæring
                 )
         )
     }
 
     // samvarsavtale
-    if (samvarsavtale != null) {
-        if (samvarsavtale.isEmpty()) {
+    if (samværsavtale != null) {
+        if (samværsavtale.isEmpty()) {
             violations.add(
                     Violation(
                             parameterName = "samvarsavtale",
                             parameterType = ParameterType.ENTITY,
                             reason = "Det må sendes minst et vedlegg for samvarsavtale.",
-                            invalidValue = samvarsavtale
+                            invalidValue = samværsavtale
                     )
             )
         }
     }
 
-    legeerklaring.mapIndexed { index, url ->
+    legeerklæring.mapIndexed { index, url ->
         val path = url.path
         // Kan oppstå url = null etter Jackson deserialisering
         if (!path.matches(Regex("/vedlegg/.*"))) {
@@ -99,8 +98,8 @@ internal fun ApplicationV1.validate() {
         }
     }
 
-    if (samvarsavtale != null) {
-        samvarsavtale.mapIndexed { index, url ->
+    if (samværsavtale != null) {
+        samværsavtale.mapIndexed { index, url ->
             val path = url.path
             // Kan oppstå url = null etter Jackson deserialisering
             if (!path.matches(Regex("/vedlegg/.*"))) {
@@ -141,7 +140,7 @@ internal fun ApplicationV1.validate() {
 
                 ))
     }
-    if (!harForstattRettigheterOgPlikter) {
+    if (!harForståttRettigheterOgPlikter) {
         violations.add(
                 Violation(
                         parameterName = "har_forstatt_rettigheter_og_plikter",
@@ -154,11 +153,11 @@ internal fun ApplicationV1.validate() {
 
 // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
-        throw ApplicationValidationException("Failed to validate received application.", violations)
+        throw SøknadValideringException("Søknad ikke validert.", violations)
     }
 }
 
-private fun Barn.validate(relasjonTilBarnet: String?): MutableSet<Violation> {
+private fun Barn.valider(relasjonTilBarnet: String?): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
     if (fødselsnummer != null && !fødselsnummer.erGyldigFodselsnummer()) {
@@ -210,9 +209,9 @@ private fun Barn.validate(relasjonTilBarnet: String?): MutableSet<Violation> {
     return violations
 }
 
-fun MutableList<DocumentJson>.validateAttachment(attachmentUrls: List<URL>) {
+fun MutableList<DocumentJsonDTO>.validerVedleggene(attachmentUrls: List<URL>) {
     if (size != attachmentUrls.size) {
-        throw ApplicationValidationException(message = "", violations = mutableSetOf(
+        throw SøknadValideringException(message = "", violations = mutableSetOf(
                 Violation(
                         parameterName = "vedlegg",
                         parameterType = ParameterType.ENTITY,
@@ -264,15 +263,15 @@ private fun validerUtenlandopphold(
     return violations
 }
 
-private fun MutableList<DocumentJson>.validerTotalStorrelse() {
+private fun MutableList<DocumentJsonDTO>.validerTotalStorrelse() {
     val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
 
     val totalSize: Int = map { attach -> attach.content.size }.sum()
     if (totalSize > MAX_VEDLEGG_SIZE) {
-        throw ApplicationValidationException("Total size of attachments to big.", mutableSetOf(Violation(
+        throw SøknadValideringException("Total størrelse på vedlegg er for stor.", mutableSetOf(Violation(
                 parameterName = "content",
                 parameterType = ParameterType.ENTITY,
-                reason = "Total file size cannot be more than $MAX_VEDLEGG_SIZE",
+                reason = "Total størrelse på vedlegg kan ikke være mer enn $MAX_VEDLEGG_SIZE",
                 invalidValue = totalSize
         )))
     }

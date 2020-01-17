@@ -16,41 +16,41 @@ import javax.validation.Valid
 @Validated
 @SecurityRequirement(name = SELVBETJENING_ID_TOKEN_SCHEME)
 @Tag(name = "Vedlegg", description = "Endepunkter for å laste opp, hente og slette vedlegg.")
-class AttachmentController(private val attachmentService: AttachmentService) {
+class VedleggController(private val vedleggService: VedleggService) {
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(AttachmentController::class.java)
+        private val log: Logger = LoggerFactory.getLogger(VedleggController::class.java)
     }
 
     @PostMapping("/vedlegg", consumes = ["multipart/form-data"])
     @ResponseStatus(HttpStatus.CREATED)
-    fun uploadAttachment(@Valid @RequestPart("file") filePart: FilePart): Mono<AttachmentId>? {
-        log.info("File uploaded")
+    fun lastOppVedlegg(@Valid @RequestPart("fil") filePart: FilePart): Mono<VedleggId>? {
+        log.info("Vedlefg opplastet")
 
-        val attachment = AttachmentFile(
+        val vedlegg = Vedlegg(
                 content = filePart.content(),
                 contentType = filePart.headers().contentType.toString(),
                 title = filePart.filename()
         )
-        log.info("Got attachment: {}", attachment)
+        log.info("Vedlegg mottatt: {}", vedlegg)
 
-        return attachmentService.saveAttachment(attachment)
-                .map { attachmentId: AttachmentId ->
-                    log.info("Got attachmentId: {}", attachmentId)
-                    attachmentId
+        return vedleggService.lagreVedlegg(vedlegg)
+                .map { vedleggId: VedleggId ->
+                    log.info("Fikk vedlegg med id: {}", vedleggId)
+                    vedleggId
                 }
     }
 
     @GetMapping("/vedlegg/{vedleggId}")
-    fun getAttachment(@PathVariable("vedleggId") attachmentId: String): Mono<AttachmentJson> {
-        log.info("Fetching attachment with id: {}", attachmentId)
-        return attachmentService.getAttachmentJson(attachmentId = attachmentId)
+    fun hentVedlegg(@PathVariable("vedleggId") vedleggId: String): Mono<VedleggJson> {
+        log.info("Henter vedlegg med id: {}", vedleggId)
+        return vedleggService.hentVedleggSomJson(vedleggId)
     }
 
     @DeleteMapping("/vedlegg/{vedleggId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteAttachment(@PathVariable("vedleggId") attachmentId: String): Mono<Void> {
-        log.info("Deleting attachment with id: {}", attachmentId)
-        return attachmentService.deleteAttachment(attachmentId)
+    fun slettVedlegg(@PathVariable("vedleggId") vedleggId: String): Mono<Void> {
+        log.info("Sletter vedlegg med id: {}", vedleggId)
+        return vedleggService.slettVedlegg(vedleggId)
     }
 }

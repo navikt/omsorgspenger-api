@@ -1,7 +1,7 @@
 package no.nav.helse.soker
 
-import no.nav.omsorgspengerapi.soknad.api.ApplicationValidationException
 import no.nav.omsorgspengerapi.soknad.api.ParameterType
+import no.nav.omsorgspengerapi.soknad.api.SøknadValideringException
 import no.nav.omsorgspengerapi.soknad.api.Violation
 import java.time.LocalDate
 import java.time.ZoneId
@@ -25,7 +25,7 @@ data class Søker(
 
 fun Søker.validate() {
     if (!isLegal(fødselsdato)) {
-        throw ApplicationValidationException(message = "Applicant is not legal.", violations =  mutableSetOf(Violation(
+        throw SøknadValideringException(message = "Søker er ikke myndig", violations = mutableSetOf(Violation(
                 parameterName = "fødselsdato",
                 parameterType = ParameterType.ENTITY,
                 reason = "Søker er under 18 år, og dermed ikke myndig.",

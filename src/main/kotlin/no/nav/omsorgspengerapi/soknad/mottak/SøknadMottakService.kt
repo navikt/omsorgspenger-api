@@ -15,17 +15,17 @@ import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
 
 @Service
-class ApplicationReceiverService(
-        @Qualifier("applicationReceiverClient") val client: WebClient,
+class SøknadMottakService(
+        @Qualifier("søknadMottaksKlient") val client: WebClient,
         private val apiGatewayApiKey: ApiGatewayApiKey,
         private val tracer: Tracer
 ) {
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(ApplicationReceiverService::class.java)
+        private val log: Logger = LoggerFactory.getLogger(SøknadMottakService::class.java)
     }
 
-    fun sendApplication(completeApplicationDTO: CompleteApplicationDTO): Mono<Void> {
+    fun sendSøknad(komplettSøknadDTO: KomplettSøknadDTO): Mono<Void> {
         return client
                 .post()
                 .uri { uri: UriBuilder ->
@@ -37,7 +37,7 @@ class ApplicationReceiverService(
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("X-Correlation-ID", tracer.currentSpan().context().traceIdString())
                 .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
-                .bodyValue(completeApplicationDTO)
+                .bodyValue(komplettSøknadDTO)
                 .exchange()
                 .doOnNext {res: ClientResponse ->
                     val statusCode = res.statusCode()
