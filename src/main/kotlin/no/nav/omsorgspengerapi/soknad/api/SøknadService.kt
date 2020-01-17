@@ -4,7 +4,7 @@ import no.nav.helse.soker.validate
 import no.nav.omsorgspengerapi.soker.api.SøkerService
 import no.nav.omsorgspengerapi.soknad.mottak.SøknadMottakService
 import no.nav.omsorgspengerapi.vedlegg.api.VedleggService
-import no.nav.omsorgspengerapi.vedlegg.document.DocumentJsonDTO
+import no.nav.omsorgspengerapi.vedlegg.dokument.DocumentJsonDTO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service

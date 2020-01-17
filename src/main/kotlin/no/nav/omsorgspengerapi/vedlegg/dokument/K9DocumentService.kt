@@ -1,4 +1,4 @@
-package no.nav.omsorgspengerapi.vedlegg.document
+package no.nav.omsorgspengerapi.vedlegg.dokument
 
 import brave.Tracer
 import no.nav.omsorgspengerapi.common.NavHeaders

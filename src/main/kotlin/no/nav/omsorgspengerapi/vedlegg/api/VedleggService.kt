@@ -1,8 +1,8 @@
 package no.nav.omsorgspengerapi.vedlegg.api
 
-import no.nav.omsorgspengerapi.vedlegg.document.DocumentJsonDTO
-import no.nav.omsorgspengerapi.vedlegg.document.DokumentFilDTO
-import no.nav.omsorgspengerapi.vedlegg.document.K9DocumentService
+import no.nav.omsorgspengerapi.vedlegg.dokument.DocumentJsonDTO
+import no.nav.omsorgspengerapi.vedlegg.dokument.DokumentFilDTO
+import no.nav.omsorgspengerapi.vedlegg.dokument.K9DocumentService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service

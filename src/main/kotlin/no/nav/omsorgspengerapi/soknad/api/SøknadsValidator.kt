@@ -1,7 +1,7 @@
 package no.nav.omsorgspengerapi.soknad.api
 
 import no.nav.omsorgspengerapi.barn.api.Barn
-import no.nav.omsorgspengerapi.vedlegg.document.DocumentJsonDTO
+import no.nav.omsorgspengerapi.vedlegg.dokument.DocumentJsonDTO
 import java.net.URL
 import java.time.format.DateTimeFormatter
 

@@ -1,4 +1,4 @@
-package no.nav.omsorgspengerapi.vedlegg.document
+package no.nav.omsorgspengerapi.vedlegg.dokument
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.core.io.buffer.DataBuffer
