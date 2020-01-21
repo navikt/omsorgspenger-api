@@ -62,8 +62,8 @@ class WebClientConfig(val proxyConfig: HttpProxyConfig) {
 fun logOutgoingRequest(logger: Logger): ExchangeFilterFunction {
     return ExchangeFilterFunction { clientRequest: ClientRequest, next: ExchangeFunction ->
         logger.info("Upstream request: {} {}", clientRequest.method(), URLDecoder.decode(clientRequest.url().toString(), StandardCharsets.UTF_8))
-        logger.info("Headers: {}", clientRequest.headers().filter { it.key != "x-nav-apiKey" })
-        logger.info("AUTHORIZATION: {}", clientRequest.headers()[HttpHeaders.AUTHORIZATION]?.first()?.substring(10))
+        logger.info("Headers: {}", clientRequest.headers().filter { it.key != "x-nav-apiKey" && it.key != HttpHeaders.AUTHORIZATION })
+
         val response = next.exchange(clientRequest)
         response.subscribe { logger.info("Upstream response: ${it.rawStatusCode()} from ${clientRequest.url()}")}
 
