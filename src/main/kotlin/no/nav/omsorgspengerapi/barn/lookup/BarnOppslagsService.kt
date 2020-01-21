@@ -3,6 +3,7 @@ package no.nav.omsorgspengerapi.barn.lookup
 import brave.Tracer
 import no.nav.omsorgspengerapi.barn.api.BarnOppslagFeiletException
 import no.nav.omsorgspengerapi.common.NavHeaders
+import no.nav.omsorgspengerapi.config.general.webClient.WebClientConfig
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -47,5 +48,5 @@ class BarnOppslagsService(
             }
             .bodyToMono(BarnOppslagRespons::class.java)
             .flatMapIterable { it.barn }
-    //.retryWhen(WebClientConfig.retry)
+            .retryWhen(WebClientConfig.retry)
 }
