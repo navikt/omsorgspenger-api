@@ -2,7 +2,6 @@ package no.nav.omsorgspengerapi.soker.lookup
 
 import brave.Tracer
 import no.nav.omsorgspengerapi.common.NavHeaders
-import no.nav.omsorgspengerapi.config.general.webClient.WebClientConfig
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
 import no.nav.omsorgspengerapi.soker.api.SøkerOppslagException
 import org.slf4j.Logger
@@ -42,7 +41,7 @@ class SøkerOppslagsService(
                 .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
                 .retrieve()
                 .bodyToMono(SøkerOppslagsDTO::class.java)
-                .retryWhen(WebClientConfig.retry)
+                //.retryWhen(WebClientConfig.retry)
                 .onErrorMap { SøkerOppslagException("Oppslag av søker feilet.") }
     }
 }
