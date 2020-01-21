@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 
 data class BarnOppslagDTO(
-        val fødselsdato: LocalDate,
+        @JsonProperty("fødselsdato") val fødselsdato: LocalDate,
         val fornavn: String,
         val mellomnavn: String? = null,
         val etternavn: String,
