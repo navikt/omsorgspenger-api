@@ -65,9 +65,7 @@ fun logOutgoingRequest(logger: Logger): ExchangeFilterFunction {
         logger.info("Headers: {}", clientRequest.headers().filter { it.key != "x-nav-apiKey" && it.key != HttpHeaders.AUTHORIZATION })
 
         val response = next.exchange(clientRequest)
-        response.subscribe { logger.info("Upstream response: ${it.rawStatusCode()} from ${clientRequest.url()}")}
-
-        response
+        response.doOnNext { logger.info("Upstream response: ${it.rawStatusCode()} from ${clientRequest.url()}") }
     }
 }
 
