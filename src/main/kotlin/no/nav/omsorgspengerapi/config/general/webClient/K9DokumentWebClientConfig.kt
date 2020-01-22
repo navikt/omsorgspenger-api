@@ -26,7 +26,6 @@ class K9DokumentWebClientConfig {
     protected fun k9LookuoClient(): WebClient {
         return WebClient.builder()
                 .baseUrl(baseUrl.toString())
-                .filter(logOutgoingRequest(log))
                 .exchangeStrategies(ExchangeStrategies.builder()
                         .codecs { codecs ->
                             codecs.defaultCodecs().maxInMemorySize(inMemoryBufferSize!!)
@@ -34,6 +33,7 @@ class K9DokumentWebClientConfig {
                         .build()
                 )
                 .filter(ServerBearerExchangeFilterFunction())
+                .filter(logOutgoingRequest(log))
                 .build()
     }
 }
