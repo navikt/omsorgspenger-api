@@ -16,6 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 import java.net.URL
+import java.util.*
 
 @ExtendWith(SpringExtension::class)
 @WebFluxTest(SøknadController::class)
@@ -29,10 +30,10 @@ internal class SøknadControllerTest {
     lateinit var søknadService: SøknadService
 
     @Test
-    internal fun `Ved registrering av søknad, forvent status NO CONTENT`() {
+    internal fun `Ved registrering av søknad, forvent status CREATED`() {
         val søknad = stubSøknad()
 
-        every { søknadService.sendSoknad(capture(slot())) } returns Mono.just(Unit)
+        every { søknadService.sendSoknad(capture(slot())) } returns Mono.just(SøknadId(UUID.randomUUID().toString()))
 
         // https://docs.spring.io/spring-security/site/docs/current/reference/html/test-webflux.html#csrf-support
         client.mutateWith(csrf()) // Adds a valid csrf token in the request.
@@ -41,9 +42,8 @@ internal class SøknadControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(søknad)
                 .exchange()
-                .expectStatus().isNoContent
-                .expectBody()
-                .isEmpty
+                .expectStatus().isCreated
+                .expectBody(SøknadId::class.java)
     }
 
     @Test

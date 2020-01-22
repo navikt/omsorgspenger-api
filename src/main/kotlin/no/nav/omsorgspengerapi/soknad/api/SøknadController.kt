@@ -22,8 +22,8 @@ class SøknadController(private val søknadService: SøknadService) {
     }
 
     @PostMapping(value = ["/soknad"], consumes = [APPLICATION_JSON_VALUE])
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun mottaSøknad(@RequestBody søknad: Søknad): Mono<Unit> {
+    @ResponseStatus(HttpStatus.CREATED)
+    fun mottaSøknad(@RequestBody søknad: Søknad): Mono<SøknadId> {
         log.info("Innsendt søknad: {}", søknad)
 
         log.info("Validerer søknad...")

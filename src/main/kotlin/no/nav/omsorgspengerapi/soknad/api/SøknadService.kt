@@ -25,7 +25,7 @@ class SøknadService(
         private val log: Logger = LoggerFactory.getLogger(SøknadService::class.java)
     }
 
-    fun sendSoknad(søknad: Søknad): Mono<Unit> {
+    fun sendSoknad(søknad: Søknad): Mono<SøknadId> {
         log.info("Henter søker...")
         val søker = søkerService.getSøker()
         log.info("Søker hentet.")
@@ -58,7 +58,7 @@ class SøknadService(
         }
 
         log.info("Sender søknad for mottak")
-        return søknadMottakService.sendSøknad(komplettSøknadDTO = søknad.TilKomplettSøknad(søker)).map { Unit }
+        return søknadMottakService.sendSøknad(komplettSøknadDTO = søknad.TilKomplettSøknad(søker))
     }
 }
 

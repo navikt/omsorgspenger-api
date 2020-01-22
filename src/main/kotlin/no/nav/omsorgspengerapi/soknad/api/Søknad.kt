@@ -22,6 +22,8 @@ data class Søknad(
         val utenlandsopphold: List<Utenlandsopphold>
 )
 
+data class SøknadId(val id: String)
+
 class Medlemskap(
         val harBoddIUtlandetSiste12Mnd: Boolean,
         val utenlandsoppholdSiste12Mnd: List<Utenlandsopphold> = listOf(),

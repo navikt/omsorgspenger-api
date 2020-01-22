@@ -4,12 +4,12 @@ import brave.Tracer
 import no.nav.omsorgspengerapi.config.general.webClient.WebClientConfig
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
 import no.nav.omsorgspengerapi.soker.api.SøkerOppslagException
+import no.nav.omsorgspengerapi.soknad.api.SøknadId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
@@ -25,7 +25,7 @@ class SøknadMottakService(
         private val log: Logger = LoggerFactory.getLogger(SøknadMottakService::class.java)
     }
 
-    fun sendSøknad(komplettSøknadDTO: KomplettSøknadDTO): Mono<Void> {
+    fun sendSøknad(komplettSøknadDTO: KomplettSøknadDTO): Mono<SøknadId> {
         return client
                 .post()
                 .uri { uri: UriBuilder ->
@@ -38,14 +38,9 @@ class SøknadMottakService(
                 .header("X-Correlation-ID", tracer.currentSpan().context().traceIdString())
                 .header(apiGatewayApiKey.header, apiGatewayApiKey.key)
                 .bodyValue(komplettSøknadDTO)
-                .exchange()
-                .doOnNext {res: ClientResponse ->
-                    val statusCode = res.statusCode()
-                    if (statusCode.is5xxServerError) {
-                        Mono.error<Void>(SøkerOppslagException("Failed to send application"))
-                    }
-                }
-                .flatMap { it.bodyToMono(Void::class.java) }
+                .retrieve()
+                .bodyToMono(SøknadId::class.java)
                 .retryWhen(WebClientConfig.retry)
+                .onErrorMap { SøkerOppslagException("Failed to send application") }
     }
 }
