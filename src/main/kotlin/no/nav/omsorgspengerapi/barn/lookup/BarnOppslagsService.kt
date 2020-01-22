@@ -46,6 +46,7 @@ class BarnOppslagsService(
             .onStatus(HttpStatus::isError) { clientResponse: ClientResponse ->
                 Mono.error(BarnOppslagFeiletException("Feilet ved oppslag av barn."))
             }
-            .bodyToFlux(BarnOppslagDTO::class.java)
+            .bodyToMono(BarnOppslagRespons::class.java)
+            .flatMapIterable { it.barn }
             .retryWhen(WebClientConfig.retry)
 }

@@ -1,18 +1,19 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.2.2.RELEASE"
-    id("io.spring.dependency-management") version "1.0.8.RELEASE"
-    kotlin("jvm") version "1.3.50"
-    kotlin("plugin.spring") version "1.3.50"
+    id("org.springframework.boot") version "2.2.4.RELEASE"
+    id("io.spring.dependency-management") version "1.0.9.RELEASE"
+    kotlin("jvm") version "1.3.61"
+    kotlin("plugin.spring") version "1.3.61"
 }
 
 group = "no.nav"
 version = "0.0.1-SNAPSHOT"
 java {
     sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
 }
+
+extra["springCloudVersion"] = "Hoxton.SR1"
 
 configurations {
     compileOnly {
@@ -40,7 +41,7 @@ dependencies {
     implementation("org.springframework.security:spring-security-config:$springSecurityVersion")
 
     // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-sleuth
-    implementation("org.springframework.cloud:spring-cloud-starter-sleuth:2.1.6.RELEASE")
+    implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
 
     // https://mvnrepository.com/artifact/io.projectreactor.addons/reactor-extra
     implementation("io.projectreactor.addons:reactor-extra:3.3.1.RELEASE")
@@ -77,6 +78,13 @@ dependencies {
 
 }
 
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+    }
+}
+
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
@@ -84,6 +92,6 @@ tasks.withType<Test> {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "11"
+        jvmTarget = "1.8"
     }
 }

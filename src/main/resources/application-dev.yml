@@ -14,7 +14,7 @@ nav.no:
     api-gw-key: mock-key
     soknad-til-prosessering-scope: mock-scope
   gateways:
-    k9_lookup_url: 'http://localhost:8080/lookup'
+    k9_lookup_url: 'http://localhost:8081'
     k9_dokument_url: 'http://localhost:8132'
     omsorgspengersoknad_mottak_url: 'http://localhost:8083'
 

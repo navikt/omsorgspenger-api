@@ -24,8 +24,8 @@ class K9LookupWebClientConfig() {
         return WebClient.builder()
                 .baseUrl(baseUrl.toString())
                 .defaultHeader("Accept", "application/json")
-                .filter(logOutgoingRequest(log))
                 .filter(ServerBearerExchangeFilterFunction())
+                .filter(logOutgoingRequest(log))
                 .build()
     }
 }

@@ -11,3 +11,5 @@ data class BarnOppslagDTO(
         val etternavn: String,
         @JsonProperty("aktør_id") val aktørId: String
 )
+
+data class BarnOppslagRespons(val barn: List<BarnOppslagDTO>)

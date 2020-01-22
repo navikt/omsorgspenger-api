@@ -90,7 +90,7 @@ internal class BarnOppslagsServiceTest {
         val barn = barnOppslagsService.slåOppBarn()
 
         StepVerifier.create(barn)
-                .assertNext { forventetBarn }
+                .assertNext { forventetBarn.barn }
                 .expectComplete()
                 .verify()
     }
@@ -142,13 +142,15 @@ internal class BarnOppslagsServiceTest {
             etternavn: String = "Nordmann",
             fodselsdato: LocalDate = LocalDate.now().minusYears(30),
             aktoerId: String = "123456")
-            : BarnOppslagDTO = BarnOppslagDTO(
-            fornavn = fornavn,
-            mellomnavn = mellomnavn,
-            etternavn = etternavn,
-            fødselsdato = fodselsdato,
-            aktørId = aktoerId
+            : BarnOppslagRespons = BarnOppslagRespons(
+            listOf(BarnOppslagDTO(
+                    fornavn = fornavn,
+                    mellomnavn = mellomnavn,
+                    etternavn = etternavn,
+                    fødselsdato = fodselsdato,
+                    aktørId = aktoerId
+            ))
     )
 
-    private fun bodyToJsonString(barnOppslagDTO: BarnOppslagDTO) = objectMapper.writeValueAsString(barnOppslagDTO)
+    private fun bodyToJsonString(barnOppslagRespons: BarnOppslagRespons) = objectMapper.writeValueAsString(barnOppslagRespons)
 }
