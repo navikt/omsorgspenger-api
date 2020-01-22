@@ -1,7 +1,9 @@
 package no.nav.omsorgspengerapi.soknad.api
 
+import no.nav.helse.soker.Søker
 import no.nav.helse.soker.validate
 import no.nav.omsorgspengerapi.soker.api.SøkerService
+import no.nav.omsorgspengerapi.soknad.mottak.KomplettSøknadDTO
 import no.nav.omsorgspengerapi.soknad.mottak.SøknadMottakService
 import no.nav.omsorgspengerapi.vedlegg.api.VedleggService
 import no.nav.omsorgspengerapi.vedlegg.dokument.DocumentJsonDTO
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.net.URL
+import java.time.ZonedDateTime
 
 @Service
 class SøknadService(
@@ -54,6 +57,26 @@ class SøknadService(
             log.info("Vedleggene validert.")
         }
 
-        return Mono.just(Unit)
+        log.info("Sender søknad for mottak")
+        return søknadMottakService.sendSøknad(komplettSøknadDTO = søknad.TilKomplettSøknad(søker)).map { Unit }
     }
 }
+
+private fun Søknad.TilKomplettSøknad(søker: Mono<Søker>): KomplettSøknadDTO = KomplettSøknadDTO(
+        nyVersjon = nyVersjon,
+        språk = språk,
+        mottatt = ZonedDateTime.now(),
+        erYrkesaktiv = erYrkesaktiv,
+        kroniskEllerFunksjonshemming = kroniskEllerFunksjonshemming,
+        søker = søker,
+        barn = barn,
+        medlemskap = medlemskap,
+        relasjonTilBarnet = relasjonTilBarnet,
+        delerOmsorg = delerOmsorg,
+        sammeAddresse = sammeAddresse,
+        legeerklæring = legeerklæring,
+        samværsavtale = samværsavtale,
+        harBekreftetOpplysninger = harBekreftetOpplysninger,
+        harForståttRettigheterOgPlikter = harForståttRettigheterOgPlikter
+
+)

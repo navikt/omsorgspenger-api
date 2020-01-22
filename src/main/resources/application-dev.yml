@@ -16,7 +16,7 @@ nav.no:
   gateways:
     k9_lookup_url: 'http://localhost:8081'
     k9_dokument_url: 'http://localhost:8132'
-    omsorgspengersoknad_mottak_url: 'http://localhost:8083'
+    omsorgspengersoknad_mottak_url: 'http://localhost:8142'
 
 http:
   proxyHost: localhost
