@@ -28,37 +28,48 @@ class SøknadService(
     fun sendSoknad(søknad: Søknad): Mono<SøknadId> {
         log.info("Henter søker...")
         val søker = søkerService.getSøker()
-        log.info("Søker hentet.")
+                .doOnNext {
+                    log.info("Søker hentet.")
+                    log.info("Validerer søker...")
+                    it.validate()
+                    log.info("Søker validert.")
+                }
+                .doOnError { throw SøknadInnsendingFeiletException("Oppslag av søker feilet.") }
 
-        log.info("Validerer søker...")
-        søker.subscribe { it.validate() }
-        log.info("Søker validert.")
 
-        log.info("Henter {} legeerklæringer...", søknad.legeerklæring.size)
+        log.info("Henter legeerklæringer...")
         val legeerklæringsFiler: Flux<DocumentJsonDTO> = vedleggService.hentVedlegg(søknad.legeerklæring)
-        legeerklæringsFiler.collectList().subscribe { log.info("Hentet {} legeerklaringsFiler.", it.size) }
+                .doOnComplete { log.info("LegeerklaringsFiler hentet.") }
+                .doOnError { throw SøknadInnsendingFeiletException("Henting av legeerklæringer feilet.") }
 
-        log.info("Henter {} samvarsavtaleFiler...", søknad.samværsavtale?.size)
-        val samvarsavtaleFiler: Flux<DocumentJsonDTO>? = søknad.samværsavtale?.let {
+        log.info("Henter samvarsavtaleFiler...")
+        var samvarsavtaleFiler: Flux<DocumentJsonDTO>? = søknad.samværsavtale?.let {
             vedleggService.hentVedlegg(it)
         }
         if (samvarsavtaleFiler != null) {
-            samvarsavtaleFiler.collectList().subscribe { log.info("Hentet {} samvarsavtaleFiler.", it.size) }
+            samvarsavtaleFiler = samvarsavtaleFiler
+                    .doOnComplete { log.info("SamvarsavtaleFiler hentet.") }
+                    .doOnError { throw SøknadInnsendingFeiletException("Henting av samværsavtaler feilet.") }
+
         }
 
-        val vedleggsUrler = mutableListOf<URL>()
-        vedleggsUrler.addAll(søknad.legeerklæring)
-        vedleggsUrler.addAll(søknad.samværsavtale!!)
+        Flux
+                .concat(legeerklæringsFiler, samvarsavtaleFiler).collectList()
+                .subscribe {
+                    val vedleggsUrler = mutableListOf<URL>()
+                    vedleggsUrler.addAll(søknad.legeerklæring)
+                    vedleggsUrler.addAll(søknad.samværsavtale!!)
 
-        val vedlegger: Mono<MutableList<DocumentJsonDTO>> = Flux.concat(legeerklæringsFiler, samvarsavtaleFiler).collectList()
-        vedlegger.map {
-            log.info("Validerer vedleggene...")
-            it.validerVedleggene(vedleggsUrler)
-            log.info("Vedleggene validert.")
-        }
+                    log.info("Validerer vedleggene...")
+                    it.validerVedleggene(vedleggsUrler)
+                    log.info("Vedleggene validert.")
+                }
+
 
         log.info("Sender søknad for mottak")
-        return søknadMottakService.sendSøknad(komplettSøknadDTO = søknad.TilKomplettSøknad(søker))
+        return Mono.`when`(søker, legeerklæringsFiler, samvarsavtaleFiler)
+                .publish { søknadMottakService.sendSøknad(komplettSøknadDTO = søknad.TilKomplettSøknad(søker)) }
+
     }
 }
 
@@ -78,5 +89,4 @@ private fun Søknad.TilKomplettSøknad(søker: Mono<Søker>): KomplettSøknadDTO
         samværsavtale = samværsavtale,
         harBekreftetOpplysninger = harBekreftetOpplysninger,
         harForståttRettigheterOgPlikter = harForståttRettigheterOgPlikter
-
 )

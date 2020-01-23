@@ -3,8 +3,8 @@ package no.nav.omsorgspengerapi.soknad.mottak
 import brave.Tracer
 import no.nav.omsorgspengerapi.config.general.webClient.WebClientConfig
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
-import no.nav.omsorgspengerapi.soker.api.SøkerOppslagException
 import no.nav.omsorgspengerapi.soknad.api.SøknadId
+import no.nav.omsorgspengerapi.soknad.api.SøknadInnsendingFeiletException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -41,6 +41,6 @@ class SøknadMottakService(
                 .retrieve()
                 .bodyToMono(SøknadId::class.java)
                 .retryWhen(WebClientConfig.retry)
-                .onErrorMap { SøkerOppslagException("Failed to send application") }
+                .onErrorMap { SøknadInnsendingFeiletException("Innsending av søknad feilet.") }
     }
 }

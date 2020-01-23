@@ -23,4 +23,5 @@ class SøknadExceptionHandler {
     }
 }
 
+class SøknadInnsendingFeiletException(message: String) : RuntimeException(message)
 class SøknadValideringException(message: String, val violations: MutableSet<Violation>) : RuntimeException(message)
