@@ -79,7 +79,7 @@ class K9DocumentService(
 
     fun hentDokumenter(ids: List<String>): Flux<DocumentJsonDTO> = Flux.fromIterable<String>(ids)
             .parallel()
-            .runOn(Schedulers.elastic())
+            .runOn(Schedulers.single())
             .flatMap { hentDokumentSomJson(it) }
             .sequential()
 
