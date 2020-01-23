@@ -3,6 +3,7 @@ package no.nav.omsorgspengerapi.barn.lookup
 import brave.Tracer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import io.mockk.every
@@ -93,6 +94,8 @@ internal class BarnOppslagsServiceTest {
                 .assertNext { forventetBarn.barn }
                 .expectComplete()
                 .verify()
+
+        verify(1, getRequestedFor(urlPathEqualTo("/meg")))
     }
 
     @Test
