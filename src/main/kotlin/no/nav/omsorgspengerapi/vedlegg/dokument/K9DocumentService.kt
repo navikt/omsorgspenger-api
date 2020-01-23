@@ -23,7 +23,6 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 
 
 @Service
@@ -78,10 +77,7 @@ class K9DocumentService(
             .retryWhen(WebClientConfig.retry)
 
     fun hentDokumenter(ids: List<String>): Flux<DocumentJsonDTO> = Flux.fromIterable<String>(ids)
-            .parallel()
-            .runOn(Schedulers.single())
             .flatMap { hentDokumentSomJson(it) }
-            .sequential()
 
     fun slettDokument(dokumentId: String): Mono<Void> = client
             .delete()
