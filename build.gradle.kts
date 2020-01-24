@@ -14,7 +14,7 @@ java {
 }
 
 extra["springCloudVersion"] = "Hoxton.SR1"
-extra["dusseldorfKtorVersion"] = "1.2.5.b695602"
+extra["dusseldorfKtorVersion"] = "1.3.0.5addbbf"
 
 configurations {
     compileOnly {
