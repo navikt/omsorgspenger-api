@@ -64,6 +64,9 @@ management:
       prometheus:
         enabled: true
 
+storage:
+  redis_mocked: true
+  passphrase: "verySecret"
 http:
   proxyHost:
   proxyPort:
