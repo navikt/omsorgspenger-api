@@ -14,6 +14,7 @@ java {
 }
 
 extra["springCloudVersion"] = "Hoxton.SR1"
+extra["dusseldorfKtorVersion"] = "1.2.5.b695602"
 
 configurations {
     compileOnly {
@@ -23,11 +24,22 @@ configurations {
 
 repositories {
     mavenCentral()
+
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/navikt/dusseldorf-ktor")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencies {
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    implementation("no.nav.helse:dusseldorf-oauth2-client:${property("dusseldorfKtorVersion")}")
 
     // See here for more info about configuring security: https://docs.spring.io/spring-security/site/docs/current/reference/html/webflux-oauth2.html#webflux-oauth2-resource-server
     // https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-resource-server

@@ -18,6 +18,13 @@ https:
 
 nav.no:
   security:
+    client:
+      azure:
+        client-id: clientID
+        client-secret: clientSecret
+        token-endpoint: "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration"
+    scopes:
+      omsorgspengesoknad-mottak-scopes: 8a37534e-7387-43af-8123-cb5facd5dc44/.default
     login-service-client-id: 0090b6e1-ffcc-4c37-bc21-049f7d1f0fe5
   authorization:
     api-gw-header: x-nav-apiKey

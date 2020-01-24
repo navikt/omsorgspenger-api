@@ -30,13 +30,14 @@ nav.no:
   authorization:
     api-gw-header: x-nav-apiKey
     api-gw-key: ${API_GATEWAY_API_KEY}
-    soknad-til-prosessering-scope: ${SENDE_SOKNAD_TIL_PROSESSERING_SCOPES}
   gateways:
     k9_lookup_url: ${K9_OPPSLAG_REGISTER_URL}
     k9_dokument_url: ${K9_DOKUMENT_BASE_URL}
     omsorgspengersoknad_mottak_url: ${OMSORGSPENGERSOKNAD_MOTTAK_BASE_URL}
   cors-addresses:
   security:
+    scopes:
+      omsorgspengesoknad-mottak-scopes: ${SENDE_SOKNAD_TIL_MOTTAK_SCOPES}
     login-service-client-id: ${LOGIN_SERVICE_CLIENT_ID}
     cors:
       apply-to-path-pattern: '/**'
@@ -46,6 +47,11 @@ nav.no:
       allowed-methods:
         - '*'
       max-age: 3600
+    client:
+      azure:
+        client-id: ${AZURE_CLIENT_ID}
+        client-secret: ${AZURE_CLIENT_SECRET}
+        token-endpoint: ${AZURE_V2_TOKEN_ENDPOINT}
 
 management:
   endpoint:
