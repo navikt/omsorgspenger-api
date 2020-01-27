@@ -4,8 +4,7 @@ import no.nav.helse.soker.Søker
 import no.nav.omsorgspengerapi.barn.api.Barn
 import no.nav.omsorgspengerapi.soknad.api.Medlemskap
 import no.nav.omsorgspengerapi.soknad.api.SøkerBarnRelasjon
-import reactor.core.publisher.Mono
-import java.net.URL
+import no.nav.omsorgspengerapi.vedlegg.api.VedleggJson
 import java.time.ZonedDateTime
 
 data class KomplettSøknadDTO(
@@ -15,12 +14,12 @@ data class KomplettSøknadDTO(
         val erYrkesaktiv: Boolean,
         val kroniskEllerFunksjonshemming: Boolean,
         val barn: Barn,
-        val søker: Mono<Søker>,
+        val søker: Søker,
         val sammeAddresse: Boolean?,
         val delerOmsorg: Boolean?,
         val relasjonTilBarnet: SøkerBarnRelasjon? = null,
-        val legeerklæring: List<URL>,
-        val samværsavtale: List<URL>?,
+        val legeerklæring: List<VedleggJson>,
+        val samværsavtale: List<VedleggJson>? = listOf(),
         val medlemskap: Medlemskap,
         val harForståttRettigheterOgPlikter: Boolean,
         val harBekreftetOpplysninger: Boolean
