@@ -30,16 +30,16 @@ class SøknadService(
     fun sendSoknad(søknad: Søknad): Mono<SøknadId> {
         log.info("Henter søker...")
         val søkerRequest = søkerService.getSøker()
-                .doOnError { throw SøknadInnsendingFeiletException("Oppslag av søker feilet.") }
+                .onErrorMap { SøknadInnsendingFeiletException("Oppslag av søker feilet.") }
 
 
         log.info("Henter legeerklæringer...")
         val legeerklæringRequest: Flux<DocumentJsonDTO> = vedleggService.hentVedlegg(søknad.legeerklæring)
-                .doOnError { throw SøknadInnsendingFeiletException("Henting av legeerklæringer feilet.") }
+                .onErrorMap { SøknadInnsendingFeiletException("Henting av legeerklæringer feilet.") }
 
         log.info("Henter samvarsavtaleFiler...")
         val samvarsavtaleRequest: Flux<DocumentJsonDTO> = vedleggService.hentVedlegg(søknad.samværsavtale ?: listOf())
-                .doOnError { throw SøknadInnsendingFeiletException("Henting av samværsavtaler feilet.") }
+                .onErrorMap { throw SøknadInnsendingFeiletException("Henting av samværsavtaler feilet.") }
 
         return Mono.zip(søkerRequest, legeerklæringRequest.collectList(), samvarsavtaleRequest.collectList())
                 .flatMap { tuple3: Tuple3<Søker, List<DocumentJsonDTO>, List<DocumentJsonDTO>> ->

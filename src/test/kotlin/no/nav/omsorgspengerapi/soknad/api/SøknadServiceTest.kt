@@ -58,16 +58,14 @@ internal class SøknadServiceTest {
     @Test
     internal fun `Forvent SøknadInnsendingFeiletException, når søker ikke er funnet`() {
 
-        every { søkerService.getSøker() } returns Mono.error(SøkerOppslagException("Oppslag av søker feilet"))
-        val forventetFeil: Mono<SøknadInnsendingFeiletException> = Mono.error(SøknadInnsendingFeiletException("Oppslag av søker feilet"))
+        every { søkerService.getSøker() } returns Mono.error(SøkerOppslagException("Oppslag av søker feilet."))
 
         mockVedlegg()
         mockSøknadMottak(Mono.just(SøknadId("test")))
         val feil = søknadService.sendSoknad(defaultSøknad())
 
         StepVerifier.create(feil)
-                .assertNext { forventetFeil }
-                .expectComplete().log()
+                .expectError(SøknadInnsendingFeiletException::class.java)
                 .verify()
     }
 
