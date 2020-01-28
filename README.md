@@ -63,3 +63,10 @@ For å kjøre kode, kjør:
 
 # Metrics
 n/a
+
+### Redis
+Vi bruker Redis for mellomlagring. En instanse av Redis må være kjørene før deploy av applikasjonen. 
+Dette gjøres manuelt med kubectl både i preprod og prod. Se [nais/doc](https://github.com/nais/doc/blob/master/content/redis.md)
+
+1. `kubectl config use-context preprod-sbs`
+2. `kubectl apply -f redis-config.yml`
