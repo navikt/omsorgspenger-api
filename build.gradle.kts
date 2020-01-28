@@ -76,6 +76,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-contract-wiremock
     testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:2.2.0.RELEASE")
 
+    compile ("io.lettuce:lettuce-core:5.2.1.RELEASE")
+    implementation("com.github.fppt:jedis-mock:0.1.16")
 }
 
 dependencyManagement {

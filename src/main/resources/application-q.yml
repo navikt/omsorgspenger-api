@@ -13,3 +13,7 @@ nav.no:
       allowed-methods:
         - '*'
       max-age: 3600
+
+storage:
+  redis_mocked: false
+  passphrase: ${STORAGE_PASSPHRASE}

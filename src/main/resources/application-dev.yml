@@ -25,3 +25,7 @@ http:
 https:
   proxyHost: localhost
   proxyPort: 8080
+
+storage:
+  redis_mocked: true
+  passphrase: "verySecret"
