@@ -3,6 +3,9 @@ spring:
     active: test
   codec:
     max-in-memory-size: 200000 # 200 KB
+  redis:
+    host: localhost
+    port: 6379
 
 springdoc:
   api-docs:
