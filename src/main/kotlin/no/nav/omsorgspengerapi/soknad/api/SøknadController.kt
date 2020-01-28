@@ -30,7 +30,6 @@ class SøknadController(private val søknadService: SøknadService) {
         søknad.valider()
         log.info("Søknad validert")
 
-        log.info("Verifiserer id token...")
         return when {
             idToken.getSubject().isNullOrBlank() -> Mono.error(IllegalStateException("Ugyldig id token. Token mangler 'sub' claim."))
             else -> søknadService.sendSoknad(søknad, idToken)
