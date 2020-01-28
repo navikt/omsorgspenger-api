@@ -4,7 +4,10 @@ import com.nimbusds.jwt.JWTParser
 
 data class IdToken(val value: String) {
     private val jwt = try {
-        JWTParser.parse(value)
+        when {
+            value.contains("Bearer ") -> JWTParser.parse(value.replace("Bearer ", ""))
+            else -> JWTParser.parse(value)
+        }
     } catch (cause: Throwable) {
         throw IdTokenInvalidFormatException(this, cause)
     }

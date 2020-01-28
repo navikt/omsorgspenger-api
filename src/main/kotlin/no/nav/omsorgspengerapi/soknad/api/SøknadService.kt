@@ -2,7 +2,9 @@ package no.nav.omsorgspengerapi.soknad.api
 
 import no.nav.helse.soker.Søker
 import no.nav.helse.soker.validate
+import no.nav.omsorgspengerapi.common.IdToken
 import no.nav.omsorgspengerapi.soker.api.SøkerService
+import no.nav.omsorgspengerapi.soknad.mottak.KomplettSøker
 import no.nav.omsorgspengerapi.soknad.mottak.KomplettSøknadDTO
 import no.nav.omsorgspengerapi.soknad.mottak.SøknadMottakService
 import no.nav.omsorgspengerapi.vedlegg.api.VedleggJson
@@ -27,11 +29,10 @@ class SøknadService(
         private val log: Logger = LoggerFactory.getLogger(SøknadService::class.java)
     }
 
-    fun sendSoknad(søknad: Søknad): Mono<SøknadId> {
+    fun sendSoknad(søknad: Søknad, idToken: IdToken): Mono<SøknadId> {
         log.info("Henter søker...")
         val søkerRequest = søkerService.getSøker()
                 .onErrorMap { SøknadInnsendingFeiletException("Oppslag av søker feilet.") }
-
 
         log.info("Henter legeerklæringer...")
         val legeerklæringRequest: Flux<DocumentJsonDTO> = vedleggService.hentVedlegg(søknad.legeerklæring)
@@ -55,7 +56,7 @@ class SøknadService(
 
                     log.info("Sender søknad for mottak")
                     søknadMottakService.sendSøknad(komplettSøknadDTO = søknad.TilKomplettSøknad(
-                            søker = søker,
+                            søker = søker.tilKomplettSøker(idToken.getSubject()!!),
                             legeerklæringer = legeerklæring.tilVedleggsFormat(),
                             samværsavtaler = samværsavtale.tilVedleggsFormat())
                     )
@@ -92,7 +93,16 @@ private fun List<DocumentJsonDTO>.tilVedleggsFormat(): List<VedleggJson> = map {
     )
 }
 
-private fun Søknad.TilKomplettSøknad(søker: Søker, legeerklæringer: List<VedleggJson>, samværsavtaler: List<VedleggJson>?): KomplettSøknadDTO = KomplettSøknadDTO(
+private fun Søker.tilKomplettSøker(fnr: String): KomplettSøker = KomplettSøker(
+        fornavn = fornavn,
+        mellomnavn = mellomnavn,
+        etternavn = etternavn,
+        fødselsdato = fødselsdato,
+        fødselsnummer = fnr,
+        aktørId = aktørId
+)
+
+private fun Søknad.TilKomplettSøknad(søker: KomplettSøker, legeerklæringer: List<VedleggJson>, samværsavtaler: List<VedleggJson>?): KomplettSøknadDTO = KomplettSøknadDTO(
         nyVersjon = nyVersjon,
         språk = språk,
         mottatt = ZonedDateTime.now(),

@@ -4,11 +4,13 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.slot
 import no.nav.omsorgspengerapi.barn.api.Barn
+import no.nav.omsorgspengerapi.common.AuthUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
+import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf
@@ -33,13 +35,14 @@ internal class SøknadControllerTest {
     internal fun `Ved registrering av søknad, forvent status CREATED`() {
         val søknad = stubSøknad()
 
-        every { søknadService.sendSoknad(capture(slot())) } returns Mono.just(SøknadId(UUID.randomUUID().toString()))
+        every { søknadService.sendSoknad(capture(slot()), capture(slot())) } returns Mono.just(SøknadId(UUID.randomUUID().toString()))
 
         // https://docs.spring.io/spring-security/site/docs/current/reference/html/test-webflux.html#csrf-support
         client.mutateWith(csrf()) // Adds a valid csrf token in the request.
                 .post()
                 .uri("/soknad")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, AuthUtils.authToken)
                 .bodyValue(søknad)
                 .exchange()
                 .expectStatus().isCreated
@@ -56,7 +59,7 @@ internal class SøknadControllerTest {
                 invalidValue = null
         )
         val forventetMelding = "Søknad ikke validert."
-        every { søknadService.sendSoknad(capture(slot())) } throws SøknadValideringException(
+        every { søknadService.sendSoknad(capture(slot()), capture(slot())) } throws SøknadValideringException(
                 message = forventetMelding,
                 violations = mutableSetOf(forventetViolation)
         )
@@ -66,6 +69,7 @@ internal class SøknadControllerTest {
                 .post()
                 .uri("/soknad")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, AuthUtils.authToken)
                 .bodyValue(stubSøknad())
                 .exchange()
                 .expectStatus().isBadRequest

@@ -6,6 +6,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import no.nav.helse.soker.Søker
 import no.nav.omsorgspengerapi.barn.api.Barn
+import no.nav.omsorgspengerapi.common.IdToken
 import no.nav.omsorgspengerapi.soker.api.SøkerOppslagException
 import no.nav.omsorgspengerapi.soker.api.SøkerService
 import no.nav.omsorgspengerapi.soknad.mottak.SøknadMottakService
@@ -35,6 +36,9 @@ internal class SøknadServiceTest {
     @MockK
     lateinit var vedleggService: VedleggService
 
+    @MockK
+    lateinit var idToken: IdToken
+
     @InjectMockKs
     lateinit var søknadService: SøknadService
 
@@ -46,8 +50,10 @@ internal class SøknadServiceTest {
 
         val forventetSøknadId = Mono.just(SøknadId(UUID.randomUUID().toString()))
         mockSøknadMottak(forventetSøknadId)
+        every { idToken.getSubject() } returns "11111111111"
 
-        val søknadId = søknadService.sendSoknad(defaultSøknad())
+
+        val søknadId = søknadService.sendSoknad(defaultSøknad(), idToken)
 
         StepVerifier.create(søknadId)
                 .assertNext { forventetSøknadId }
@@ -59,10 +65,11 @@ internal class SøknadServiceTest {
     internal fun `Forvent SøknadInnsendingFeiletException, når søker ikke er funnet`() {
 
         every { søkerService.getSøker() } returns Mono.error(SøkerOppslagException("Oppslag av søker feilet."))
+        every { idToken.getSubject() } returns "11111111111"
 
         mockVedlegg()
         mockSøknadMottak(Mono.just(SøknadId("test")))
-        val feil = søknadService.sendSoknad(defaultSøknad())
+        val feil = søknadService.sendSoknad(defaultSøknad(), idToken)
 
         StepVerifier.create(feil)
                 .expectError(SøknadInnsendingFeiletException::class.java)
