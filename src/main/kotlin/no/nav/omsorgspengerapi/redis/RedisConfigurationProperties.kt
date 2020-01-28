@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 import kotlin.properties.Delegates
 
 @Component
-@ConfigurationProperties(prefix = "state")
+@ConfigurationProperties(prefix = "storage")
 class RedisConfigurationProperties {
     var redisMocked: Boolean by Delegates.notNull()
 

@@ -10,7 +10,7 @@ import java.util.*
 import kotlin.properties.Delegates
 
 @Service
-@ConfigurationProperties(prefix = "state")
+@ConfigurationProperties(prefix = "storage")
 class MellomlagringService constructor(@Autowired private val redisStore: RedisStore) {
     var passphrase: String by Delegates.notNull()
     private companion object {

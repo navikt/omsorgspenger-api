@@ -9,7 +9,9 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import no.nav.omsorgspengerapi.common.NavHeaders
 import no.nav.omsorgspengerapi.config.security.ApiGatewayApiKey
+import no.nav.omsorgspengerapi.redis.RedisMockUtil
 import no.nav.omsorgspengerapi.soker.api.SøkerOppslagException
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

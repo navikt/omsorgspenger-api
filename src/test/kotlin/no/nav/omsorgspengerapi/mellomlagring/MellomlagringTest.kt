@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles
 class MellomlagringTest {
     @Autowired
     lateinit var mellomlagringService: MellomlagringService
+
     @Autowired
     lateinit var redisStore: RedisStore
 
@@ -27,11 +28,10 @@ class MellomlagringTest {
 
     @Test
     internal fun `verdier skal være krypterte`() {
-
         mellomlagringService.setMellomlagring("test", "test")
 
         val mellomlagring = mellomlagringService.getMellomlagring("test")
-        assertNotNull(redisStore.get("test"))
+        assertNotNull(redisStore.get("mellomlagring_test"))
         assertNotEquals(mellomlagring, redisStore.get("test"))
     }
 
