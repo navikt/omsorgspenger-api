@@ -53,6 +53,7 @@ class SecurityConfig(
                         corsConfig.maxAge = corsProps.maxAge.toLong()
 
                         ex.response.headers.accessControlAllowOrigin = corsConfig.checkOrigin(ex.request.headers.origin)
+                        ex.response.headers.accessControlAllowCredentials = true
 
                         corsConfig
                     }
