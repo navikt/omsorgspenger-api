@@ -7,7 +7,7 @@ nav.no:
     cors:
       apply-to-path-pattern: '/**'
       allowed-origins:
-        - 'https://omsorgspengesoknad-q.nav.no'
+        - 'https://www-q0.nav.no'
         - 'https://omsorgspengesoknad-api-q.nav.no'
         - 'https://omsorgspengesoknad.nais.oera-q.local'
       allowed-methods:
