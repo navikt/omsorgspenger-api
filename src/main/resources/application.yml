@@ -25,6 +25,9 @@ spring:
       max-request-size: 24MB # Maximum of 24MB, each file max 8 MB
   codec:
     max-in-memory-size: 24000000 # 24 MB
+  redis:
+    host: localhost
+    port: 6379
 
 nav.no:
   authorization:
