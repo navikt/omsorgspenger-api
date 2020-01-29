@@ -29,3 +29,7 @@ https:
 storage:
   redis_mocked: true
   passphrase: "verySecret"
+spring:
+  redis:
+    host: localhost
+    port: 6379

@@ -1,6 +1,9 @@
 spring:
   profiles:
     active: q
+  redis:
+    host: ${REDIS_HOST}
+    port: 6379
 
 nav.no:
   security:
