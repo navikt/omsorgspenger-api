@@ -49,6 +49,7 @@ class SecurityConfig(
                         val corsConfig = CorsConfiguration().applyPermitDefaultValues()
                         corsConfig.allowedOrigins = corsProps.allowedOrigins
                         corsConfig.exposedHeaders = listOf(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN)
+                        corsConfig.allowCredentials = true
                         corsConfig.maxAge = corsProps.maxAge.toLong()
 
                         ex.response.headers.accessControlAllowOrigin = corsConfig.checkOrigin(ex.request.headers.origin)
