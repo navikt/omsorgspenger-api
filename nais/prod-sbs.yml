@@ -39,6 +39,8 @@ spec:
     enabled: true
   webproxy: true
   env:
+    - name: REDIS_HOST
+      value: omsorgspenger-api-redis.default.svc.nais.local
     - name: SPRING_PROFILES_ACTIVE
       value: prod
     - name: ISSUER
