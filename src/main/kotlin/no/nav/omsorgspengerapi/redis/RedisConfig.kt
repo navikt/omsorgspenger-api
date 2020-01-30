@@ -1,20 +1,15 @@
 package no.nav.omsorgspengerapi.redis
 
+import io.ktor.util.KtorExperimentalAPI
 import io.lettuce.core.RedisClient
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties
-import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import no.nav.omsorgspengerapi.Configuration
 
-@Configuration
-@EnableConfigurationProperties(RedisProperties::class)
 class RedisConfig(private val redisConfigurationProperties: RedisConfigurationProperties) {
 
-    @Bean
-    fun redisClient(properties: RedisProperties): RedisClient {
+    @KtorExperimentalAPI
+    fun redisClient(configuration: Configuration): RedisClient {
         redisConfigurationProperties.startInMemoryRedisIfMocked()
-
-        return RedisClient.create("redis://${properties.host}:${properties.port}")
+        return RedisClient.create("redis://${configuration.getRedisHost()}:${configuration.getRedisPort()}")
     }
 
 }

@@ -1,0 +1,341 @@
+package no.nav.omsorgspengerapi.soknad
+import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
+import no.nav.helse.dusseldorf.ktor.core.Throwblem
+import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
+import no.nav.omsorgspengerapi.vedlegg.Vedlegg
+import no.nav.omsorgspengerapi.barn.Barn
+import java.net.URL
+import java.time.format.DateTimeFormatter
+
+private val KUN_SIFFER = Regex("\\d+")
+internal val vekttallProviderFnr1: (Int) -> Int = { arrayOf(3, 7, 6, 1, 8, 9, 4, 5, 2).reversedArray()[it] }
+internal val vekttallProviderFnr2: (Int) -> Int = { arrayOf(5, 4, 3, 2, 7, 6, 5, 4, 3, 2).reversedArray()[it] }
+private val fnrDateFormat = DateTimeFormatter.ofPattern("ddMMyy")
+
+private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
+
+private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
+    title = "attachments-too-large",
+    status = 413,
+    detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB."
+)
+
+enum class ParameterType {
+    QUERY,
+    PATH,
+    HEADER,
+    ENTITY,
+    FORM
+}
+
+data class Violation(val parameterName: String, val parameterType: ParameterType, val reason: String, val invalidValue: Any? = null)
+
+internal fun Søknad.valider() {
+    val violations: MutableSet<Violation> = this.barn.valider(relasjonTilBarnet = relasjonTilBarnet?.name)
+
+    // legeerklaring
+    if (legeerklæring.isEmpty()) {
+        violations.add(
+            Violation(
+                parameterName = "legeerklaring",
+                parameterType = ParameterType.ENTITY,
+                reason = "Det må sendes minst et vedlegg for legeerklaring.",
+                invalidValue = legeerklæring
+            )
+        )
+    }
+
+    // samvarsavtale
+    if (samværsavtale != null) {
+        if (samværsavtale.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "samvarsavtale",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Det må sendes minst et vedlegg for samvarsavtale.",
+                    invalidValue = samværsavtale
+                )
+            )
+        }
+    }
+
+    legeerklæring.mapIndexed { index, url ->
+        val path = url.path
+        // Kan oppstå url = null etter Jackson deserialisering
+        if (!path.matches(Regex("/vedlegg/.*"))) {
+            violations.add(
+                Violation(
+                    parameterName = "legeerklaring[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Ikke gyldig vedlegg URL.",
+                    invalidValue = url
+                )
+            )
+        }
+    }
+
+    utenlandsopphold.mapIndexed { index, utenlandsopphold ->
+        val fraDataErForTilDato = utenlandsopphold.fraOgMed.isBefore(utenlandsopphold.tilOgMed)
+        if (!fraDataErForTilDato) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Til dato kan ikke være før fra dato",
+                    invalidValue = "fraOgMed eller tilOgMed"
+                )
+            )
+        }
+        if (utenlandsopphold.landkode.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Landkode er ikke satt",
+                    invalidValue = "landkode"
+                )
+            )
+        }
+        if (utenlandsopphold.landnavn.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Landnavn er ikke satt",
+                    invalidValue = "landnavn"
+                )
+            )
+        }
+    }
+
+    if (samværsavtale != null) {
+        samværsavtale.mapIndexed { index, url ->
+            val path = url.path
+            // Kan oppstå url = null etter Jackson deserialisering
+            if (!path.matches(Regex("/vedlegg/.*"))) {
+                violations.add(
+                    Violation(
+                        parameterName = "samvarsavtale[$index]",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Ikke gyldig vedlegg URL.",
+                        invalidValue = url
+                    )
+                )
+            }
+        }
+    }
+
+    // Booleans (For å forsikre at de er satt og ikke blir default false)
+    fun booleanIkkeSatt(parameterName: String) {
+        violations.add(
+            Violation(
+                parameterName = parameterName,
+                parameterType = ParameterType.ENTITY,
+                reason = "Må settes til true eller false.",
+                invalidValue = null
+
+            )
+        )
+    }
+    if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.har_bodd_i_utlandet_siste_12_mnd")
+    violations.addAll(validerUtenlandopphold(medlemskap.utenlandsoppholdSiste12Mnd))
+    if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skal_bo_i_utlandet_neste_12_mnd")
+    violations.addAll(validerUtenlandopphold(medlemskap.utenlandsoppholdNeste12Mnd))
+    if (!harBekreftetOpplysninger) {
+        violations.add(
+            Violation(
+                parameterName = "har_bekreftet_opplysninger",
+                parameterType = ParameterType.ENTITY,
+                reason = "Opplysningene må bekreftes for å sende inn søknad.",
+                invalidValue = false
+
+            )
+        )
+    }
+    if (!harForståttRettigheterOgPlikter) {
+        violations.add(
+            Violation(
+                parameterName = "har_forstatt_rettigheter_og_plikter",
+                parameterType = ParameterType.ENTITY,
+                reason = "Må ha forstått rettigheter og plikter for å sende inn søknad.",
+                invalidValue = false
+
+            )
+        )
+    }
+
+// Ser om det er noen valideringsfeil
+    if (violations.isNotEmpty()) {
+        throw SøknadValideringException("Søknad ikke validert.", violations)
+    }
+}
+
+private fun Barn.valider(relasjonTilBarnet: String?): MutableSet<Violation> {
+    val violations = mutableSetOf<Violation>()
+
+    if (fødselsnummer != null && !fødselsnummer.erGyldigFodselsnummer()) {
+        violations.add(
+            Violation(
+                parameterName = "barn.fodselsnummer",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke gyldig fødselsnummer.",
+                invalidValue = fødselsnummer
+            )
+        )
+    }
+
+    val kreverNavnPaaBarnet = fødselsnummer != null
+//    if ((kreverNavnPaaBarnet || navn != null) && (navn == null || navn.erBlankEllerLengreEnn(100))) {
+//        violations.add(
+//            Violation(
+//                parameterName = "barn.navn",
+//                parameterType = ParameterType.ENTITY,
+//                reason = "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
+//                invalidValue = navn
+//            )
+//        )
+//    }
+
+    if ((relasjonTilBarnet != null) && (relasjonTilBarnet.erBlankEllerLengreEnn(100))) {
+        violations.add(
+            Violation(
+                parameterName = "relasjon_til_barnet",
+                parameterType = ParameterType.ENTITY,
+                reason = "Relasjon til barnet kan ikke være tom og være mindre enn 100 tegn.",
+                invalidValue = relasjonTilBarnet
+            )
+        )
+    }
+
+    return violations
+}
+
+private fun validerUtenlandopphold(
+    list: List<Utenlandsopphold>
+): MutableSet<Violation> {
+    val violations = mutableSetOf<Violation>()
+    list.mapIndexed { index, utenlandsopphold ->
+        val fraDataErEtterTilDato = utenlandsopphold.fraOgMed.isAfter(utenlandsopphold.tilOgMed)
+        if (fraDataErEtterTilDato) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Til dato kan ikke være før fra dato",
+                    invalidValue = "fraOgMed eller tilOgMed"
+                )
+            )
+        }
+        if (utenlandsopphold.landkode.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Landkode er ikke satt",
+                    invalidValue = "landkode"
+                )
+            )
+        }
+        if (utenlandsopphold.landnavn.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Landnavn er ikke satt",
+                    invalidValue = "landnavn"
+                )
+            )
+        }
+    }
+    return violations
+}
+
+fun String.erKunSiffer() = matches(KUN_SIFFER)
+
+private fun String.starterMedFodselsdato(): Boolean {
+    // Sjekker ikke hvilket århundre vi skal tolket yy som, kun at det er en gyldig dato.
+    // F.eks blir 290990 parset til 2090-09-29, selv om 1990-09-29 var ønskelig.
+    // Kunne sett på individsifre (Tre første av personnummer) for å tolke århundre,
+    // men virker unødvendig komplekst og sårbart for ev. endringer i fødselsnummeret.
+    return try {
+        fnrDateFormat.parse(substring(0, 6))
+        true
+    } catch (cause: Throwable) {
+        false
+    }
+}
+
+private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
+
+internal fun List<Vedlegg>.validerVedlegg(vedleggUrler: List<URL>) {
+    if (size != vedleggUrler.size) {
+        throw Throwblem(
+            ValidationProblemDetails(
+                violations = setOf(
+                    no.nav.helse.dusseldorf.ktor.core.Violation(
+                        parameterName = "vedlegg",
+                        parameterType = no.nav.helse.dusseldorf.ktor.core.ParameterType.ENTITY,
+                        reason = "Mottok referanse til ${vedleggUrler.size} vedlegg, men fant kun $size vedlegg.",
+                        invalidValue = vedleggUrler
+                    )
+                )
+            )
+        )
+    }
+    validerTotalStørresle()
+}
+
+private fun List<Vedlegg>.validerTotalStørresle() {
+    val totalSize = sumBy { it.content.size }
+    if (totalSize > MAX_VEDLEGG_SIZE) {
+        throw Throwblem(vedleggTooLargeProblemDetails)
+    }
+}
+
+fun String.erGyldigFodselsnummer(): Boolean {
+    if (length != 11 || !erKunSiffer() || !starterMedFodselsdato()) return false
+
+    val forventetKontrollsifferEn = get(9)
+
+    val kalkulertKontrollsifferEn = Mod11.kontrollsiffer(
+        number = substring(0, 9),
+        vekttallProvider = vekttallProviderFnr1
+    )
+
+    if (kalkulertKontrollsifferEn != forventetKontrollsifferEn) return false
+
+    val forventetKontrollsifferTo = get(10)
+
+    val kalkulertKontrollsifferTo = Mod11.kontrollsiffer(
+        number = substring(0, 10),
+        vekttallProvider = vekttallProviderFnr2
+    )
+
+    return kalkulertKontrollsifferTo == forventetKontrollsifferTo
+}
+
+/**
+ * https://github.com/navikt/helse-sparkel/blob/2e79217ae00632efdd0d4e68655ada3d7938c4b6/src/main/kotlin/no/nav/helse/ws/organisasjon/Mod11.kt
+ * https://www.miles.no/blogg/tema/teknisk/validering-av-norske-data
+ */
+internal object Mod11 {
+    private val defaultVekttallProvider: (Int) -> Int = { 2 + it % 6 }
+
+    internal fun kontrollsiffer(
+        number: String,
+        vekttallProvider: (Int) -> Int = defaultVekttallProvider
+    ): Char {
+        return number.reversed().mapIndexed { i, char ->
+            Character.getNumericValue(char) * vekttallProvider(i)
+        }.sum().let(Mod11::kontrollsifferFraSum)
+    }
+
+
+    private fun kontrollsifferFraSum(sum: Int) = sum.rem(11).let { rest ->
+        when (rest) {
+            0 -> '0'
+            1 -> '-'
+            else -> "${11 - rest}"[0]
+        }
+    }
+}

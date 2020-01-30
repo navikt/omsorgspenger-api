@@ -1,43 +1,56 @@
 package no.nav.omsorgspengerapi.mellomlagring
 
-
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import io.swagger.v3.oas.annotations.tags.Tag
-import no.nav.omsorgspengerapi.common.IdToken
-import no.nav.omsorgspengerapi.docs.SELVBETJENING_ID_TOKEN_SCHEME
+import io.ktor.application.call
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.locations.*
+import io.ktor.request.receive
+import io.ktor.response.respond
+import io.ktor.response.respondText
+import io.ktor.routing.Route
+import no.nav.omsorgspengerapi.general.auth.IdTokenProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.web.bind.annotation.*
 
-@RestController
-@SecurityRequirement(name = SELVBETJENING_ID_TOKEN_SCHEME)
-@Tag(name = "Endepunkt for mellomlagring", description = "Endepunkt for mellomlagring av søknad")
-class MellomlagringController(private val mellomlagringService: MellomlagringService) {
+private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 
-    companion object {
-        private val log: Logger = LoggerFactory.getLogger(MellomlagringController::class.java)
+@KtorExperimentalLocationsAPI
+fun Route.mellomlagringApis(
+    mellomlagringService: MellomlagringService,
+    idTokenProvider: IdTokenProvider
+) {
+
+    @Location("/mellomlagring")
+    class mellomlagring
+
+    post { _: mellomlagring ->
+        val midlertidigSøknad = call.receive<String>()
+        val idToken = idTokenProvider.getIdToken(call)
+        mellomlagringService.setMellomlagring(idToken.getSubject()!!, midlertidigSøknad)
+        call.respond(HttpStatusCode.NoContent)
     }
 
-    @GetMapping("/mellomlagring")
-    fun getMellomlagring(@RequestHeader ("Authorization") auth: String): String? {
-        val mellomlagring = mellomlagringService.getMellomlagring(IdToken(auth).getSubject()!!)
-        return when {
-            mellomlagring != null -> {
-                mellomlagring
-            }
-            else -> {
-                "{}"
-            }
+    get { _: mellomlagring ->
+        val idToken = idTokenProvider.getIdToken(call)
+        val mellomlagring = mellomlagringService.getMellomlagring(idToken.getSubject()!!)
+        if (mellomlagring != null) {
+            call.respondText(
+                contentType = ContentType.Application.Json,
+                text = mellomlagring,
+                status = HttpStatusCode.OK
+            )
+        } else {
+            call.respondText(
+                contentType = ContentType.Application.Json,
+                text = "{}",
+                status = HttpStatusCode.OK
+            )
         }
     }
 
-    @PostMapping("/mellomlagring")
-    fun setMellomlagring(@RequestHeader ("Authorization") auth: String, @RequestBody body: String) {
-              return  mellomlagringService.setMellomlagring(IdToken(auth).getSubject()!!, body)
-    }
-
-    @DeleteMapping("/mellomlagring")
-    fun slettMellomlagring(@RequestHeader ("Authorization") auth: String) {
-        return mellomlagringService.slettMellomlagring(IdToken(auth).getSubject()!!)
+    delete { _: mellomlagring ->
+        val idToken = idTokenProvider.getIdToken(call)
+        mellomlagringService.deleteMellomlagring(idToken.getSubject()!!)
+        call.respond(HttpStatusCode.Accepted)
     }
 }

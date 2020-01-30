@@ -1,21 +1,43 @@
 package no.nav.omsorgspengerapi.mellomlagring
 
+import com.typesafe.config.ConfigFactory
+import io.ktor.config.HoconApplicationConfig
+import io.ktor.util.KtorExperimentalAPI
+import no.nav.omsorgspengerapi.Configuration
+import no.nav.omsorgspengerapi.TestConfiguration
+import no.nav.omsorgspengerapi.redis.RedisConfig
+import no.nav.omsorgspengerapi.redis.RedisConfigurationProperties
+import no.nav.omsorgspengerapi.redis.RedisMockUtil
 import no.nav.omsorgspengerapi.redis.RedisStore
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
+import org.junit.AfterClass
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
 
-
-@SpringBootTest
-@ActiveProfiles("test")
+@KtorExperimentalAPI
 class MellomlagringTest {
-    @Autowired
-    lateinit var mellomlagringService: MellomlagringService
+    private companion object {
+        val redisClient = RedisConfig(RedisConfigurationProperties(true)).redisClient(
+            Configuration(
+                HoconApplicationConfig(ConfigFactory.parseMap(TestConfiguration.asMap()))
+            )
+        )
+        val redisStore = RedisStore(
+            redisClient
+        )
+        val mellomlagringService = MellomlagringService(
+            redisStore,
+            "VerySecretPass"
+        )
 
-    @Autowired
-    lateinit var redisStore: RedisStore
+        @AfterClass
+        @JvmStatic
+        fun teardown() {
+            redisClient.shutdown()
+            RedisMockUtil.stopRedisMocked()
+        }
+    }
 
     @Test
     internal fun `mellomlagre verdier`() {
@@ -28,6 +50,7 @@ class MellomlagringTest {
 
     @Test
     internal fun `verdier skal være krypterte`() {
+
         mellomlagringService.setMellomlagring("test", "test")
 
         val mellomlagring = mellomlagringService.getMellomlagring("test")

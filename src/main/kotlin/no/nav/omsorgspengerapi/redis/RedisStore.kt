@@ -1,13 +1,10 @@
 package no.nav.omsorgspengerapi.redis
 
 import io.lettuce.core.RedisClient
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-@Component
-class RedisStore @Autowired constructor(
+class RedisStore constructor(
         redisClient: RedisClient) {
 
     private val connection = redisClient.connect()

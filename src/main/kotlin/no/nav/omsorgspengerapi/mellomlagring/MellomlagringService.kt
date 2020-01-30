@@ -1,18 +1,12 @@
 package no.nav.omsorgspengerapi.mellomlagring
 
+import io.ktor.util.KtorExperimentalAPI
 import no.nav.omsorgspengerapi.redis.RedisStore
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.stereotype.Service
 import java.util.*
-import kotlin.properties.Delegates
 
-@Service
-@ConfigurationProperties(prefix = "storage")
-class MellomlagringService constructor(@Autowired private val redisStore: RedisStore) {
-    var passphrase: String by Delegates.notNull()
+class MellomlagringService @KtorExperimentalAPI constructor(private val redisStore: RedisStore, private val passphrase:String) {
     private companion object {
         private val log: Logger = LoggerFactory.getLogger(MellomlagringService::class.java)
     }
@@ -39,7 +33,7 @@ class MellomlagringService constructor(@Autowired private val redisStore: RedisS
         redisStore.set(nøkkelPrefiks + fnr, krypto.encrypt(midlertidigSøknad),expirationDate)
     }
 
-    fun slettMellomlagring(
+    fun deleteMellomlagring(
         fnr: String
     ) {
         redisStore.delete(nøkkelPrefiks + fnr)
