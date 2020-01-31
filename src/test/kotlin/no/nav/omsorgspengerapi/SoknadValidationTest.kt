@@ -25,9 +25,7 @@ internal class SøknadValideringsTest {
             harForståttRettigheterOgPlikter = true,
             relasjonTilBarnet = SøkerBarnRelasjon.FAR,
             barn = Barn(
-                fornavn = "Ole",
-                mellomnavn = "Dole",
-                etternavn = "Doffen",
+                navn = "Ole Dole Doffen",
                 fødselsdato = LocalDate.now().minusDays(895),
                 aktørId = "123456"
             ),
@@ -76,9 +74,7 @@ internal class SøknadValideringsTest {
             harForståttRettigheterOgPlikter = true,
             relasjonTilBarnet = SøkerBarnRelasjon.FAR,
             barn = Barn(
-                fornavn = "Ole",
-                mellomnavn = "Dole",
-                etternavn = "Doffen",
+                navn = "Ole Dole Doffen",
                 fødselsdato = LocalDate.now().minusDays(895),
                 aktørId = "123456"
             ),
@@ -123,9 +119,7 @@ internal class SøknadValideringsTest {
             harForståttRettigheterOgPlikter = true,
             relasjonTilBarnet = SøkerBarnRelasjon.FAR,
             barn = Barn(
-                fornavn = "Ole",
-                mellomnavn = "Dole",
-                etternavn = "Doffen",
+                navn = "Ole Dole Doffen",
                 fødselsdato = LocalDate.now().minusDays(895),
                 aktørId = "123456"
             ),

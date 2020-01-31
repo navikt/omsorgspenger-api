@@ -38,11 +38,11 @@ object TestConfiguration {
         // Clients
         if (wireMockServer != null) {
             map["nav.auth.clients.0.alias"] = "azure-v2"
-            map["nav.auth.clients.0.client_id"] = "pleiepengesoknad-api"
+            map["nav.auth.clients.0.client_id"] = "omsorgspengesoknad-api"
             map["nav.auth.clients.0.private_key_jwk"] = ClientCredentials.ClientA.privateKeyJwk
             map["nav.auth.clients.0.certificate_hex_thumbprint"] = ClientCredentials.ClientA.certificateHexThumbprint
             map["nav.auth.clients.0.discovery_endpoint"] = wireMockServer.getAzureV2WellKnownUrl()
-            map["nav.auth.scopes.sende-soknad-til-prosessering"] = "pleiepengesoknad-mottak/.default"
+            map["nav.auth.scopes.sende-soknad-til-prosessering"] = "omsorgspengesoknad-mottak/.default"
         }
 
         map["nav.redis.host"] = "localhost"

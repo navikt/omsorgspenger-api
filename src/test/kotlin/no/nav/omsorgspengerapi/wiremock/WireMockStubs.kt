@@ -11,7 +11,7 @@ internal const val k9OppslagPath = "/helse-reverse-proxy/k9-selvbetjening-oppsla
 private const val omsorgpengesoknadMottakPath = "/helse-reverse-proxy/omsorgpengesoknad-mottak-mock"
 private const val k9DokumentPath = "/k9-dokument-mock"
 
-internal fun WireMockBuilder.pleiepengesoknadApiConfig() = wireMockConfiguration {
+internal fun WireMockBuilder.omsorgspengesoknadApiConfig() = wireMockConfiguration {
     it
         .extensions(SokerResponseTransformer())
         .extensions(BarnResponseTransformer())
@@ -54,25 +54,6 @@ internal fun WireMockServer.stubK9OppslagBarn(simulerFeil: Boolean = false) : Wi
                     .withHeader("Content-Type", "application/json")
                     .withStatus(if (simulerFeil) 500 else 200)
                     .withTransformers("k9-oppslag-barn")
-            )
-    )
-    return this
-}
-
-internal fun WireMockServer.stubK9OppslagArbeidsgivere(simulerFeil: Boolean = false) : WireMockServer {
-    WireMock.stubFor(
-        WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/.*"))
-            .withHeader("x-nav-apiKey", AnythingPattern())
-            .withHeader(HttpHeaders.Authorization, AnythingPattern())
-            .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].organisasjonsnummer"))
-            .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].navn"))
-            .withQueryParam("fom", AnythingPattern()) // vurder regex som validerer dato-format
-            .withQueryParam("tom", AnythingPattern()) // vurder regex som validerer dato-format
-            .willReturn(
-                WireMock.aResponse()
-                    .withHeader("Content-Type", "application/json")
-                    .withStatus(if (simulerFeil) 500 else 200)
-                    .withTransformers("k9-oppslag-arbeidsgivere")
             )
     )
     return this

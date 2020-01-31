@@ -2,8 +2,8 @@ package no.nav.omsorgspengerapi.soknad
 import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
-import no.nav.omsorgspengerapi.vedlegg.Vedlegg
 import no.nav.omsorgspengerapi.barn.Barn
+import no.nav.omsorgspengerapi.vedlegg.Vedlegg
 import java.net.URL
 import java.time.format.DateTimeFormatter
 
@@ -74,6 +74,33 @@ internal fun Søknad.valider() {
         }
     }
 
+    samværsavtale?.mapIndexed { index, url ->
+        if (url == null) {
+            violations.add(
+                Violation(
+                    parameterName = "samvarsavtale[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Ikke gyldig URL.",
+                    invalidValue = null
+                )
+            )
+        } else {
+            val path = url.path
+            // Kan oppstå url = null etter Jackson deserialisering
+            if (!path.matches(Regex("/vedlegg/.*"))) {
+                violations.add(
+                    Violation(
+                        parameterName = "samvarsavtale[$index]",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Ikke gyldig vedlegg URL.",
+                        invalidValue = url
+                    )
+                )
+            } else {
+            }
+        }
+    }
+
     utenlandsopphold.mapIndexed { index, utenlandsopphold ->
         val fraDataErForTilDato = utenlandsopphold.fraOgMed.isBefore(utenlandsopphold.tilOgMed)
         if (!fraDataErForTilDato) {
@@ -108,23 +135,6 @@ internal fun Søknad.valider() {
         }
     }
 
-    if (samværsavtale != null) {
-        samværsavtale.mapIndexed { index, url ->
-            val path = url.path
-            // Kan oppstå url = null etter Jackson deserialisering
-            if (!path.matches(Regex("/vedlegg/.*"))) {
-                violations.add(
-                    Violation(
-                        parameterName = "samvarsavtale[$index]",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Ikke gyldig vedlegg URL.",
-                        invalidValue = url
-                    )
-                )
-            }
-        }
-    }
-
     // Booleans (For å forsikre at de er satt og ikke blir default false)
     fun booleanIkkeSatt(parameterName: String) {
         violations.add(
@@ -137,14 +147,14 @@ internal fun Søknad.valider() {
             )
         )
     }
-    if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.har_bodd_i_utlandet_siste_12_mnd")
+    if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.harBoddIUtlandetSiste12Mnd")
     violations.addAll(validerUtenlandopphold(medlemskap.utenlandsoppholdSiste12Mnd))
-    if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skal_bo_i_utlandet_neste_12_mnd")
+    if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skalBoIUtlandetNeste12Mnd")
     violations.addAll(validerUtenlandopphold(medlemskap.utenlandsoppholdNeste12Mnd))
     if (!harBekreftetOpplysninger) {
         violations.add(
             Violation(
-                parameterName = "har_bekreftet_opplysninger",
+                parameterName = "harBekreftetOpplysninger",
                 parameterType = ParameterType.ENTITY,
                 reason = "Opplysningene må bekreftes for å sende inn søknad.",
                 invalidValue = false
@@ -155,7 +165,7 @@ internal fun Søknad.valider() {
     if (!harForståttRettigheterOgPlikter) {
         violations.add(
             Violation(
-                parameterName = "har_forstatt_rettigheter_og_plikter",
+                parameterName = "harForståttRettigheterOgPlikter",
                 parameterType = ParameterType.ENTITY,
                 reason = "Må ha forstått rettigheter og plikter for å sende inn søknad.",
                 invalidValue = false
@@ -185,16 +195,16 @@ private fun Barn.valider(relasjonTilBarnet: String?): MutableSet<Violation> {
     }
 
     val kreverNavnPaaBarnet = fødselsnummer != null
-//    if ((kreverNavnPaaBarnet || navn != null) && (navn == null || navn.erBlankEllerLengreEnn(100))) {
-//        violations.add(
-//            Violation(
-//                parameterName = "barn.navn",
-//                parameterType = ParameterType.ENTITY,
-//                reason = "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
-//                invalidValue = navn
-//            )
-//        )
-//    }
+    if ((kreverNavnPaaBarnet || navn != null) && (navn == null || navn.erBlankEllerLengreEnn(100))) {
+        violations.add(
+            Violation(
+                parameterName = "barn.navn",
+                parameterType = ParameterType.ENTITY,
+                reason = "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
+                invalidValue = navn
+            )
+        )
+    }
 
     if ((relasjonTilBarnet != null) && (relasjonTilBarnet.erBlankEllerLengreEnn(100))) {
         violations.add(

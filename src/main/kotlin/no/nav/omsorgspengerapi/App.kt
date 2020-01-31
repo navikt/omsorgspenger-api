@@ -1,6 +1,7 @@
 package no.nav.omsorgspengerapi
 
 import com.auth0.jwk.JwkProviderBuilder
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.*
 import io.ktor.auth.Authentication
@@ -18,9 +19,6 @@ import io.ktor.metrics.micrometer.MicrometerMetrics
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
-import no.nav.omsorgspengerapi.barn.BarnGateway
-import no.nav.omsorgspengerapi.barn.BarnService
-import no.nav.omsorgspengerapi.barn.barnApis
 import no.nav.helse.dusseldorf.ktor.auth.clients
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthCheck
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthConfig
@@ -33,23 +31,26 @@ import no.nav.helse.dusseldorf.ktor.jackson.JacksonStatusPages
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
+import no.nav.omsorgspengerapi.barn.BarnGateway
+import no.nav.omsorgspengerapi.barn.BarnService
+import no.nav.omsorgspengerapi.barn.barnApis
 import no.nav.omsorgspengerapi.general.auth.IdTokenProvider
 import no.nav.omsorgspengerapi.general.auth.authorizationStatusPages
 import no.nav.omsorgspengerapi.general.systemauth.AccessTokenClientResolver
 import no.nav.omsorgspengerapi.mellomlagring.MellomlagringService
 import no.nav.omsorgspengerapi.mellomlagring.mellomlagringApis
+import no.nav.omsorgspengerapi.redis.RedisConfig
 import no.nav.omsorgspengerapi.redis.RedisConfigurationProperties
 import no.nav.omsorgspengerapi.redis.RedisStore
-import no.nav.omsorgspengerapi.vedlegg.K9DokumentGateway
-import no.nav.omsorgspengerapi.vedlegg.VedleggService
-import no.nav.omsorgspengerapi.vedlegg.vedleggApis
-import no.nav.omsorgspengerapi.redis.RedisConfig
 import no.nav.omsorgspengerapi.soker.SøkerGateway
 import no.nav.omsorgspengerapi.soker.SøkerService
 import no.nav.omsorgspengerapi.soker.søkerApis
 import no.nav.omsorgspengerapi.soknad.OmsorgpengesøknadMottakGateway
 import no.nav.omsorgspengerapi.soknad.SøknadService
 import no.nav.omsorgspengerapi.soknad.søknadApis
+import no.nav.omsorgspengerapi.vedlegg.K9DokumentGateway
+import no.nav.omsorgspengerapi.vedlegg.VedleggService
+import no.nav.omsorgspengerapi.vedlegg.vedleggApis
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Duration
@@ -72,7 +73,9 @@ fun Application.omsorgpengesoknadapi() {
 
     install(ContentNegotiation) {
         jackson {
-            dusseldorfConfigured().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+            dusseldorfConfigured()
+                .setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE)
+                .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
         }
     }
 

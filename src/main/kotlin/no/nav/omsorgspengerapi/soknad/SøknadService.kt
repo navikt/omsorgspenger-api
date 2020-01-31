@@ -1,12 +1,12 @@
 package no.nav.omsorgspengerapi.soknad
 
+import no.nav.omsorgspengerapi.barn.Barn
 import no.nav.omsorgspengerapi.general.CallId
 import no.nav.omsorgspengerapi.general.auth.IdToken
-import no.nav.omsorgspengerapi.vedlegg.VedleggService
-import no.nav.omsorgspengerapi.barn.Barn
 import no.nav.omsorgspengerapi.soker.Søker
 import no.nav.omsorgspengerapi.soker.SøkerService
 import no.nav.omsorgspengerapi.soker.validate
+import no.nav.omsorgspengerapi.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
@@ -60,9 +60,7 @@ class SøknadService(private val omsorgpengesøknadMottakGateway: Omsorgpengesø
             barn = Barn(
                 fødselsdato = søknad.barn.fødselsdato,
                 aktørId = søknad.barn.aktørId,
-                fornavn = søknad.barn.fornavn,
-                mellomnavn = søknad.barn.mellomnavn,
-                etternavn = søknad.barn.etternavn
+                navn = søknad.barn.navn
             ),
             legeerklæring = legeerklæring,
             samværsavtale = samværsavtale,

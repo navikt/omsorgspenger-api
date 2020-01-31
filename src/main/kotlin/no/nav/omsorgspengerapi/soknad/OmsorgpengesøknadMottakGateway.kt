@@ -1,5 +1,6 @@
 package no.nav.omsorgspengerapi.soknad
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
@@ -23,15 +24,17 @@ import java.io.ByteArrayInputStream
 import java.net.URI
 
 class OmsorgpengesøknadMottakGateway(
-    baseUrl : URI,
+    baseUrl: URI,
     private val accessTokenClient: AccessTokenClient,
-    private val sendeSoknadTilProsesseringScopes : Set<String>,
+    private val sendeSoknadTilProsesseringScopes: Set<String>,
     private val apiGatewayApiKey: ApiGatewayApiKey
 ) : HealthCheck {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(OmsorgpengesøknadMottakGateway::class.java)
-        private val objectMapper = jacksonObjectMapper().dusseldorfConfigured().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+        private val objectMapper = jacksonObjectMapper().dusseldorfConfigured()
+            .setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE)
+            .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
     }
 
     private val komplettUrl = Url.buildURL(
@@ -52,10 +55,11 @@ class OmsorgpengesøknadMottakGateway(
     }
 
     suspend fun leggTilProsessering(
-        soknad : KomplettSoknad,
+        soknad: KomplettSoknad,
         callId: CallId
     ) {
-        val authorizationHeader = cachedAccessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes).asAuthoriationHeader()
+        val authorizationHeader =
+            cachedAccessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes).asAuthoriationHeader()
 
         val body = objectMapper.writeValueAsBytes(soknad)
         val contentStream = { ByteArrayInputStream(body) }

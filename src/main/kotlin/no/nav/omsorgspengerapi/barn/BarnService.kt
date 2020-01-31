@@ -15,7 +15,7 @@ class BarnService(
     internal suspend fun hentNaaverendeBarn(
         idToken: IdToken,
         callId: CallId
-    ) = try {
+    ): List<Barn> = try {
         barnGateway.hentBarn(
             idToken = idToken,
             callId = callId
@@ -27,9 +27,12 @@ class BarnService(
 
     private fun BarnGateway.BarnOppslagDTO.tilBarn() = Barn(
         fødselsdato = fødselsdato,
-        fornavn = fornavn,
-        mellomnavn = mellomnavn,
-        etternavn = etternavn,
+        navn = tilFullNavn(fornavn, mellomnavn, etternavn),
         aktørId = aktør_id
     )
+
+    private fun tilFullNavn(fornavn: String, mellomnavn: String?, etternavn: String) = when {
+        mellomnavn.isNullOrBlank() -> "$fornavn $etternavn"
+        else -> "$fornavn $mellomnavn $etternavn"
+    }
 }

@@ -20,7 +20,7 @@ class ApplicationWithMocks {
                 .withAzureSupport()
                 .withNaisStsSupport()
                 .withLoginServiceSupport()
-                .pleiepengesoknadApiConfig()
+                .omsorgspengesoknadApiConfig()
                 .build()
                 .stubK9DokumentHealth()
                 .stubOmsorgsoknadMottakHealth()
@@ -29,7 +29,6 @@ class ApplicationWithMocks {
                 .stubK9Dokument()
                 .stubK9OppslagSoker()
                 .stubK9OppslagBarn()
-                .stubK9OppslagArbeidsgivere()
 
             val testArgs = TestConfiguration.asMap(
                 port = 8082,

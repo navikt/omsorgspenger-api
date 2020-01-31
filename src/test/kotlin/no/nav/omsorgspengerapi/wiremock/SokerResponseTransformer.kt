@@ -38,7 +38,7 @@ private fun getResponse(ident: String): String {
         "25037139184" -> {
             return """
         { 
-            "aktør_id": "23456",
+            "aktørId": "23456",
             "fornavn": "ARNE",
             "mellomnavn": "BJARNE",
             "etternavn": "CARLSEN",

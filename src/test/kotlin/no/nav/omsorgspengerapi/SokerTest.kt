@@ -10,9 +10,9 @@ class SokerTest {
     @Test
     fun `En person som fyller 18 i morgen kan ikke søke`() {
         val soker = Søker(
-            aktoerId = "1234",
-            fodselsnummer = "29099012345",
-            fodselsdato = LocalDate.now().minusYears(18).plusDays(1)
+            aktørId = "1234",
+            fødselsnummer = "29099012345",
+            fødselsdato = LocalDate.now().minusYears(18).plusDays(1)
         )
         assertFalse(soker.myndig)
     }
@@ -20,9 +20,9 @@ class SokerTest {
     @Test
     fun `En person som fyller 18 i dag kan søke`() {
         val soker = Søker(
-            aktoerId = "5678",
-            fodselsnummer = "29099012345",
-            fodselsdato = LocalDate.now().minusYears(18)
+            aktørId = "5678",
+            fødselsnummer = "29099012345",
+            fødselsdato = LocalDate.now().minusYears(18)
         )
         assertTrue(soker.myndig)
     }
