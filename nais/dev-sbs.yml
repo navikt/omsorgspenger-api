@@ -37,12 +37,17 @@ spec:
     path: /metrics
   vault:
     enabled: true
+    paths:  # Optional. If specified, will override default values with custom Vault configuration.
+      - mountPath: /var/run/secrets/nais.io/vault  # Filesystem path inside the pod where secrets will appear.
+        kvPath: /kv/preprod/sbs/omsorgspenger-api/default  # Vault KV path to fetch secrets from.
+      - mountPath: /var/run/secrets/nais.io/azuread
+        kvPath: /azuread/data/dev/creds/omsorgspenger-api
   webproxy: true
   env:
     - name: REDIS_HOST
       value: omsorgspengesoknad-api-redis.default.svc.nais.local
     - name: CORS_ADDRESSES
-      value: https://omsorgspengesoknad-q.nav.no
+      value: https://www-q0.nav.no
     - name: ISSUER
       value: https://login.microsoftonline.com/d38f25aa-eab8-4c50-9f28-ebf92c1256f2/v2.0/
     - name: COOKIE_NAME
@@ -56,8 +61,8 @@ spec:
     - name: K9_DOKUMENT_BASE_URL
       value: https://k9-dokument.nais.oera-q.local
     - name: AZURE_CLIENT_ID
-      value: 1c494523-b92c-4387-9e18-a43e654d511c
+      value: 14f509d4-5f43-4e42-b551-d61db10972f2
     - name: AZURE_V2_DISCOVERY_ENDPOINT
       value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration
     - name: SENDE_SOKNAD_TIL_PROSESSERING_SCOPES
-      value: 8caa7c32-1523-43a7-af95-63123938f45c/.default
+      value: 8a37534e-7387-43af-8123-cb5facd5dc44/.default
