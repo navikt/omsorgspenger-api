@@ -1,7 +1,6 @@
 package no.nav.omsorgspengerapi.soknad
-import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
-import no.nav.helse.dusseldorf.ktor.core.Throwblem
-import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
+
+import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.omsorgspengerapi.barn.Barn
 import no.nav.omsorgspengerapi.vedlegg.Vedlegg
 import java.net.URL
@@ -19,16 +18,6 @@ private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
     status = 413,
     detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB."
 )
-
-enum class ParameterType {
-    QUERY,
-    PATH,
-    HEADER,
-    ENTITY,
-    FORM
-}
-
-data class Violation(val parameterName: String, val parameterType: ParameterType, val reason: String, val invalidValue: Any? = null)
 
 internal fun Søknad.valider() {
     val violations: MutableSet<Violation> = this.barn.valider(relasjonTilBarnet = relasjonTilBarnet?.name)
@@ -65,7 +54,7 @@ internal fun Søknad.valider() {
         if (!path.matches(Regex("/vedlegg/.*"))) {
             violations.add(
                 Violation(
-                    parameterName = "legeerklaring[$index]",
+                    parameterName = "legeerklæring[$index]",
                     parameterType = ParameterType.ENTITY,
                     reason = "Ikke gyldig vedlegg URL.",
                     invalidValue = url
@@ -78,9 +67,9 @@ internal fun Søknad.valider() {
         if (url == null) {
             violations.add(
                 Violation(
-                    parameterName = "samvarsavtale[$index]",
+                    parameterName = "samværsavtale[$index]",
                     parameterType = ParameterType.ENTITY,
-                    reason = "Ikke gyldig URL.",
+                    reason = "Ikke gyldig vedlegg URL.",
                     invalidValue = null
                 )
             )
@@ -90,7 +79,7 @@ internal fun Søknad.valider() {
             if (!path.matches(Regex("/vedlegg/.*"))) {
                 violations.add(
                     Violation(
-                        parameterName = "samvarsavtale[$index]",
+                        parameterName = "samværsavtale[$index]",
                         parameterType = ParameterType.ENTITY,
                         reason = "Ikke gyldig vedlegg URL.",
                         invalidValue = url
@@ -176,7 +165,7 @@ internal fun Søknad.valider() {
 
 // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
-        throw SøknadValideringException("Søknad ikke validert.", violations)
+        throw Throwblem(ValidationProblemDetails(violations))
     }
 }
 
@@ -186,7 +175,7 @@ private fun Barn.valider(relasjonTilBarnet: String?): MutableSet<Violation> {
     if (fødselsnummer != null && !fødselsnummer.erGyldigFodselsnummer()) {
         violations.add(
             Violation(
-                parameterName = "barn.fodselsnummer",
+                parameterName = "barn.fødselsnummer",
                 parameterType = ParameterType.ENTITY,
                 reason = "Ikke gyldig fødselsnummer.",
                 invalidValue = fødselsnummer
@@ -277,13 +266,13 @@ private fun String.starterMedFodselsdato(): Boolean {
 
 private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
 
-internal fun List<Vedlegg>.validerVedlegg(vedleggUrler: List<URL>) {
+internal fun List<Vedlegg>.validerLegeerklæring(vedleggUrler: List<URL>) {
     if (size != vedleggUrler.size) {
         throw Throwblem(
             ValidationProblemDetails(
                 violations = setOf(
                     no.nav.helse.dusseldorf.ktor.core.Violation(
-                        parameterName = "vedlegg",
+                        parameterName = "legeerklæring",
                         parameterType = no.nav.helse.dusseldorf.ktor.core.ParameterType.ENTITY,
                         reason = "Mottok referanse til ${vedleggUrler.size} vedlegg, men fant kun $size vedlegg.",
                         invalidValue = vedleggUrler
@@ -295,7 +284,26 @@ internal fun List<Vedlegg>.validerVedlegg(vedleggUrler: List<URL>) {
     validerTotalStørresle()
 }
 
-private fun List<Vedlegg>.validerTotalStørresle() {
+internal fun List<Vedlegg>.validerSamværsavtale(vedleggUrler: List<URL>) {
+    if (size != vedleggUrler.size) {
+        throw Throwblem(
+            ValidationProblemDetails(
+                violations = setOf(
+                    no.nav.helse.dusseldorf.ktor.core.Violation(
+                        parameterName = "samværsavtale",
+                        parameterType = no.nav.helse.dusseldorf.ktor.core.ParameterType.ENTITY,
+                        reason = "Mottok referanse til ${vedleggUrler.size} vedlegg, men fant kun $size vedlegg.",
+                        invalidValue = vedleggUrler
+                    )
+                )
+            )
+        )
+    }
+    validerTotalStørresle()
+}
+
+
+fun List<Vedlegg>.validerTotalStørresle() {
     val totalSize = sumBy { it.content.size }
     if (totalSize > MAX_VEDLEGG_SIZE) {
         throw Throwblem(vedleggTooLargeProblemDetails)

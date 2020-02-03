@@ -48,8 +48,10 @@ class SøknadService(private val omsorgpengesøknadMottakGateway: Omsorgpengesø
         )
 
         logger.trace("Vedlegg hentet. Validerer vedleggene.")
-        legeerklæring.validerVedlegg(søknad.legeerklæring)
-        samværsavtale.validerVedlegg(søknad.samværsavtale)
+        legeerklæring.validerLegeerklæring(søknad.legeerklæring)
+        samværsavtale.validerSamværsavtale(søknad.samværsavtale)
+        val alleVedlegg = listOf(*legeerklæring.toTypedArray(), *samværsavtale.toTypedArray())
+        alleVedlegg.validerTotalStørresle()
 
         logger.trace("Legger søknad til prosessering")
 

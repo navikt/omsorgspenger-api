@@ -310,8 +310,8 @@ class ApplicationTest {
                 "invalid_parameters": [{
                     "type": "entity",
                     "name": "samværsavtale",
-                    "reason": "Mottok referanse til 2 vedlegg, men fant kun 1 vedlegg.",
-                    "invalid_value": ["$jpegUrl", "$finnesIkkeUrl"]
+                    "reason": "Mottok referanse til 1 vedlegg, men fant kun 0 vedlegg.",
+                    "invalid_value": ["$finnesIkkeUrl"]
                 }]
             }
             """.trimIndent(),
@@ -334,8 +334,7 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.BadRequest,
             requestEntity =
             //language=JSON
-            """
-                {
+            """{
                   "nyVersjon": true,
                   "språk": "nb",
                   "erYrkesaktiv": true,
@@ -358,7 +357,7 @@ class ApplicationTest {
                   ],
                   "medlemskap": {
                     "harBoddIUtlandetSiste12Mnd": null,
-                    "skalBoIUtlandetNeste12Mnd": true,
+                    "skalBoIUtlandetNeste12Mnd": null,
                     "utenlandsoppholdNeste12Mnd": [
                       {
                         "fraOgMed": "2020-01-31",
@@ -368,8 +367,8 @@ class ApplicationTest {
                       }
                     ]
                   },
-                  "harForståttRettigheterOgPlikter": true,
-                  "harBekreftetOpplysninger": true,
+                  "harForståttRettigheterOgPlikter": false,
+                  "harBekreftetOpplysninger": false,
                   "utenlandsopphold": [
                     {
                       "fraOgMed": "2020-01-31",
@@ -396,28 +395,18 @@ class ApplicationTest {
                         "type": "entity",
                         "name": "barn.navn",
                         "reason": "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
-                        "invalid_value": ""
+                        "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
                     }, {
                         "type": "entity",
                         "name": "legeerklæring[0]",
                         "reason": "Ikke gyldig vedlegg URL.",
-                        "invalid_value": "http://localhost:8080/ikke-vedlegg/123"
+                        "invalid_value": "http://localhost:8080/ikke-vedlegg/1"
                     }, {
                         "type": "entity",
                         "name": "samværsavtale[1]",
                         "reason": "Ikke gyldig vedlegg URL.",
                         "invalid_value": null
                     }, {
-                        "type": "entity",
-                        "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
-                        "reason": "Må settes til true eller false.",
-                        "invalid_value": null
-	                },{
-                        "type": "entity",
-                        "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
-                        "reason": "Må settes til true eller false.",
-                        "invalid_value": null
-	                },{
                         "type": "entity",
                         "name": "harBekreftetOpplysninger",
                         "reason": "Opplysningene må bekreftes for å sende inn søknad.",
