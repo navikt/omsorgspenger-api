@@ -11,11 +11,13 @@ import no.nav.helse.dusseldorf.ktor.core.fromResources
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-fun TestApplicationEngine.handleRequestUploadImage(cookie: Cookie,
-                                                   vedlegg: ByteArray = "vedlegg/iPhone_6.jpg".fromResources().readBytes(),
-                                                   fileName: String = "iPhone_6.jpg",
-                                                   contentType: String = "image/jpeg",
-                                                   expectedCode: HttpStatusCode = HttpStatusCode.Created) : String {
+fun TestApplicationEngine.handleRequestUploadImage(
+    cookie: Cookie,
+    vedlegg: ByteArray = "vedlegg/iPhone_6.jpg".fromResources().readBytes(),
+    fileName: String = "iPhone_6.jpg",
+    contentType: String = "image/jpeg",
+    expectedCode: HttpStatusCode = HttpStatusCode.Created
+): String {
     val boundary = "***vedlegg***"
 
     handleRequest(HttpMethod.Post, "/vedlegg") {
@@ -49,7 +51,7 @@ fun TestApplicationEngine.handleRequestUploadImage(cookie: Cookie,
     }.apply {
         assertEquals(expectedCode, response.status())
         return if (expectedCode == HttpStatusCode.Created) {
-            val locationHeader= response.headers[HttpHeaders.Location]
+            val locationHeader = response.headers[HttpHeaders.Location]
             assertNotNull(locationHeader)
             locationHeader
         } else ""
@@ -58,7 +60,7 @@ fun TestApplicationEngine.handleRequestUploadImage(cookie: Cookie,
 
 fun TestApplicationEngine.jpegUrl(
     cookie: Cookie
-) : String {
+): String {
     return handleRequestUploadImage(
         cookie = cookie,
         vedlegg = "vedlegg/nav-logo.png".fromResources().readBytes(),
@@ -69,7 +71,7 @@ fun TestApplicationEngine.jpegUrl(
 
 fun TestApplicationEngine.pdUrl(
     cookie: Cookie
-) : String {
+): String {
     return handleRequestUploadImage(
         cookie = cookie,
         vedlegg = "vedlegg/test.pdf".fromResources().readBytes(),

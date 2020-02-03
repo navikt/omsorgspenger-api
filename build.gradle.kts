@@ -31,7 +31,7 @@ dependencies {
     implementation("com.github.fppt:jedis-mock:0.1.16")
 
     // Test
-    testCompile ( "no.nav.helse:dusseldorf-ktor-test-support:$dusseldorfKtorVersion")
+    testCompile("no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
     testCompile ("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
