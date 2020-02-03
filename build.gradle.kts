@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val dusseldorfKtorVersion = "1.3.0.b7013ab"
 val ktorVersion = ext.get("ktorVersion").toString()
-
 val mainClass = "no.nav.helse.AppKt"
 
 plugins {
@@ -22,7 +21,7 @@ dependencies {
     compile ( "no.nav.helse:dusseldorf-ktor-metrics:$dusseldorfKtorVersion")
     compile ( "no.nav.helse:dusseldorf-ktor-health:$dusseldorfKtorVersion")
     compile ( "no.nav.helse:dusseldorf-ktor-auth:$dusseldorfKtorVersion")
-    compile ("io.ktor:ktor-locations:$ktorVersion")
+    compile ("io.ktor:ktor-locations:1.3.0")
 
     // Client
     compile ( "no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
@@ -32,7 +31,7 @@ dependencies {
 
     // Test
     testCompile("no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
-    testCompile ("io.ktor:ktor-server-test-host:$ktorVersion") {
+    testCompile ("io.ktor:ktor-server-test-host:1.3.0") {
         exclude(group = "org.eclipse.jetty")
     }
 
