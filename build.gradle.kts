@@ -11,7 +11,8 @@ plugins {
 }
 
 buildscript {
-    apply("https://raw.githubusercontent.com/navikt/dusseldorf-ktor/b695602315f8f05305773db692fd1af7cfeae620/gradle/dusseldorf-ktor.gradle.kts")
+    // Henter ut diverse dependency versjoner, i.e. ktorVersion.
+    apply("https://raw.githubusercontent.com/navikt/dusseldorf-ktor/b7013abce578447fb79186175b728e26e1537c27/gradle/dusseldorf-ktor.gradle.kts")
 }
 
 dependencies {
@@ -21,7 +22,7 @@ dependencies {
     compile ( "no.nav.helse:dusseldorf-ktor-metrics:$dusseldorfKtorVersion")
     compile ( "no.nav.helse:dusseldorf-ktor-health:$dusseldorfKtorVersion")
     compile ( "no.nav.helse:dusseldorf-ktor-auth:$dusseldorfKtorVersion")
-    compile ("io.ktor:ktor-locations:1.3.0")
+    compile("io.ktor:ktor-locations:$ktorVersion")
 
     // Client
     compile ( "no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
@@ -31,7 +32,7 @@ dependencies {
 
     // Test
     testCompile("no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
-    testCompile ("io.ktor:ktor-server-test-host:1.3.0") {
+    testCompile("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
 
