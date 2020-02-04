@@ -45,7 +45,7 @@ spec:
   webproxy: true
   env:
     - name: REDIS_HOST
-      value: omsorgspengesoknad-api-redis.default.svc.nais.local
+      value: omsorgspenger-api-redis.default.svc.nais.local
     - name: CORS_ADDRESSES
       value: https://www.nav.no
     - name: ISSUER

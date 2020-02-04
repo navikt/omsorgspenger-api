@@ -1,7 +1,7 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: omsorgspengesoknad-api
+  name: omsorgspenger-api
   namespace: default
   labels:
     team: {{team}}
@@ -45,7 +45,7 @@ spec:
   webproxy: true
   env:
     - name: REDIS_HOST
-      value: omsorgspengesoknad-api-redis.default.svc.nais.local
+      value: omsorgspenger-api-redis.default.svc.nais.local
     - name: CORS_ADDRESSES
       value: https://www-q0.nav.no
     - name: ISSUER
