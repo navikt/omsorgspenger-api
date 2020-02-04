@@ -114,14 +114,16 @@ class ApplicationTest {
             {
                 "barn": [{
                     "fødselsdato": "2000-08-27",
-                    "fødselsnummer": null,
-                    "navn": "BARN EN BARNESEN",
+                    "fornavn": "BARN",
+                    "mellomnavn": "EN",
+                    "etternavn": "BARNESEN",
                     "aktørId": "1000000000001"
                 }, 
                 {
                     "fødselsdato": "2001-04-10",
-                    "fødselsnummer": null,
-                    "navn": "BARN TO BARNESEN",
+                    "fornavn": "BARN",
+                    "mellomnavn": "TO",
+                    "etternavn": "BARNESEN",
                     "aktørId": "1000000000002"
                 }]
             }

@@ -1,7 +1,6 @@
 package no.nav.omsorgspenger.soknad
 
 import no.nav.helse.dusseldorf.ktor.core.*
-import no.nav.omsorgspenger.barn.Barn
 import no.nav.omsorgspenger.vedlegg.Vedlegg
 import java.net.URL
 import java.time.format.DateTimeFormatter
@@ -169,7 +168,7 @@ internal fun Søknad.valider() {
     }
 }
 
-private fun Barn.valider(relasjonTilBarnet: String?): MutableSet<Violation> {
+private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
     if (fødselsnummer != null && !fødselsnummer.erGyldigFodselsnummer()) {

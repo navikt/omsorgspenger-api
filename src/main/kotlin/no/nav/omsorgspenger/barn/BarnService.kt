@@ -27,12 +27,9 @@ class BarnService(
 
     private fun BarnGateway.BarnOppslagDTO.tilBarn() = Barn(
         fødselsdato = fødselsdato,
-        navn = tilFullNavn(fornavn, mellomnavn, etternavn),
+        fornavn = fornavn,
+        mellomnavn = mellomnavn,
+        etternavn = etternavn,
         aktørId = aktør_id
     )
-
-    private fun tilFullNavn(fornavn: String, mellomnavn: String?, etternavn: String) = when {
-        mellomnavn.isNullOrBlank() -> "$fornavn $etternavn"
-        else -> "$fornavn $mellomnavn $etternavn"
-    }
 }

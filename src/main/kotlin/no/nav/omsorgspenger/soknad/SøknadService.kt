@@ -1,6 +1,5 @@
 package no.nav.omsorgspenger.soknad
 
-import no.nav.omsorgspenger.barn.Barn
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.auth.IdToken
 import no.nav.omsorgspenger.soker.Søker
@@ -13,9 +12,10 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 
-class SøknadService(private val omsorgpengesøknadMottakGateway: OmsorgpengesøknadMottakGateway,
-                    private val søkerService: SøkerService,
-                    private val vedleggService: VedleggService
+class SøknadService(
+    private val omsorgpengesøknadMottakGateway: OmsorgpengesøknadMottakGateway,
+    private val søkerService: SøkerService,
+    private val vedleggService: VedleggService
 ) {
 
     private companion object {
@@ -59,10 +59,11 @@ class SøknadService(private val omsorgpengesøknadMottakGateway: Omsorgpengesø
             språk = søknad.språk,
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
             søker = søker,
-            barn = Barn(
+            barn = BarnDetaljer(
                 fødselsdato = søknad.barn.fødselsdato,
                 aktørId = søknad.barn.aktørId,
-                navn = søknad.barn.navn
+                navn = søknad.barn.navn,
+                fødselsnummer = søknad.barn.fødselsnummer
             ),
             legeerklæring = legeerklæring,
             samværsavtale = samværsavtale,

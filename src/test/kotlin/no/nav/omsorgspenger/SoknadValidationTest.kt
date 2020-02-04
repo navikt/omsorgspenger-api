@@ -1,10 +1,6 @@
 package no.nav.omsorgspenger
 
-import no.nav.omsorgspenger.barn.Barn
-import no.nav.omsorgspenger.soknad.Medlemskap
-import no.nav.omsorgspenger.soknad.SøkerBarnRelasjon
-import no.nav.omsorgspenger.soknad.Søknad
-import no.nav.omsorgspenger.soknad.Utenlandsopphold
+import no.nav.omsorgspenger.soknad.*
 import org.junit.Test
 import java.net.URL
 import java.time.LocalDate
@@ -24,7 +20,7 @@ internal class SøknadValideringsTest {
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
             relasjonTilBarnet = SøkerBarnRelasjon.FAR,
-            barn = Barn(
+            barn = BarnDetaljer(
                 navn = "Ole Dole Doffen",
                 fødselsdato = LocalDate.now().minusDays(895),
                 aktørId = "123456"
@@ -45,11 +41,12 @@ internal class SøknadValideringsTest {
                 Utenlandsopphold(
                     LocalDate.of(2020, 1, 2),
                     LocalDate.of(2020, 1, 1),
-                    "NO", "Norge")
+                    "NO", "Norge"
+                )
 
             )
         )
-       // val exception = Assertions.assertThrows(SøknadValideringException::class.java) { søknad.valider() }
+        // val exception = Assertions.assertThrows(SøknadValideringException::class.java) { søknad.valider() }
 
 //        val forventetViolation = Violation(
 //            parameterType = ParameterType.ENTITY,
@@ -73,7 +70,7 @@ internal class SøknadValideringsTest {
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
             relasjonTilBarnet = SøkerBarnRelasjon.FAR,
-            barn = Barn(
+            barn = BarnDetaljer(
                 navn = "Ole Dole Doffen",
                 fødselsdato = LocalDate.now().minusDays(895),
                 aktørId = "123456"
@@ -90,7 +87,8 @@ internal class SøknadValideringsTest {
                 Utenlandsopphold(
                     LocalDate.of(2020, 1, 1),
                     LocalDate.of(2020, 1, 2),
-                    "", "Norge")
+                    "", "Norge"
+                )
 
             )
         )
@@ -118,7 +116,7 @@ internal class SøknadValideringsTest {
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
             relasjonTilBarnet = SøkerBarnRelasjon.FAR,
-            barn = Barn(
+            barn = BarnDetaljer(
                 navn = "Ole Dole Doffen",
                 fødselsdato = LocalDate.now().minusDays(895),
                 aktørId = "123456"
@@ -135,19 +133,10 @@ internal class SøknadValideringsTest {
                 Utenlandsopphold(
                     LocalDate.of(2020, 1, 1),
                     LocalDate.of(2020, 1, 2),
-                    "NO", "")
+                    "NO", ""
+                )
 
             )
         )
-//        val exception = Assertions.assertThrows(SøknadValideringException::class.java) { søknad.valider() }
-//
-//        val forventetViolation = Violation(
-//            parameterType = ParameterType.ENTITY,
-//            parameterName = "Utenlandsopphold[0]",
-//            reason = "Landnavn er ikke satt",
-//            invalidValue = "landnavn"
-//        )
-//
-//        assertThat(exception.violations).contains(forventetViolation)
     }
 }

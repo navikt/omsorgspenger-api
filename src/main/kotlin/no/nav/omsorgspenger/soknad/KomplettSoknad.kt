@@ -1,6 +1,5 @@
 package no.nav.omsorgspenger.soknad
 
-import no.nav.omsorgspenger.barn.Barn
 import no.nav.omsorgspenger.soker.Søker
 import no.nav.omsorgspenger.vedlegg.Vedlegg
 import java.time.ZonedDateTime
@@ -11,7 +10,7 @@ data class KomplettSoknad(
     val mottatt : ZonedDateTime,
     val erYrkesaktiv: Boolean,
     val kroniskEllerFunksjonshemming: Boolean,
-    val barn: Barn,
+    val barn: BarnDetaljer,
     val søker: Søker,
     val sammeAddresse: Boolean?,
     val delerOmsorg: Boolean?,

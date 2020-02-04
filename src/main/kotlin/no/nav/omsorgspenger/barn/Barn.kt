@@ -8,7 +8,8 @@ data class BarnResponse(
 
 data class Barn (
     val fødselsdato: LocalDate,
-    val fødselsnummer: String? = null,
-    val navn: String?,
+    val fornavn: String?,
+    val mellomnavn: String?,
+    val etternavn: String?,
     val aktørId: String?
 )
