@@ -1,6 +1,6 @@
 # omsorgspengesoknad-api
 
-![](https://github.com/navikt/omsorgspengesoknad-api/workflows/CI%20/%20CD/badge.svg)
+![CI / CD](https://github.com/navikt/omsorgspenger-api/workflows/CI%20/%20CD/badge.svg)
 
 # Innholdsoversikt
 * [1. Kontekst](#1-kontekst)
