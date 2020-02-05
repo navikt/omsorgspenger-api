@@ -29,7 +29,7 @@ class Medlemskap(
 )
 
 data class BarnDetaljer(
-    val fødselsnummer: String? = null,
+    val norskIdentifikator: String? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fødselsdato: LocalDate? = null,
     val aktørId: String? = null,

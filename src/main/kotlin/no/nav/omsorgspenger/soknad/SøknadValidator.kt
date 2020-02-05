@@ -137,18 +137,18 @@ internal fun Søknad.valider() {
 private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
-    if (fødselsnummer != null && !fødselsnummer.erGyldigFodselsnummer()) {
+    if (norskIdentifikator != null && !norskIdentifikator.erGyldigNorskIdentifikator()) {
         violations.add(
             Violation(
-                parameterName = "barn.fødselsnummer",
+                parameterName = "barn.norskIdentifikator",
                 parameterType = ParameterType.ENTITY,
-                reason = "Ikke gyldig fødselsnummer.",
-                invalidValue = fødselsnummer
+                reason = "Ikke gyldig norskIdentifikator.",
+                invalidValue = norskIdentifikator
             )
         )
     }
 
-    val kreverNavnPaaBarnet = fødselsnummer != null
+    val kreverNavnPaaBarnet = norskIdentifikator != null
     if ((kreverNavnPaaBarnet || navn != null) && (navn == null || navn.erBlankEllerLengreEnn(100))) {
         violations.add(
             Violation(
@@ -216,13 +216,19 @@ private fun validerUtenlandopphold(
 
 fun String.erKunSiffer() = matches(KUN_SIFFER)
 
-private fun String.starterMedFodselsdato(): Boolean {
+fun String.starterMedFodselsdato(): Boolean {
     // Sjekker ikke hvilket århundre vi skal tolket yy som, kun at det er en gyldig dato.
     // F.eks blir 290990 parset til 2090-09-29, selv om 1990-09-29 var ønskelig.
     // Kunne sett på individsifre (Tre første av personnummer) for å tolke århundre,
     // men virker unødvendig komplekst og sårbart for ev. endringer i fødselsnummeret.
     return try {
-        fnrDateFormat.parse(substring(0, 6))
+        var substring = substring(0, 6)
+        val førsteSiffer = (substring[0]).toString().toInt()
+        if (førsteSiffer in 4..7) {
+            substring = (førsteSiffer - 4).toString() + substring(1, 6)
+        }
+        fnrDateFormat.parse(substring)
+
         true
     } catch (cause: Throwable) {
         false
@@ -275,7 +281,7 @@ fun List<Vedlegg>.validerTotalStørresle() {
     }
 }
 
-fun String.erGyldigFodselsnummer(): Boolean {
+fun String.erGyldigNorskIdentifikator(): Boolean {
     if (length != 11 || !erKunSiffer() || !starterMedFodselsdato()) return false
 
     val forventetKontrollsifferEn = get(9)

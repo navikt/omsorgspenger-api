@@ -63,7 +63,7 @@ class SøknadService(
                 fødselsdato = søknad.barn.fødselsdato,
                 aktørId = søknad.barn.aktørId,
                 navn = søknad.barn.navn,
-                fødselsnummer = søknad.barn.fødselsnummer
+                norskIdentifikator = søknad.barn.norskIdentifikator
             ),
             legeerklæring = legeerklæring,
             samværsavtale = samværsavtale,

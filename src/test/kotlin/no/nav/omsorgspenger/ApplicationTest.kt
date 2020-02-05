@@ -343,7 +343,7 @@ class ApplicationTest {
                   "barn": {
                     "navn": "$forlangtNavn",
                     "fødselsdato": "1990-09-26",
-                    "fødselsnummer": "29099012345",
+                    "norskIdentifikator": "29099012345",
                     "aktørId": "123456"
                   },
                   "sammeAddresse": true,
@@ -389,8 +389,8 @@ class ApplicationTest {
                     "instance": "about:blank",
                     "invalid_parameters": [{
                         "type": "entity",
-                        "name": "barn.fødselsnummer",
-                        "reason": "Ikke gyldig fødselsnummer.",
+                        "name": "barn.norskIdentifikator",
+                        "reason": "Ikke gyldig norskIdentifikator.",
                         "invalid_value": "29099012345"
                     }, {
                         "type": "entity",

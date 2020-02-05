@@ -1,12 +1,10 @@
 package no.nav.omsorgspenger
 
-import no.nav.omsorgspenger.soknad.BarnDetaljer
-import no.nav.omsorgspenger.soknad.Medlemskap
-import no.nav.omsorgspenger.soknad.SøkerBarnRelasjon
-import no.nav.omsorgspenger.soknad.Søknad
+import no.nav.omsorgspenger.soknad.*
 import org.junit.Test
 import java.net.URL
 import java.time.LocalDate
+import kotlin.test.assertTrue
 
 
 internal class SøknadValideringsTest {
@@ -89,6 +87,12 @@ internal class SøknadValideringsTest {
 //        )
 //
 //        assertThat(exception.violations).contains(forventetViolation)
+    }
+
+    @Test
+    fun `Tester gyldig fødselsdato dersom dnunmer`() {
+        val starterMedFodselsdato = "630293".starterMedFodselsdato()
+        assertTrue(starterMedFodselsdato)
     }
 
     @Test
