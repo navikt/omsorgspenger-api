@@ -1,6 +1,7 @@
 package no.nav.omsorgspenger.soknad
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonValue
 import java.net.URL
 import java.time.LocalDate
 
@@ -46,7 +47,7 @@ data class Utenlandsopphold(
     val landnavn: String
 )
 
-enum class SøkerBarnRelasjon(relasjon: String) {
+enum class SøkerBarnRelasjon(@JsonValue val relasjon: String) {
     MOR("mor"),
     FAR("far"),
     ADOPTIVFORELDER("adoptivforelder"),

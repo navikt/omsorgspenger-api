@@ -222,7 +222,6 @@ class ApplicationTest {
                 legeerklæringUrl = jpegUrl,
                 samværsavtaleUrl = pdfUrl
             )
-
         )
     }
 
@@ -349,7 +348,7 @@ class ApplicationTest {
                   },
                   "sammeAddresse": true,
                   "delerOmsorg": true,
-                  "relasjonTilBarnet": "MOR",
+                  "relasjonTilBarnet": "mor",
                   "legeerklæring": [
                     "http://localhost:8080/ikke-vedlegg/1"
                   ],

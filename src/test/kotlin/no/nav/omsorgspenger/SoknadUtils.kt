@@ -8,7 +8,8 @@ class SoknadUtils {
         fun bodyMedFodselsnummerPaaBarn(
             fodselsnummer: String,
             legeerklæringUrl: String,
-            samværsavtaleUrl: String
+            samværsavtaleUrl: String,
+            relasjonTilBarnet: String? = "mor"
         ): String {
             //language=JSON
             return """
@@ -25,7 +26,7 @@ class SoknadUtils {
                   },
                   "sammeAddresse": true,
                   "delerOmsorg": true,
-                  "relasjonTilBarnet": "MOR",
+                  "relasjonTilBarnet": "$relasjonTilBarnet",
                   "legeerklæring": [
                     "$legeerklæringUrl"
                   ],
@@ -84,7 +85,7 @@ class SoknadUtils {
                   },
                   "sammeAddresse": true,
                   "delerOmsorg": true,
-                  "relasjonTilBarnet": "MOR",
+                  "relasjonTilBarnet": "mor",
                   "legeerklæring": [
                     "$legeerklæringUrl"
                   ],
@@ -142,7 +143,7 @@ class SoknadUtils {
                   },
                   "sammeAddresse": true,
                   "delerOmsorg": true,
-                  "relasjonTilBarnet": "MOR",
+                  "relasjonTilBarnet": "mor",
                   "legeerklæring": [
                     "$legeerklæringUrl"
                   ],
