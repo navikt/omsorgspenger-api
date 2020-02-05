@@ -41,15 +41,18 @@ class SøknadService(
         )
 
         logger.trace("Validert Søker. Henter ${søknad.legeerklæring.size} legeerklæring.")
-        val samværsavtale = vedleggService.hentVedlegg(
-            idToken = idToken,
-            vedleggUrls = søknad.samværsavtale!!,
-            callId = callId
-        )
+        val samværsavtale = when {
+            !søknad.samværsavtale.isNullOrEmpty() -> vedleggService.hentVedlegg(
+                idToken = idToken,
+                vedleggUrls = søknad.samværsavtale,
+                callId = callId
+            )
+            else -> listOf()
+        }
 
         logger.trace("Vedlegg hentet. Validerer vedleggene.")
         legeerklæring.validerLegeerklæring(søknad.legeerklæring)
-        samværsavtale.validerSamværsavtale(søknad.samværsavtale)
+        søknad.samværsavtale?.let { samværsavtale.validerSamværsavtale(it) }
         val alleVedlegg = listOf(*legeerklæring.toTypedArray(), *samværsavtale.toTypedArray())
         alleVedlegg.validerTotalStørresle()
 
@@ -85,11 +88,13 @@ class SøknadService(
 
         logger.trace("Søknad lagt til prosessering. Sletter vedlegg.")
 
-        vedleggService.slettVedleg(
-            vedleggUrls = søknad.samværsavtale,
-            callId = callId,
-            idToken = idToken
-        )
+        søknad.samværsavtale?.let {
+            vedleggService.slettVedleg(
+                vedleggUrls = it,
+                callId = callId,
+                idToken = idToken
+            )
+        }
 
         vedleggService.slettVedleg(
             vedleggUrls = søknad.legeerklæring,
