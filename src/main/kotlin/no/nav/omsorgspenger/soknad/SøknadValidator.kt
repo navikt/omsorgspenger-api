@@ -89,40 +89,6 @@ internal fun Søknad.valider() {
         }
     }
 
-    utenlandsopphold.mapIndexed { index, utenlandsopphold ->
-        val fraDataErForTilDato = utenlandsopphold.fraOgMed.isBefore(utenlandsopphold.tilOgMed)
-        if (!fraDataErForTilDato) {
-            violations.add(
-                Violation(
-                    parameterName = "Utenlandsopphold[$index]",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Til dato kan ikke være før fra dato",
-                    invalidValue = "fraOgMed eller tilOgMed"
-                )
-            )
-        }
-        if (utenlandsopphold.landkode.isEmpty()) {
-            violations.add(
-                Violation(
-                    parameterName = "Utenlandsopphold[$index]",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Landkode er ikke satt",
-                    invalidValue = "landkode"
-                )
-            )
-        }
-        if (utenlandsopphold.landnavn.isEmpty()) {
-            violations.add(
-                Violation(
-                    parameterName = "Utenlandsopphold[$index]",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Landnavn er ikke satt",
-                    invalidValue = "landnavn"
-                )
-            )
-        }
-    }
-
     // Booleans (For å forsikre at de er satt og ikke blir default false)
     fun booleanIkkeSatt(parameterName: String) {
         violations.add(

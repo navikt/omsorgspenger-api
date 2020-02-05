@@ -1,6 +1,9 @@
 package no.nav.omsorgspenger
 
-import no.nav.omsorgspenger.soknad.*
+import no.nav.omsorgspenger.soknad.BarnDetaljer
+import no.nav.omsorgspenger.soknad.Medlemskap
+import no.nav.omsorgspenger.soknad.SøkerBarnRelasjon
+import no.nav.omsorgspenger.soknad.Søknad
 import org.junit.Test
 import java.net.URL
 import java.time.LocalDate
@@ -36,14 +39,6 @@ internal class SøknadValideringsTest {
             legeerklæring = listOf(
                 URL("http://localhost:8080/vedlegg/3"),
                 URL("http://localhost:8080/vedlegg/4")
-            ),
-            utenlandsopphold = listOf(
-                Utenlandsopphold(
-                    LocalDate.of(2020, 1, 2),
-                    LocalDate.of(2020, 1, 1),
-                    "NO", "Norge"
-                )
-
             )
         )
         // val exception = Assertions.assertThrows(SøknadValideringException::class.java) { søknad.valider() }
@@ -82,14 +77,6 @@ internal class SøknadValideringsTest {
             samværsavtale = listOf(
             ),
             legeerklæring = listOf(
-            ),
-            utenlandsopphold = listOf(
-                Utenlandsopphold(
-                    LocalDate.of(2020, 1, 1),
-                    LocalDate.of(2020, 1, 2),
-                    "", "Norge"
-                )
-
             )
         )
 //        val exception = Assertions.assertThrows(SøknadValideringException::class.java) { søknad.valider() }
@@ -128,14 +115,6 @@ internal class SøknadValideringsTest {
             samværsavtale = listOf(
             ),
             legeerklæring = listOf(
-            ),
-            utenlandsopphold = listOf(
-                Utenlandsopphold(
-                    LocalDate.of(2020, 1, 1),
-                    LocalDate.of(2020, 1, 2),
-                    "NO", ""
-                )
-
             )
         )
     }

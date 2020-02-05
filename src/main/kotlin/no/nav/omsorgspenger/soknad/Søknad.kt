@@ -17,8 +17,7 @@ data class Søknad(
     val samværsavtale: List<URL>?,
     val medlemskap: Medlemskap,
     val harForståttRettigheterOgPlikter: Boolean,
-    val harBekreftetOpplysninger: Boolean,
-    val utenlandsopphold: List<Utenlandsopphold>
+    val harBekreftetOpplysninger: Boolean
 )
 
 class Medlemskap(
