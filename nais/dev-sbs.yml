@@ -37,7 +37,7 @@ spec:
     path: /metrics
   vault:
     enabled: true
-    paths:  # Optional. If specified, will override default values with custom Vault configuration.
+    paths:
       - mountPath: /var/run/secrets/nais.io/vault  # Filesystem path inside the pod where secrets will appear.
         kvPath: /kv/preprod/sbs/omsorgspenger-api/default  # Vault KV path to fetch secrets from.
       - mountPath: /var/run/secrets/nais.io/azuread
