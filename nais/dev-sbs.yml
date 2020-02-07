@@ -42,6 +42,8 @@ spec:
         kvPath: /kv/preprod/sbs/omsorgspenger-api/default  # Vault KV path to fetch secrets from.
       - mountPath: /var/run/secrets/nais.io/azuread
         kvPath: /azuread/data/dev/creds/omsorgspenger-api
+      - mountPath: /var/run/secrets/nais.io/apigw
+        kvPath: /apikey/apigw/dev/helse-reverse-proxy/omsorgspenger-api_q1
   webproxy: true
   env:
     - name: REDIS_HOST
