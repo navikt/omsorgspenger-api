@@ -1,6 +1,6 @@
-# omsorgspenger-api
+# omsorgspengesoknad-api
 
-![](https://github.com/navikt/omsorgspenger-api/workflows/CI%20/%20CD/badge.svg)
+![CI / CD](https://github.com/navikt/omsorgspenger-api/workflows/CI%20/%20CD/badge.svg)
 
 # Innholdsoversikt
 * [1. Kontekst](#1-kontekst)
@@ -37,7 +37,7 @@ Denne tjenesten understøtter søknadsprosessen, samt eksponerer endepunkt for i
 
 # 9. Distribusjon av tjenesten (deployment)
 Distribusjon av tjenesten er gjort med bruk av Github Actions.
-[Omsorgspenger-API CI / CD](https://github.com/navikt/omsorgspenger-api/actions)
+[Omsorgspengesoknad-API CI / CD](https://github.com/navikt/omsorgspengesoknad-api/actions)
 
 Push til dev-* brancher vil teste, bygge og deploye til dev/staging miljø.
 Push/merge til master branche vil teste, bygge og deploye til produksjonsmiljø.
