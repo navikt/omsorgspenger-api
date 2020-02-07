@@ -60,8 +60,6 @@ spec:
       value: https://api-gw-q1.oera.no/helse-reverse-proxy/omsorgspenger-mottak
     - name: K9_DOKUMENT_BASE_URL
       value: https://k9-dokument.nais.oera-q.local
-    - name: AZURE_CLIENT_ID
-      value: 14f509d4-5f43-4e42-b551-d61db10972f2
     - name: AZURE_V2_DISCOVERY_ENDPOINT
       value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration
     - name: SENDE_SOKNAD_TIL_PROSESSERING_SCOPES
