@@ -43,7 +43,7 @@ spec:
       - mountPath: /var/run/secrets/nais.io/azuread
         kvPath: /azuread/data/prod/creds/omsorgspenger-api
       - mountPath: /var/run/secrets/nais.io/apigw
-        kvPath: /apikey/apigw/dev/helse-reverse-proxy/omsorgspenger-api_q1
+        kvPath: /apikey/apigw/prod/helse-reverse-proxy/omsorgspenger-api
   webproxy: true
   env:
     - name: REDIS_HOST
