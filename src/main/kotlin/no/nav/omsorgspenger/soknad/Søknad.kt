@@ -15,7 +15,7 @@ data class Søknad(
     val delerOmsorg: Boolean?,
     val relasjonTilBarnet: SøkerBarnRelasjon? = null,
     val legeerklæring: List<URL>,
-    val samværsavtale: List<URL>?,
+    val samværsavtale: List<URL>? = null,
     val medlemskap: Medlemskap,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean

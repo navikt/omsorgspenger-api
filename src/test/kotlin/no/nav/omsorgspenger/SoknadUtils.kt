@@ -70,7 +70,8 @@ class SoknadUtils {
         fun bodyMedAktoerIdPaaBarn(
             aktoerId: String,
             legeerklæringUrl: String,
-            samværsavtaleUrl: String
+            samværsavtaleUrl: String,
+            barnetsNorskIdentifikator: String?
         ): String {
             //language=JSON
             return """
