@@ -3,6 +3,7 @@ package no.nav.omsorgspenger.soknad
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.omsorgspenger.vedlegg.Vedlegg
 import java.net.URL
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 private val KUN_SIFFER = Regex("\\d+")
@@ -20,6 +21,29 @@ private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
 
 internal fun Søknad.valider() {
     val violations: MutableSet<Violation> = this.barn.valider(relasjonTilBarnet = relasjonTilBarnet?.name)
+
+    if (arbeidssituasjon.isEmpty()) {
+        violations.add(
+            Violation(
+                parameterName = "arbeidssituasjon",
+                parameterType = ParameterType.ENTITY,
+                reason = "List over arbeidssituasjon kan ikke være tomt. Må inneholde minst 1 verdi.",
+                invalidValue = listOf<String>()
+            )
+        )
+    }
+    arbeidssituasjon.mapIndexed { index, situasjon ->
+        if (situasjon.isNullOrBlank()) {
+            violations.add(
+                Violation(
+                    parameterName = "arbeidssituasjon[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "List over arbeidssituasjon kan ikke inneholde null eller tomme verdier",
+                    invalidValue = situasjon
+                )
+            )
+        }
+    }
 
     // legeerklaring
     if (legeerklæring.isEmpty()) {
@@ -89,22 +113,8 @@ internal fun Søknad.valider() {
         }
     }
 
-    // Booleans (For å forsikre at de er satt og ikke blir default false)
-    fun booleanIkkeSatt(parameterName: String) {
-        violations.add(
-            Violation(
-                parameterName = parameterName,
-                parameterType = ParameterType.ENTITY,
-                reason = "Må settes til true eller false.",
-                invalidValue = null
+    violations.addAll(medlemskap.valider())
 
-            )
-        )
-    }
-    if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.harBoddIUtlandetSiste12Mnd")
-    violations.addAll(validerUtenlandopphold(medlemskap.utenlandsoppholdSiste12Mnd))
-    if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skalBoIUtlandetNeste12Mnd")
-    violations.addAll(validerUtenlandopphold(medlemskap.utenlandsoppholdNeste12Mnd))
     if (!harBekreftetOpplysninger) {
         violations.add(
             Violation(
@@ -116,6 +126,7 @@ internal fun Søknad.valider() {
             )
         )
     }
+
     if (!harForståttRettigheterOgPlikter) {
         violations.add(
             Violation(
@@ -123,7 +134,6 @@ internal fun Søknad.valider() {
                 parameterType = ParameterType.ENTITY,
                 reason = "Må ha forstått rettigheter og plikter for å sende inn søknad.",
                 invalidValue = false
-
             )
         )
     }
@@ -132,6 +142,63 @@ internal fun Søknad.valider() {
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
     }
+}
+
+private fun Medlemskap.valider(): MutableSet<Violation> {
+    val violations = mutableSetOf<Violation>()
+
+    // Booleans (For å forsikre at de er satt og ikke blir default false)
+    fun booleanIkkeSatt(parameterName: String) {
+        violations.add(
+            Violation(
+                parameterName = parameterName,
+                parameterType = ParameterType.ENTITY,
+                reason = "Må settes til true eller false.",
+                invalidValue = null
+            )
+        )
+    }
+
+    when (harBoddIUtlandetSiste12Mnd) {
+        null -> {
+            booleanIkkeSatt("medlemskap.harBoddIUtlandetSiste12Mnd")
+        }
+        true -> {
+            violations.addAll(
+                validerUtenlandopphold(
+                    "medlemskap.harBoddIUtlandetSiste12Mnd",
+                    "medlemskap.utenlandsoppholdSiste12Mnd",
+                    utenlandsoppholdSiste12Mnd
+                )
+            )
+        }
+        else -> {
+        }
+    }
+
+    when (skalBoIUtlandetNeste12Mnd) {
+        null -> {
+            booleanIkkeSatt("medlemskap.skalBoIUtlandetNeste12Mnd")
+        }
+        true -> {
+            violations.addAll(
+                validerUtenlandopphold(
+                    "medlemskap.skalBoIUtlandetNeste12Mnd",
+                    "medlemskap.utenlandsoppholdNeste12Mnd",
+                    utenlandsoppholdNeste12Mnd
+                )
+            )
+        }
+        else -> {
+        }
+    }
+
+    return violations
+}
+
+private fun BarnDetaljer.gyldigAntallIder(): Boolean {
+    val antallIderSatt = listOfNotNull(aktørId, norskIdentifikator).size
+    return antallIderSatt == 0 || antallIderSatt == 1
 }
 
 private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violation> {
@@ -144,6 +211,61 @@ private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violati
                 parameterType = ParameterType.ENTITY,
                 reason = "Ikke gyldig norskIdentifikator.",
                 invalidValue = norskIdentifikator
+            )
+        )
+    }
+
+    if (!gyldigAntallIder()) {
+        violations.add(
+            Violation(
+                parameterName = "barn",
+                parameterType = ParameterType.ENTITY,
+                reason = "Kan kun sette 'aktørId' eller 'norskIdentifikator' på barnet.",
+                invalidValue = null
+            )
+        )
+    }
+
+    if (norskIdentifikator.isNullOrBlank() && fødselsdato == null) {
+        violations.add(
+            Violation(
+                parameterName = "barn",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke tillatt med barn som mangler både fødselsdato og norskIdentifikator.",
+                invalidValue = norskIdentifikator
+            )
+        )
+    }
+
+    if (!norskIdentifikator.isNullOrBlank() && fødselsdato != null) {
+        violations.add(
+            Violation(
+                parameterName = "barn",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke tillatt med barn som har både fødselsdato og norskIdentifikator.",
+                invalidValue = norskIdentifikator
+            )
+        )
+    }
+
+    if (norskIdentifikator != null && !norskIdentifikator.erKunSiffer()) {
+        violations.add(
+            Violation(
+                parameterName = "barn.norskIdentifikator",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke gyldig fødselsnummer.",
+                invalidValue = norskIdentifikator
+            )
+        )
+    }
+
+    if (fødselsdato != null && (fødselsdato.isAfter(LocalDate.now()))) {
+        violations.add(
+            Violation(
+                parameterName = "barn.fodselsdato",
+                parameterType = ParameterType.ENTITY,
+                reason = "Fødselsdato kan ikke være in fremtiden",
+                invalidValue = fødselsdato
             )
         )
     }
@@ -175,10 +297,24 @@ private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violati
 }
 
 private fun validerUtenlandopphold(
-    list: List<Utenlandsopphold>
+    relatertFelt: String,
+    felt: String,
+    utenlandsOpphold: List<Utenlandsopphold>
 ): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
-    list.mapIndexed { index, utenlandsopphold ->
+
+    if (utenlandsOpphold.isNullOrEmpty()) {
+        violations.add(
+            Violation(
+                parameterName = "$felt",
+                parameterType = ParameterType.ENTITY,
+                reason = "$relatertFelt er satt til true, men $relatertFelt var tomt eller null.",
+                invalidValue = utenlandsOpphold
+            )
+        )
+    }
+
+    utenlandsOpphold.mapIndexed { index, utenlandsopphold ->
         val fraDataErEtterTilDato = utenlandsopphold.fraOgMed.isAfter(utenlandsopphold.tilOgMed)
         if (fraDataErEtterTilDato) {
             violations.add(

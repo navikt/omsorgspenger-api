@@ -74,8 +74,7 @@ class SøknadService(
             relasjonTilBarnet = søknad.relasjonTilBarnet,
             harBekreftetOpplysninger = søknad.harBekreftetOpplysninger,
             harForståttRettigheterOgPlikter = søknad.harForståttRettigheterOgPlikter,
-            delerOmsorg = søknad.delerOmsorg,
-            erYrkesaktiv = søknad.erYrkesaktiv,
+            arbeidssituasjon = søknad.arbeidssituasjon,
             kroniskEllerFunksjonshemming = søknad.kroniskEllerFunksjonshemming,
             nyVersjon = søknad.nyVersjon,
             sammeAddresse = søknad.sammeAddresse

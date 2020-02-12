@@ -7,17 +7,16 @@ import java.time.ZonedDateTime
 data class KomplettSoknad(
     val nyVersjon: Boolean,
     val språk: String,
-    val mottatt : ZonedDateTime,
-    val erYrkesaktiv: Boolean,
+    val mottatt: ZonedDateTime,
     val kroniskEllerFunksjonshemming: Boolean,
-    val barn: BarnDetaljer,
     val søker: Søker,
-    val sammeAddresse: Boolean?,
-    val delerOmsorg: Boolean?,
+    val arbeidssituasjon: List<String>,
+    val barn: BarnDetaljer,
     val relasjonTilBarnet: SøkerBarnRelasjon? = null,
+    val sammeAddresse: Boolean?,
+    val medlemskap: Medlemskap,
     val legeerklæring: List<Vedlegg>,
     val samværsavtale: List<Vedlegg>?,
-    val medlemskap: Medlemskap,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean
 )

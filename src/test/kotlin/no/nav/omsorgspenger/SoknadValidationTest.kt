@@ -1,5 +1,6 @@
 package no.nav.omsorgspenger
 
+import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.omsorgspenger.soknad.*
 import org.junit.Test
 import java.net.URL
@@ -9,14 +10,20 @@ import kotlin.test.assertTrue
 
 internal class SøknadValideringsTest {
 
-    @Test
+    companion object {
+        private val gyldigFodselsnummerA = "02119970078"
+        private val gyldigFodselsnummerB = "19066672169"
+        private val gyldigFodselsnummerC = "20037473937"
+        private val dNummerA = "55125314561"
+    }
+
+    @Test(expected = Throwblem::class)
     internal fun `Til dato kan ikke være før fra dato`() {
-        val søknad = Søknad(
+        Søknad(
             nyVersjon = false,
             språk = "nb",
-            erYrkesaktiv = true,
+            arbeidssituasjon = listOf("Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"),
             kroniskEllerFunksjonshemming = true,
-            delerOmsorg = false,
             sammeAddresse = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
@@ -28,7 +35,15 @@ internal class SøknadValideringsTest {
             ),
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
-                skalBoIUtlandetNeste12Mnd = false
+                skalBoIUtlandetNeste12Mnd = true,
+                utenlandsoppholdNeste12Mnd = listOf(
+                    Utenlandsopphold(
+                        fraOgMed = LocalDate.now(),
+                        tilOgMed = LocalDate.now().minusDays(1),
+                        landkode = "NO",
+                        landnavn = "Norge"
+                    )
+                )
             ),
             samværsavtale = listOf(
                 URL("http://localhost:8080/vedlegg/1"),
@@ -38,27 +53,16 @@ internal class SøknadValideringsTest {
                 URL("http://localhost:8080/vedlegg/3"),
                 URL("http://localhost:8080/vedlegg/4")
             )
-        )
-        // val exception = Assertions.assertThrows(SøknadValideringException::class.java) { søknad.valider() }
-
-//        val forventetViolation = Violation(
-//            parameterType = ParameterType.ENTITY,
-//            parameterName = "Utenlandsopphold[0]",
-//            reason = "Til dato kan ikke være før fra dato",
-//            invalidValue = "fraOgMed eller tilOgMed"
-//        )
-//
-//        assertThat(exception.violations).contains(forventetViolation)
+        ).valider()
     }
 
-    @Test
+    @Test(expected = Throwblem::class)
     internal fun `Mangler landkode`() {
         val søknad = Søknad(
             nyVersjon = false,
             språk = "nb",
-            erYrkesaktiv = true,
+            arbeidssituasjon = listOf("Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"),
             kroniskEllerFunksjonshemming = true,
-            delerOmsorg = false,
             sammeAddresse = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
@@ -70,23 +74,21 @@ internal class SøknadValideringsTest {
             ),
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
-                skalBoIUtlandetNeste12Mnd = false
+                skalBoIUtlandetNeste12Mnd = true,
+                utenlandsoppholdNeste12Mnd = listOf(
+                    Utenlandsopphold(
+                        fraOgMed = LocalDate.now().minusDays(5),
+                        tilOgMed = LocalDate.now(),
+                        landkode = "",
+                        landnavn = "Norge"
+                    )
+                )
             ),
-            samværsavtale = listOf(
-            ),
+            samværsavtale = null,
             legeerklæring = listOf(
+                URL("http://localhost:8080/vedlegg/1")
             )
-        )
-//        val exception = Assertions.assertThrows(SøknadValideringException::class.java) { søknad.valider() }
-//
-//        val forventetViolation = Violation(
-//            parameterType = ParameterType.ENTITY,
-//            parameterName = "Utenlandsopphold[0]",
-//            reason = "Landkode er ikke satt",
-//            invalidValue = "landkode"
-//        )
-//
-//        assertThat(exception.violations).contains(forventetViolation)
+        ).valider()
     }
 
     @Test
@@ -95,14 +97,67 @@ internal class SøknadValideringsTest {
         assertTrue(starterMedFodselsdato)
     }
 
-    @Test
-    internal fun `Mangler landnavn`() {
-        val søknad = Søknad(
+    @Test(expected = Throwblem::class)
+    fun `Forvent violation dersom barn har både fødselsdato og norskIdentnummer`() {
+        Søknad(
             nyVersjon = false,
             språk = "nb",
-            erYrkesaktiv = true,
+            arbeidssituasjon = listOf("Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"),
             kroniskEllerFunksjonshemming = true,
-            delerOmsorg = false,
+            sammeAddresse = true,
+            harBekreftetOpplysninger = true,
+            harForståttRettigheterOgPlikter = true,
+            relasjonTilBarnet = SøkerBarnRelasjon.FAR,
+            barn = BarnDetaljer(
+                navn = "Ole Dole Doffen",
+                fødselsdato = LocalDate.now().minusDays(895),
+                norskIdentifikator = gyldigFodselsnummerA
+            ),
+            medlemskap = Medlemskap(
+                harBoddIUtlandetSiste12Mnd = false,
+                skalBoIUtlandetNeste12Mnd = false
+            ),
+            samværsavtale = null,
+            legeerklæring = listOf(
+                URL("http://localhodt:8080/vedlegg/1")
+            )
+        ).valider()
+    }
+
+    @Test(expected = Throwblem::class)
+    fun `Forvent violation dersom barn mangler både fødselsdato og norskIdentnummer`() {
+        Søknad(
+            nyVersjon = false,
+            språk = "nb",
+            arbeidssituasjon = listOf("Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"),
+            kroniskEllerFunksjonshemming = true,
+            sammeAddresse = true,
+            harBekreftetOpplysninger = true,
+            harForståttRettigheterOgPlikter = true,
+            relasjonTilBarnet = SøkerBarnRelasjon.FAR,
+            barn = BarnDetaljer(
+                navn = "Ole Dole Doffen",
+                fødselsdato = null,
+                norskIdentifikator = null
+            ),
+            medlemskap = Medlemskap(
+                harBoddIUtlandetSiste12Mnd = false,
+                skalBoIUtlandetNeste12Mnd = false
+            ),
+            samværsavtale = null,
+            legeerklæring = listOf(
+                URL("http://localhodt:8080/vedlegg/1")
+            )
+        ).valider()
+    }
+
+    @Test(expected = Throwblem::class)
+    internal fun `Forvent violation dersom harBoddIUtlandetSiste12Mnd er true, men utenlandsoppholdSiste12Mnd er tom eller null`() {
+        Søknad(
+            nyVersjon = false,
+            språk = "nb",
+            arbeidssituasjon = listOf("Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"),
+            kroniskEllerFunksjonshemming = true,
             sammeAddresse = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
@@ -113,13 +168,15 @@ internal class SøknadValideringsTest {
                 aktørId = "123456"
             ),
             medlemskap = Medlemskap(
-                harBoddIUtlandetSiste12Mnd = false,
-                skalBoIUtlandetNeste12Mnd = false
+                harBoddIUtlandetSiste12Mnd = true,
+                skalBoIUtlandetNeste12Mnd = false,
+                utenlandsoppholdSiste12Mnd = listOf()
             ),
             samværsavtale = listOf(
             ),
             legeerklæring = listOf(
+                URL("http://localhost:8080/vedlegg/1")
             )
-        )
+        ).valider()
     }
 }

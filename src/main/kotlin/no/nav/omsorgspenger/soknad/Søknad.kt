@@ -8,14 +8,13 @@ import java.time.LocalDate
 data class Søknad(
     val nyVersjon: Boolean,
     val språk: String,
-    val erYrkesaktiv: Boolean,
+    val arbeidssituasjon: List<String>,
     val kroniskEllerFunksjonshemming: Boolean,
     val barn: BarnDetaljer,
     val sammeAddresse: Boolean?,
-    val delerOmsorg: Boolean?,
     val relasjonTilBarnet: SøkerBarnRelasjon? = null,
     val legeerklæring: List<URL>,
-    val samværsavtale: List<URL>?,
+    val samværsavtale: List<URL>? = null,
     val medlemskap: Medlemskap,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean

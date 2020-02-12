@@ -16,7 +16,7 @@ class SoknadUtils {
                 {
                   "nyVersjon": true,
                   "språk": "nb",
-                  "erYrkesaktiv": true,
+                  "arbeidssituasjon": ["Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"],
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
                     "navn": "Ole Dole Doffen",
@@ -25,7 +25,6 @@ class SoknadUtils {
                     "aktørId": "123456"
                   },
                   "sammeAddresse": true,
-                  "delerOmsorg": true,
                   "relasjonTilBarnet": "$relasjonTilBarnet",
                   "legeerklæring": [
                     "$legeerklæringUrl"
@@ -54,15 +53,7 @@ class SoknadUtils {
                     ]
                   },
                   "harForståttRettigheterOgPlikter": true,
-                  "harBekreftetOpplysninger": true,
-                  "utenlandsopphold": [
-                    {
-                      "fraOgMed": "2020-01-31",
-                      "tilOgMed": "2020-02-31",
-                      "landkode": "DK",
-                      "landnavn": "Danmark"
-                    }
-                  ]
+                  "harBekreftetOpplysninger": true
                 }
             """.trimIndent()
         }
@@ -70,21 +61,21 @@ class SoknadUtils {
         fun bodyMedAktoerIdPaaBarn(
             aktoerId: String,
             legeerklæringUrl: String,
-            samværsavtaleUrl: String
+            samværsavtaleUrl: String,
+            barnetsNorskIdentifikator: String?
         ): String {
             //language=JSON
             return """
                 {
                   "nyVersjon": true,
                   "språk": "nb",
-                  "erYrkesaktiv": true,
+                  "arbeidssituasjon": ["Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"],
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
                     "fødselsdato": "2005-02-23",
                     "aktørId": "$aktoerId"
                   },
                   "sammeAddresse": true,
-                  "delerOmsorg": true,
                   "relasjonTilBarnet": "mor",
                   "legeerklæring": [
                     "$legeerklæringUrl"
@@ -113,15 +104,7 @@ class SoknadUtils {
                     ]
                   },
                   "harForståttRettigheterOgPlikter": true,
-                  "harBekreftetOpplysninger": true,
-                  "utenlandsopphold": [
-                    {
-                      "fraOgMed": "2020-01-31",
-                      "tilOgMed": "2020-02-31",
-                      "landkode": "DK",
-                      "landnavn": "Danmark"
-                    }
-                  ]
+                  "harBekreftetOpplysninger": true
                 }
             """.trimIndent()
         }
@@ -136,13 +119,12 @@ class SoknadUtils {
                 {
                   "nyVersjon": true,
                   "språk": "nb",
-                  "erYrkesaktiv": true,
+                  "arbeidssituasjon": ["Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"],
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
                     "fødselsdato": "2005-01-23"
                   },
                   "sammeAddresse": true,
-                  "delerOmsorg": true,
                   "relasjonTilBarnet": "mor",
                   "legeerklæring": [
                     "$legeerklæringUrl"
@@ -171,15 +153,7 @@ class SoknadUtils {
                     ]
                   },
                   "harForståttRettigheterOgPlikter": true,
-                  "harBekreftetOpplysninger": true,
-                  "utenlandsopphold": [
-                    {
-                      "fraOgMed": "2020-01-31",
-                      "tilOgMed": "2020-02-31",
-                      "landkode": "DK",
-                      "landnavn": "Danmark"
-                    }
-                  ]
+                  "harBekreftetOpplysninger": true
                 }
             """.trimIndent()
         }
