@@ -339,7 +339,7 @@ class ApplicationTest {
             """{
                   "nyVersjon": true,
                   "språk": "nb",
-                  "erYrkesaktiv": true,
+                  "arbeidssituasjon": [],
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
                     "navn": "$forlangtNavn",
@@ -348,7 +348,6 @@ class ApplicationTest {
                     "aktørId": "123456"
                   },
                   "sammeAddresse": true,
-                  "delerOmsorg": true,
                   "relasjonTilBarnet": "mor",
                   "legeerklæring": [
                     "http://localhost:8080/ikke-vedlegg/1"
@@ -370,15 +369,7 @@ class ApplicationTest {
                     ]
                   },
                   "harForståttRettigheterOgPlikter": false,
-                  "harBekreftetOpplysninger": false,
-                  "utenlandsopphold": [
-                    {
-                      "fraOgMed": "2020-01-31",
-                      "tilOgMed": "2020-02-31",
-                      "landkode": "DK",
-                      "landnavn": "Danmark"
-                    }
-                  ]
+                  "harBekreftetOpplysninger": false
                 }
                 """.trimIndent(),
             expectedResponse = """
@@ -412,6 +403,12 @@ class ApplicationTest {
                       "name": "barn.navn",
                       "reason": "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
                       "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
+                    },
+                    {
+                      "type": "entity",
+                      "name": "arbeidssituasjon",
+                      "reason": "List over arbeidssituasjon kan ikke være tomt. Må inneholde minst 1 verdi.",
+                      "invalid_value": []
                     },
                     {
                       "type": "entity",

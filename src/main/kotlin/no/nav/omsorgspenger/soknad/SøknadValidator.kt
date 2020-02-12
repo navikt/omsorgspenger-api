@@ -22,6 +22,29 @@ private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
 internal fun Søknad.valider() {
     val violations: MutableSet<Violation> = this.barn.valider(relasjonTilBarnet = relasjonTilBarnet?.name)
 
+    if (arbeidssituasjon.isEmpty()) {
+        violations.add(
+            Violation(
+                parameterName = "arbeidssituasjon",
+                parameterType = ParameterType.ENTITY,
+                reason = "List over arbeidssituasjon kan ikke være tomt. Må inneholde minst 1 verdi.",
+                invalidValue = listOf<String>()
+            )
+        )
+    }
+    arbeidssituasjon.mapIndexed { index, situasjon ->
+        if (situasjon.isNullOrBlank()) {
+            violations.add(
+                Violation(
+                    parameterName = "arbeidssituasjon[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "List over arbeidssituasjon kan ikke inneholde null eller tomme verdier",
+                    invalidValue = situasjon
+                )
+            )
+        }
+    }
+
     // legeerklaring
     if (legeerklæring.isEmpty()) {
         violations.add(
