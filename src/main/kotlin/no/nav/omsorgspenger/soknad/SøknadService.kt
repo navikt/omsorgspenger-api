@@ -27,36 +27,41 @@ class SøknadService(
         idToken: IdToken,
         callId: CallId
     ) {
-        logger.trace("Registrerer søknad. Henter søker")
+        logger.info("Registrerer søknad. Henter søker")
         val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
 
-        logger.trace("Søker hentet. Validerer om søkeren.")
+        logger.info("Søker hentet. Validerer søker.")
         søker.validate()
 
-        logger.trace("Validert Søker. Henter ${søknad.legeerklæring.size} legeerklæring.")
+        logger.info("Søker Validert.")
+        logger.info("Henter ${søknad.legeerklæring.size} legeerklæringsvedlegg.")
         val legeerklæring = vedleggService.hentVedlegg(
             idToken = idToken,
             vedleggUrls = søknad.legeerklæring,
             callId = callId
         )
 
-        logger.trace("Validert Søker. Henter ${søknad.legeerklæring.size} legeerklæring.")
+        søknad.samværsavtale?.let { logger.info("Henter ${søknad.samværsavtale.size} samværsavtalevedlegg.") }
         val samværsavtale = when {
-            !søknad.samværsavtale.isNullOrEmpty() -> vedleggService.hentVedlegg(
-                idToken = idToken,
-                vedleggUrls = søknad.samværsavtale,
-                callId = callId
-            )
+            !søknad.samværsavtale.isNullOrEmpty() -> {
+                val samværsavtalevedlegg = vedleggService.hentVedlegg(
+                    idToken = idToken,
+                    vedleggUrls = søknad.samværsavtale,
+                    callId = callId
+                )
+                logger.info("Hentet ${samværsavtalevedlegg.size} samværsavtalevedlegg.")
+                samværsavtalevedlegg
+            }
             else -> listOf()
         }
 
-        logger.trace("Vedlegg hentet. Validerer vedleggene.")
+        logger.info("Vedlegg hentet. Validerer vedleggene.")
         legeerklæring.validerLegeerklæring(søknad.legeerklæring)
         søknad.samværsavtale?.let { samværsavtale.validerSamværsavtale(it) }
         val alleVedlegg = listOf(*legeerklæring.toTypedArray(), *samværsavtale.toTypedArray())
         alleVedlegg.validerTotalStørresle()
 
-        logger.trace("Legger søknad til prosessering")
+        logger.info("Legger søknad til prosessering")
 
         val komplettSoknad = KomplettSoknad(
             språk = søknad.språk,
