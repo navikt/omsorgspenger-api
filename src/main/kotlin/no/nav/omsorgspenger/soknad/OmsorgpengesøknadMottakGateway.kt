@@ -77,7 +77,7 @@ class OmsorgpengesøknadMottakGateway(
             )
 
         val (request, _, result) = Operation.monitored(
-            app = "omsorgpengesoknad-api",
+            app = "omsorgspenger-api",
             operation = "sende-soknad-til-prosessering",
             resultResolver = { 202 == it.second.statusCode }
         ) { httpRequet.awaitStringResponseResult() }
