@@ -13,7 +13,7 @@ data class KomplettSoknad(
     val arbeidssituasjon: List<String>,
     val barn: BarnDetaljer,
     val relasjonTilBarnet: SøkerBarnRelasjon? = null,
-    val sammeAddresse: Boolean?,
+    val sammeAdresse: Boolean?,
     val medlemskap: Medlemskap,
     val legeerklæring: List<Vedlegg>,
     val samværsavtale: List<Vedlegg>?,

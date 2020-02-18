@@ -11,7 +11,7 @@ data class Søknad(
     val arbeidssituasjon: List<String>,
     val kroniskEllerFunksjonshemming: Boolean,
     val barn: BarnDetaljer,
-    val sammeAddresse: Boolean?,
+    val sammeAdresse: Boolean?,
     val relasjonTilBarnet: SøkerBarnRelasjon? = null,
     val legeerklæring: List<URL>,
     val samværsavtale: List<URL>? = null,
