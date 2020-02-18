@@ -82,7 +82,7 @@ class SøknadService(
             arbeidssituasjon = søknad.arbeidssituasjon,
             kroniskEllerFunksjonshemming = søknad.kroniskEllerFunksjonshemming,
             nyVersjon = søknad.nyVersjon,
-            sammeAddresse = søknad.sammeAddresse
+            sammeAdresse = søknad.sammeAdresse
         )
 
         omsorgpengesøknadMottakGateway.leggTilProsessering(
