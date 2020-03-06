@@ -11,6 +11,8 @@ on:
 
 env:
   IMAGE: docker.pkg.github.com/${{ github.repository }}/omsorgspenger-api:${{ github.sha }}
+  GITHUB_USERNAME: x-access-token
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   test:
@@ -31,9 +33,6 @@ jobs:
         with:
           java-version: 11
       - name: Test Code
-        env:
-          GITHUB_USERNAME: x-access-token
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew check
 
   build-code-and-push-docker:
@@ -56,13 +55,8 @@ jobs:
         with:
           java-version: 11
       - name: Build JAR
-        env:
-          GITHUB_USERNAME: x-access-token
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew shadowjar # Creates a combined JAR of project and runTime dependencies.
       - name: Build and publish Docker image
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           docker build --tag ${IMAGE} .
           docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
