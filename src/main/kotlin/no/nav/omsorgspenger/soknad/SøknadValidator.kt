@@ -319,7 +319,7 @@ private fun validerUtenlandopphold(
         if (fraDataErEtterTilDato) {
             violations.add(
                 Violation(
-                    parameterName = "Utenlandsopphold[$index]",
+                    parameterName = "Utenlandsopphold[$index].fraOgMed eller Utenlandsopphold[$index].tilOgMed",
                     parameterType = ParameterType.ENTITY,
                     reason = "Til dato kan ikke være før fra dato",
                     invalidValue = "fraOgMed eller tilOgMed"
@@ -329,7 +329,7 @@ private fun validerUtenlandopphold(
         if (utenlandsopphold.landkode.isEmpty()) {
             violations.add(
                 Violation(
-                    parameterName = "Utenlandsopphold[$index]",
+                    parameterName = "Utenlandsopphold[$index].landkode",
                     parameterType = ParameterType.ENTITY,
                     reason = "Landkode er ikke satt",
                     invalidValue = "landkode"
@@ -339,7 +339,7 @@ private fun validerUtenlandopphold(
         if (utenlandsopphold.landnavn.isEmpty()) {
             violations.add(
                 Violation(
-                    parameterName = "Utenlandsopphold[$index]",
+                    parameterName = "Utenlandsopphold[$index].landnavn",
                     parameterType = ParameterType.ENTITY,
                     reason = "Landnavn er ikke satt",
                     invalidValue = "landnavn"
