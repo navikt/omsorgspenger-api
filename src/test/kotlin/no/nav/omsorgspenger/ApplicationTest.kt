@@ -601,6 +601,36 @@ class ApplicationTest {
         )
     }
 
+    @Test
+    fun `Sende full søknad for overføring av dager hvor personnummer for mottaker er ugyldig`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-dager",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "mottakerAvDagerNorskIdentifikator",
+                      "reason": "Ikke gyldig norskIdentifikator på mottaker av dager",
+                      "invalid_value": "123456789"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.fullBody(mottakerAvDagerNorskIdentifikator = "123456789")
+        )
+    }
+
     private fun requestAndAssert(
         httpMethod: HttpMethod,
         path: String,

@@ -4,6 +4,7 @@ import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.Violation
+import no.nav.omsorgspenger.soknad.erGyldigNorskIdentifikator
 import no.nav.omsorgspenger.soknad.valider
 
 internal fun SøknadOverføreDager.valider() {
@@ -57,6 +58,17 @@ internal fun SøknadOverføreDager.valider() {
     }
 
     //TODO: Trenger validering på antall dager(Kanskje maks 10?) og mottakerAvDager(Må vente og se hva det blir, kanskje bare personnummer)
+
+    if(!mottakerAvDagerNorskIdentifikator.erGyldigNorskIdentifikator()){
+        violations.add(
+            Violation(
+                parameterName = "mottakerAvDagerNorskIdentifikator",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke gyldig norskIdentifikator på mottaker av dager",
+                invalidValue = mottakerAvDagerNorskIdentifikator
+            )
+        )
+    }
 
 // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {

@@ -9,7 +9,7 @@ data class KomplettSøknadOverføreDager (
     val søker: Søker,
     val språk: String,
     val antallDager: Int,
-    val mottakerAvDager: Int,
+    val mottakerAvDagerNorskIdentifikator: String,
     val medlemskap: Medlemskap,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
