@@ -9,11 +9,11 @@ class SøknadOverføreDagerUtils {
 
         fun fullBody(harSamfunnskritiskJobb: Boolean = true,
                      arbeidssituasjon: List<Arbeidssituasjon> = listOf(Arbeidssituasjon.SELVSTENDIGNÆRINGSDRIVENDE),
-                     landkode: String = "DK"
+                     landkode: String = "DK",
+                     mottakerAvDagerNorskIdentifikator: String = "26104500284"
         ): String {
             //language=JSON
             val arbeidssituasjonSomJson = jacksonObjectMapper().dusseldorfConfigured().writerWithDefaultPrettyPrinter().writeValueAsString(arbeidssituasjon)
-            val landkodeSomJson = jacksonObjectMapper().dusseldorfConfigured().writerWithDefaultPrettyPrinter().writeValueAsString(landkode)
 
             return """
                 {
@@ -25,7 +25,7 @@ class SøknadOverføreDagerUtils {
                       {
                         "fraOgMed": "2020-01-31",
                         "tilOgMed": "2020-02-31",
-                        "landkode": $landkodeSomJson,
+                        "landkode": "$landkode",
                         "landnavn": "Danmark"
                       }
                     ],
@@ -42,7 +42,7 @@ class SøknadOverføreDagerUtils {
                   "harForståttRettigheterOgPlikter": true,
                   "harBekreftetOpplysninger": true,
                   "antallDager": 5,
-                  "mottakerAvDager": 123456789,
+                  "mottakerAvDagerNorskIdentifikator": "$mottakerAvDagerNorskIdentifikator",
                   "harSamfunnskritiskJobb": $harSamfunnskritiskJobb
                 }
             """.trimIndent()
