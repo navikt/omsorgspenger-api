@@ -10,11 +10,32 @@ import java.time.LocalDate
 
 internal class SøknadOverføreDagerValideringsTest {
 
-    companion object {
-        private val gyldigFodselsnummerA = "02119970078"
-        private val gyldigFodselsnummerB = "19066672169"
-        private val gyldigFodselsnummerC = "20037473937"
-        private val dNummerA = "55125314561"
+    @Test
+    fun `Skal ikke feile på gyldig søknad`(){
+        val søknadOverføreDager = SøknadOverføreDager(
+            språk = "nb",
+            antallDager = 5,
+            mottakerAvDager = 123456789,
+            medlemskap = Medlemskap(
+                harBoddIUtlandetSiste12Mnd = false,
+                skalBoIUtlandetNeste12Mnd = true,
+                utenlandsoppholdNeste12Mnd = listOf(
+                    Utenlandsopphold(
+                        fraOgMed = LocalDate.now().minusDays(5),
+                        tilOgMed = LocalDate.now(),
+                        landkode = "NO",
+                        landnavn = "Norge"
+                    )
+                )
+            ),
+            harForståttRettigheterOgPlikter = true,
+            harBekreftetOpplysninger = true,
+            arbeidssituasjon = listOf(
+                Arbeidssituasjon.ARBEIDSTAKER
+            ),
+            harSamfunnskritiskJobb = true
+        )
+        søknadOverføreDager.valider()
     }
 
     @Test(expected = Throwblem::class)
@@ -39,7 +60,8 @@ internal class SøknadOverføreDagerValideringsTest {
             harBekreftetOpplysninger = false,
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
-            )
+            ),
+            harSamfunnskritiskJobb = true
         )
         søknadOverføreDager.valider()
     }
@@ -66,7 +88,8 @@ internal class SøknadOverføreDagerValideringsTest {
             harBekreftetOpplysninger = true,
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
-            )
+            ),
+            harSamfunnskritiskJobb = true
         )
         søknadOverføreDager.valider()
     }
@@ -91,9 +114,37 @@ internal class SøknadOverføreDagerValideringsTest {
             ),
             harForståttRettigheterOgPlikter = true,
             harBekreftetOpplysninger = true,
-            arbeidssituasjon = listOf()
+            arbeidssituasjon = listOf(),
+            harSamfunnskritiskJobb = true
         )
         søknadOverføreDager.valider()
     }
 
+    @Test(expected = Throwblem::class)
+    fun `Skal feile dersom harSamfunnskritiskJobb er false`(){
+        val søknadOverføreDager = SøknadOverføreDager(
+            språk = "nb",
+            antallDager = 5,
+            mottakerAvDager = 123456789,
+            medlemskap = Medlemskap(
+                harBoddIUtlandetSiste12Mnd = false,
+                skalBoIUtlandetNeste12Mnd = true,
+                utenlandsoppholdNeste12Mnd = listOf(
+                    Utenlandsopphold(
+                        fraOgMed = LocalDate.now().minusDays(5),
+                        tilOgMed = LocalDate.now(),
+                        landkode = "NO",
+                        landnavn = "Norge"
+                    )
+                )
+            ),
+            harForståttRettigheterOgPlikter = true,
+            harBekreftetOpplysninger = true,
+            arbeidssituasjon = listOf(
+                Arbeidssituasjon.ARBEIDSTAKER
+            ),
+            harSamfunnskritiskJobb = false
+        )
+        søknadOverføreDager.valider()
+    }
 }

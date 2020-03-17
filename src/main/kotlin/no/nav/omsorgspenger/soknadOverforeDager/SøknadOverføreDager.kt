@@ -10,11 +10,12 @@ data class SøknadOverføreDager(
     val medlemskap: Medlemskap,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
-    val arbeidssituasjon: List<Arbeidssituasjon>
+    val arbeidssituasjon: List<Arbeidssituasjon>,
+    val harSamfunnskritiskJobb: Boolean
 )
 
 enum class Arbeidssituasjon() {
-    @JsonProperty("Arbeidstaker") ARBEIDSTAKER,
-    @JsonProperty("Selvstendig Næringsdrivende") SELVSTENDIGNÆRINGSDRIVENDE,
-    @JsonProperty("Frilans") FRILANSER
+    @JsonProperty("arbeidstaker") ARBEIDSTAKER,
+    @JsonProperty("selvstendigNæringsdrivende") SELVSTENDIGNÆRINGSDRIVENDE,
+    @JsonProperty("frilanser") FRILANSER
 }

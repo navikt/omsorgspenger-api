@@ -498,10 +498,8 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende full søknad for overføring av dager`(){
+    fun `Sende full gyldig søknad for overføring av dager`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -510,6 +508,96 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
             requestEntity = SøknadOverføreDagerUtils.fullBody()
+        )
+    }
+
+    @Test
+    fun `Sende full søknad for overføring av dager hvor harSamfunnskritiskJobb er false`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-dager",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "harSamfunnskritiskJobb",
+                      "reason": "harSamfunnskritiskJobb må være satt til true",
+                      "invalid_value": false
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.fullBody(harSamfunnskritiskJobb = false)
+        )
+    }
+
+    @Test
+    fun `Sende full søknad for overføring av dager hvor listen over arbeidssituasjon er tom`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-dager",
+            expectedResponse = """
+                    {
+                      "type": "/problem-details/invalid-request-parameters",
+                      "title": "invalid-request-parameters",
+                      "status": 400,
+                      "detail": "Requesten inneholder ugyldige paramtere.",
+                      "instance": "about:blank",
+                      "invalid_parameters": [
+                        {
+                          "type": "entity",
+                          "name": "arbeidssituasjon",
+                          "reason": "List over arbeidssituasjon kan ikke være tomt. Må inneholde minst 1 verdi",
+                          "invalid_value": []
+                        }
+                      ]
+                    }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.fullBody(arbeidssituasjon = listOf())
+        )
+    }
+
+    @Test
+    fun `Sende full søknad for overføring av dager hvor landkode er tom`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-dager",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "Utenlandsopphold[0].landkode",
+                      "reason": "Landkode er ikke satt",
+                      "invalid_value": "landkode"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.fullBody(landkode = "")
         )
     }
 
