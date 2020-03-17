@@ -48,6 +48,7 @@ import no.nav.omsorgspenger.soker.søkerApis
 import no.nav.omsorgspenger.soknad.OmsorgpengesøknadMottakGateway
 import no.nav.omsorgspenger.soknad.SøknadService
 import no.nav.omsorgspenger.soknad.søknadApis
+import no.nav.omsorgspenger.soknadOverforeDager.SøknadOverføreDagerService
 import no.nav.omsorgspenger.vedlegg.K9DokumentGateway
 import no.nav.omsorgspenger.vedlegg.VedleggService
 import no.nav.omsorgspenger.vedlegg.vedleggApis
@@ -190,6 +191,10 @@ fun Application.omsorgpengesoknadapi() {
                     omsorgpengesøknadMottakGateway = omsorgpengesoknadMottakGateway,
                     søkerService = søkerService,
                     vedleggService = vedleggService
+                ),
+                søknadOverføreDagerService = SøknadOverføreDagerService(
+                    omsorgpengesøknadMottakGateway = omsorgpengesoknadMottakGateway,
+                    søkerService = søkerService
                 )
             )
         }
