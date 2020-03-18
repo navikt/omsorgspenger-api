@@ -108,7 +108,7 @@ class OmsorgpengesøknadMottakGateway(
         val body = objectMapper.writeValueAsBytes(soknad)
         val contentStream = { ByteArrayInputStream(body) }
 
-        val httpRequet = komplettUrl //TODO: Feil URL. Skal bruke komplettUrlOverforeDager. Denne sender til /v1/soknad, og ikke /v1/soknad/overfore-dager
+        val httpRequet = komplettUrlOverforeDager
             .httpPost()
             .timeout(20_000)
             .timeoutRead(20_000)
