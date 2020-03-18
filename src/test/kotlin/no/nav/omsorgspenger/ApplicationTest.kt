@@ -598,7 +598,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SøknadOverføreDagerUtils.fullBody(landkode = "")
+            requestEntity = SøknadOverføreDagerUtils.fullBodyMedMedlemskap(landkode = "")
         )
     }
 
