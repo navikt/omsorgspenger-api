@@ -12,6 +12,7 @@ internal class SøknadOverføreDagerValideringsTest {
 
     companion object {
         private val gyldigFodselsnummerA = "26104500284"
+        private val dNummerA = "55125314561"
     }
 
     @Test
@@ -41,6 +42,36 @@ internal class SøknadOverføreDagerValideringsTest {
         )
         søknadOverføreDager.valider()
     }
+
+    @Test
+    fun `Skal ikke feile på gyldig søknad med dNummer som identifikator`(){
+        val søknadOverføreDager = SøknadOverføreDager(
+            språk = "nb",
+            antallDager = 5,
+            mottakerAvDagerNorskIdentifikator = dNummerA,
+            medlemskap = Medlemskap(
+                harBoddIUtlandetSiste12Mnd = false,
+                skalBoIUtlandetNeste12Mnd = true,
+                utenlandsoppholdNeste12Mnd = listOf(
+                    Utenlandsopphold(
+                        fraOgMed = LocalDate.now().minusDays(5),
+                        tilOgMed = LocalDate.now(),
+                        landkode = "NO",
+                        landnavn = "Norge"
+                    )
+                )
+            ),
+            harForståttRettigheterOgPlikter = true,
+            harBekreftetOpplysninger = true,
+            arbeidssituasjon = listOf(
+                Arbeidssituasjon.ARBEIDSTAKER
+            ),
+            harSamfunnskritiskJobb = true
+        )
+        søknadOverføreDager.valider()
+    }
+
+
 
     @Test(expected = Throwblem::class)
     fun `Skal feile dersom harBekreftetOpplysninger er false`(){
