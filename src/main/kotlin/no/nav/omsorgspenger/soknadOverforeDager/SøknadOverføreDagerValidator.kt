@@ -41,7 +41,6 @@ internal fun SøknadOverføreDager.valider() {
                 parameterType = ParameterType.ENTITY,
                 reason = "Opplysningene må bekreftes for å sende inn søknad.",
                 invalidValue = harBekreftetOpplysninger
-
             )
         )
     }
@@ -57,7 +56,7 @@ internal fun SøknadOverføreDager.valider() {
         )
     }
 
-    //TODO: Trenger validering på antall dager(Kanskje maks 10?) og mottakerAvDager(Må vente og se hva det blir, kanskje bare personnummer)
+    //TODO: Trenger validering på antall dager(Kanskje maks 10? Avventer svar fra analyse)
 
     if(!mottakerAvDagerNorskIdentifikator.erGyldigNorskIdentifikator()){
         violations.add(
