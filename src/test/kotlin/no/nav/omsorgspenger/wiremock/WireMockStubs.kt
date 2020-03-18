@@ -91,7 +91,7 @@ internal fun WireMockServer.stubOppslagHealth() = stubHealthEndpointThroughZones
 
 internal fun WireMockServer.stubLeggSoknadTilProsessering() : WireMockServer{
     WireMock.stubFor(
-        WireMock.post(WireMock.urlMatching(".*$omsorgpengesoknadMottakPath/v1/soknad"))
+        WireMock.post(WireMock.urlMatching(".*$omsorgpengesoknadMottakPath/v1/soknad")) //TODO: Legge til stub for v1/soknad/overfore-dager
             .withHeader("x-nav-apiKey", AnythingPattern())
             .willReturn(
                 WireMock.aResponse()

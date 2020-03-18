@@ -43,6 +43,11 @@ class OmsorgpengesøknadMottakGateway(
         pathParts = listOf("v1", "soknad")
     ).toString()
 
+    private val komplettUrlOverforeDager = Url.buildURL(
+    baseUrl = baseUrl,
+    pathParts = listOf("v1", "soknad/overfore-dager")
+    ).toString()
+
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
 
     override suspend fun check(): Result {
@@ -103,7 +108,7 @@ class OmsorgpengesøknadMottakGateway(
         val body = objectMapper.writeValueAsBytes(soknad)
         val contentStream = { ByteArrayInputStream(body) }
 
-        val httpRequet = komplettUrl
+        val httpRequet = komplettUrl //TODO: Feil URL. Skal bruke komplettUrlOverforeDager. Denne sender til /v1/soknad, og ikke /v1/soknad/overfore-dager
             .httpPost()
             .timeout(20_000)
             .timeoutRead(20_000)
