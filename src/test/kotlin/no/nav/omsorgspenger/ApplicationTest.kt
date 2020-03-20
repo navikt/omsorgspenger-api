@@ -504,7 +504,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad/overfore-dager",
+            path = "/soknad/overfore-omsorgsdager",
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
@@ -518,7 +518,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad/overfore-dager",
+            path = "/soknad/overfore-omsorgsdager",
             expectedResponse = """
                 {
                   "type": "/problem-details/invalid-request-parameters",
@@ -548,7 +548,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad/overfore-dager",
+            path = "/soknad/overfore-omsorgsdager",
             expectedResponse = """
                     {
                       "type": "/problem-details/invalid-request-parameters",
@@ -578,7 +578,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad/overfore-dager",
+            path = "/soknad/overfore-omsorgsdager",
             expectedResponse = """
                 {
                   "type": "/problem-details/invalid-request-parameters",
@@ -608,7 +608,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad/overfore-dager",
+            path = "/soknad/overfore-omsorgsdager",
             expectedResponse = """
                 {
                   "type": "/problem-details/invalid-request-parameters",
