@@ -45,7 +45,7 @@ class OmsorgpengesøknadMottakGateway(
 
     private val komplettUrlOverforeDager = Url.buildURL(
     baseUrl = baseUrl,
-    pathParts = listOf("v1", "soknad/overfore-omsorgsdager")
+    pathParts = listOf("v1", "soknad/overfore-dager")
     ).toString()
 
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
