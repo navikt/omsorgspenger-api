@@ -57,17 +57,20 @@ internal fun SøknadOverføreDager.valider() {
     }
 
     //TODO: Trenger validering på antall dager(Kanskje maks 10? Avventer svar fra analyse)
-
-    if(!mottakerAvDagerNorskIdentifikator.erGyldigNorskIdentifikator()){
-        violations.add(
-            Violation(
-                parameterName = "mottakerAvDagerNorskIdentifikator",
-                parameterType = ParameterType.ENTITY,
-                reason = "Ikke gyldig norskIdentifikator på mottaker av dager",
-                invalidValue = mottakerAvDagerNorskIdentifikator
+    //TODO:Legg til validering på mottaker når format er avklart med frontend
+    if(mottakerAvDagerNorskIdentifikator != null){
+        if(!mottakerAvDagerNorskIdentifikator.erGyldigNorskIdentifikator()){
+            violations.add(
+                Violation(
+                    parameterName = "mottakerAvDagerNorskIdentifikator",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Ikke gyldig norskIdentifikator på mottaker av dager",
+                    invalidValue = mottakerAvDagerNorskIdentifikator
+                )
             )
-        )
+        }
     }
+
 
 // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {

@@ -5,8 +5,8 @@ import no.nav.omsorgspenger.soknad.Medlemskap
 
 data class SøknadOverføreDager(
     val språk: String,
-    val antallDager: Int,
-    val mottakerAvDagerNorskIdentifikator: String,
+    val antallDager: Int? = null,
+    val mottakerAvDagerNorskIdentifikator: String? = null,
     val medlemskap: Medlemskap,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
