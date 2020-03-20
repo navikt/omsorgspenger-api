@@ -46,7 +46,7 @@ fun Route.søknadApis(
         call.respond(HttpStatusCode.Accepted)
     }
 
-    @Location("/soknad/overfore-dager")
+    @Location("/soknad/overfore-omsorgsdager")
     class sendSoknadOverforeDager
 
     post { _ : sendSoknadOverforeDager ->
