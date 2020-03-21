@@ -42,8 +42,7 @@ class SøknadOverføreDagerService(
             medlemskap = søknadOverføreDager.medlemskap,
             harForståttRettigheterOgPlikter = søknadOverføreDager.harForståttRettigheterOgPlikter,
             harBekreftetOpplysninger = søknadOverføreDager.harBekreftetOpplysninger,
-            arbeidssituasjon = søknadOverføreDager.arbeidssituasjon,
-            harSamfunnskritiskJobb = søknadOverføreDager.harSamfunnskritiskJobb
+            arbeidssituasjon = søknadOverføreDager.arbeidssituasjon
         )
 
         omsorgpengesøknadMottakGateway.leggTilProsesseringOverføreDager(

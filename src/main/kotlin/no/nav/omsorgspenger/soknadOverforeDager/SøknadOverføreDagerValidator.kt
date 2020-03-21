@@ -10,17 +10,6 @@ import no.nav.omsorgspenger.soknad.valider
 internal fun SøknadOverføreDager.valider() {
     val violations: MutableSet<Violation> = mutableSetOf<Violation>()
 
-    if(!harSamfunnskritiskJobb){
-        violations.add(
-            Violation(
-                parameterName = "harSamfunnskritiskJobb",
-                parameterType = ParameterType.ENTITY,
-                reason = "harSamfunnskritiskJobb må være satt til true",
-                invalidValue = harSamfunnskritiskJobb
-            )
-        )
-    }
-
     if (arbeidssituasjon.isEmpty()) {
         violations.add(
             Violation(
