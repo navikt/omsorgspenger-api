@@ -37,8 +37,7 @@ internal class SøknadOverføreDagerValideringsTest {
             harBekreftetOpplysninger = true,
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
-            ),
-            harSamfunnskritiskJobb = true
+            )
         )
         søknadOverføreDager.valider()
     }
@@ -65,8 +64,7 @@ internal class SøknadOverføreDagerValideringsTest {
             harBekreftetOpplysninger = true,
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
-            ),
-            harSamfunnskritiskJobb = true
+            )
         )
         søknadOverføreDager.valider()
     }
@@ -95,8 +93,7 @@ internal class SøknadOverføreDagerValideringsTest {
             harBekreftetOpplysninger = false,
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
-            ),
-            harSamfunnskritiskJobb = true
+            )
         )
         søknadOverføreDager.valider()
     }
@@ -123,8 +120,7 @@ internal class SøknadOverføreDagerValideringsTest {
             harBekreftetOpplysninger = true,
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
-            ),
-            harSamfunnskritiskJobb = true
+            )
         )
         søknadOverføreDager.valider()
     }
@@ -149,36 +145,7 @@ internal class SøknadOverføreDagerValideringsTest {
             ),
             harForståttRettigheterOgPlikter = true,
             harBekreftetOpplysninger = true,
-            arbeidssituasjon = listOf(),
-            harSamfunnskritiskJobb = true
-        )
-        søknadOverføreDager.valider()
-    }
-
-    @Test(expected = Throwblem::class)
-    fun `Skal feile dersom harSamfunnskritiskJobb er false`(){
-        val søknadOverføreDager = SøknadOverføreDager(
-            språk = "nb",
-            antallDager = 5,
-            mottakerAvDagerNorskIdentifikator = gyldigFodselsnummerA,
-            medlemskap = Medlemskap(
-                harBoddIUtlandetSiste12Mnd = false,
-                skalBoIUtlandetNeste12Mnd = true,
-                utenlandsoppholdNeste12Mnd = listOf(
-                    Utenlandsopphold(
-                        fraOgMed = LocalDate.now().minusDays(5),
-                        tilOgMed = LocalDate.now(),
-                        landkode = "NO",
-                        landnavn = "Norge"
-                    )
-                )
-            ),
-            harForståttRettigheterOgPlikter = true,
-            harBekreftetOpplysninger = true,
-            arbeidssituasjon = listOf(
-                Arbeidssituasjon.ARBEIDSTAKER
-            ),
-            harSamfunnskritiskJobb = false
+            arbeidssituasjon = listOf()
         )
         søknadOverføreDager.valider()
     }
@@ -205,8 +172,7 @@ internal class SøknadOverføreDagerValideringsTest {
             harBekreftetOpplysninger = true,
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
-            ),
-            harSamfunnskritiskJobb = true
+            )
         )
         søknadOverføreDager.valider()
     }

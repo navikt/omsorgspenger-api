@@ -34,8 +34,7 @@ class SøknadOverføreDagerUtils {
             """.trimIndent()
         }
 
-        fun fullBodyMedMedlemskap(harSamfunnskritiskJobb: Boolean = true,
-                     arbeidssituasjon: List<Arbeidssituasjon> = listOf(Arbeidssituasjon.SELVSTENDIGNÆRINGSDRIVENDE),
+        fun fullBodyMedMedlemskap(arbeidssituasjon: List<Arbeidssituasjon> = listOf(Arbeidssituasjon.SELVSTENDIGNÆRINGSDRIVENDE),
                      landkode: String = "DK",
                      mottakerAvDagerNorskIdentifikator: String = "26104500284"
         ): String {
@@ -69,8 +68,7 @@ class SøknadOverføreDagerUtils {
                   "harForståttRettigheterOgPlikter": true,
                   "harBekreftetOpplysninger": true,
                   "antallDager": 5,
-                  "mottakerAvDagerNorskIdentifikator": "$mottakerAvDagerNorskIdentifikator",
-                  "harSamfunnskritiskJobb": $harSamfunnskritiskJobb
+                  "mottakerAvDagerNorskIdentifikator": "$mottakerAvDagerNorskIdentifikator"
                 }
             """.trimIndent()
         }

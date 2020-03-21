@@ -513,36 +513,6 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende full søknad for overføring av dager hvor harSamfunnskritiskJobb er false`(){
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = "/soknad/overfore-omsorgsdager",
-            expectedResponse = """
-                {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "harSamfunnskritiskJobb",
-                      "reason": "harSamfunnskritiskJobb må være satt til true",
-                      "invalid_value": false
-                    }
-                  ]
-                }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadOverføreDagerUtils.fullBody(harSamfunnskritiskJobb = false)
-        )
-    }
-
-    @Test
     fun `Sende full søknad for overføring av dager hvor listen over arbeidssituasjon er tom`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
 
