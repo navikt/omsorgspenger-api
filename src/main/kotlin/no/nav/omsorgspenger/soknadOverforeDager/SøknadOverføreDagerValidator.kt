@@ -47,7 +47,7 @@ internal fun SøknadOverføreDager.valider() {
 
     //TODO: Trenger validering på antall dager(Kanskje maks 10? Avventer svar fra analyse)
     //TODO:Legg til validering på mottaker når format er avklart med frontend
-    if(mottakerAvDagerNorskIdentifikator != null){
+    if(mottakerAvDagerNorskIdentifikator != null){  //TODO: Fjerne null sjekk når klient sender med. Mottaker skal alltid være satt
         if(!mottakerAvDagerNorskIdentifikator.erGyldigNorskIdentifikator()){
             violations.add(
                 Violation(

@@ -602,6 +602,50 @@ class ApplicationTest {
         )
     }
 
+    @Test
+    fun `Sende full søknad for overføring av dager hvor det er flere feil`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-omsorgsdager",
+            expectedResponse = """
+                        {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "arbeidssituasjon",
+                  "reason": "List over arbeidssituasjon kan ikke være tomt. Må inneholde minst 1 verdi",
+                  "invalid_value": [
+                    
+                  ]
+                },
+                {
+                  "type": "entity",
+                  "name": "Utenlandsopphold[0].landkode",
+                  "reason": "Landkode er ikke satt",
+                  "invalid_value": "landkode"
+                },
+                {
+                  "type": "entity",
+                  "name": "mottakerAvDagerNorskIdentifikator",
+                  "reason": "Ikke gyldig norskIdentifikator på mottaker av dager",
+                  "invalid_value": "123456789"
+                }
+              ]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.fullBodyMedMedlemskap(mottakerAvDagerNorskIdentifikator = "123456789", arbeidssituasjon = listOf(), landkode = "")
+        )
+    }
+
     private fun requestAndAssert(
         httpMethod: HttpMethod,
         path: String,
