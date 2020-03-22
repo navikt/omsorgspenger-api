@@ -7,8 +7,7 @@ import no.nav.omsorgspenger.soknadOverforeDager.Arbeidssituasjon
 class SøknadOverføreDagerUtils {
     companion object {
 
-        fun fullBody(harSamfunnskritiskJobb: Boolean = true,
-                     arbeidssituasjon: List<Arbeidssituasjon> = listOf(Arbeidssituasjon.SELVSTENDIGNÆRINGSDRIVENDE),
+        fun fullBody(arbeidssituasjon: List<Arbeidssituasjon> = listOf(Arbeidssituasjon.SELVSTENDIGNÆRINGSDRIVENDE),
                      landkode: String = "DK",
                      fnrMottaker: String = "26104500284"
         ): String {
@@ -29,7 +28,7 @@ class SøknadOverføreDagerUtils {
                   "harBekreftetOpplysninger": true,
                   "antallDager": 5,
                   "fnrMottaker": "$fnrMottaker",
-                  "harSamfunnskritiskJobb": $harSamfunnskritiskJobb
+                  "antallBarn": 2
                 }
             """.trimIndent()
         }
@@ -68,7 +67,8 @@ class SøknadOverføreDagerUtils {
                   "harForståttRettigheterOgPlikter": true,
                   "harBekreftetOpplysninger": true,
                   "antallDager": 5,
-                  "fnrMottaker": "$fnrMottaker"
+                  "fnrMottaker": "$fnrMottaker",
+                  "antallBarn": 2
                 }
             """.trimIndent()
         }

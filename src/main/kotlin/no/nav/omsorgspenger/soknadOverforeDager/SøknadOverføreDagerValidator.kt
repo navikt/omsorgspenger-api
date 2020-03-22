@@ -45,20 +45,16 @@ internal fun SøknadOverføreDager.valider() {
         )
     }
 
-    //TODO:Legg til validering på mottaker når format er avklart med frontend
-    if(fnrMottaker != null){  //TODO: Fjerne null sjekk når klient sender med. Mottaker skal alltid være satt
-        if(!fnrMottaker.erGyldigNorskIdentifikator()){
-            violations.add(
-                Violation(
-                    parameterName = "fnrMottaker",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Ikke gyldig norskIdentifikator på mottaker av dager",
-                    invalidValue = fnrMottaker
-                )
+    if(!fnrMottaker.erGyldigNorskIdentifikator()){
+        violations.add(
+            Violation(
+                parameterName = "fnrMottaker",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke gyldig norskIdentifikator på mottaker av dager",
+                invalidValue = fnrMottaker
             )
-        }
+        )
     }
-
 
 // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
