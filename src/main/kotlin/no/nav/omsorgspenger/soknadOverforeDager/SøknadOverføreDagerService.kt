@@ -38,7 +38,7 @@ class SøknadOverføreDagerService(
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
             søker = søker,
             antallDager = søknadOverføreDager.antallDager,
-            mottakerAvDagerNorskIdentifikator = søknadOverføreDager.mottakerAvDagerNorskIdentifikator,
+            fnrMottaker = søknadOverføreDager.fnrMottaker,
             medlemskap = søknadOverføreDager.medlemskap,
             harForståttRettigheterOgPlikter = søknadOverføreDager.harForståttRettigheterOgPlikter,
             harBekreftetOpplysninger = søknadOverføreDager.harBekreftetOpplysninger,

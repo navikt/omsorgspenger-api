@@ -589,7 +589,7 @@ class ApplicationTest {
                   "invalid_parameters": [
                     {
                       "type": "entity",
-                      "name": "mottakerAvDagerNorskIdentifikator",
+                      "name": "fnrMottaker",
                       "reason": "Ikke gyldig norskIdentifikator på mottaker av dager",
                       "invalid_value": "123456789"
                     }
@@ -598,7 +598,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SøknadOverføreDagerUtils.fullBody(mottakerAvDagerNorskIdentifikator = "123456789")
+            requestEntity = SøknadOverføreDagerUtils.fullBody(fnrMottaker = "123456789")
         )
     }
 
@@ -633,7 +633,7 @@ class ApplicationTest {
                 },
                 {
                   "type": "entity",
-                  "name": "mottakerAvDagerNorskIdentifikator",
+                  "name": "fnrMottaker",
                   "reason": "Ikke gyldig norskIdentifikator på mottaker av dager",
                   "invalid_value": "123456789"
                 }
@@ -642,7 +642,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SøknadOverføreDagerUtils.fullBodyMedMedlemskap(mottakerAvDagerNorskIdentifikator = "123456789", arbeidssituasjon = listOf(), landkode = "")
+            requestEntity = SøknadOverføreDagerUtils.fullBodyMedMedlemskap(fnrMottaker = "123456789", arbeidssituasjon = listOf(), landkode = "")
         )
     }
 

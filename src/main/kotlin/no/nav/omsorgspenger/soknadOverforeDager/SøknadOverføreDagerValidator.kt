@@ -45,16 +45,15 @@ internal fun SøknadOverføreDager.valider() {
         )
     }
 
-    //TODO: Trenger validering på antall dager(Kanskje maks 10? Avventer svar fra analyse)
     //TODO:Legg til validering på mottaker når format er avklart med frontend
-    if(mottakerAvDagerNorskIdentifikator != null){  //TODO: Fjerne null sjekk når klient sender med. Mottaker skal alltid være satt
-        if(!mottakerAvDagerNorskIdentifikator.erGyldigNorskIdentifikator()){
+    if(fnrMottaker != null){  //TODO: Fjerne null sjekk når klient sender med. Mottaker skal alltid være satt
+        if(!fnrMottaker.erGyldigNorskIdentifikator()){
             violations.add(
                 Violation(
-                    parameterName = "mottakerAvDagerNorskIdentifikator",
+                    parameterName = "fnrMottaker",
                     parameterType = ParameterType.ENTITY,
                     reason = "Ikke gyldig norskIdentifikator på mottaker av dager",
-                    invalidValue = mottakerAvDagerNorskIdentifikator
+                    invalidValue = fnrMottaker
                 )
             )
         }

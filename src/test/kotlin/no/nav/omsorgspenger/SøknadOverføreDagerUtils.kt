@@ -10,7 +10,7 @@ class SøknadOverføreDagerUtils {
         fun fullBody(harSamfunnskritiskJobb: Boolean = true,
                      arbeidssituasjon: List<Arbeidssituasjon> = listOf(Arbeidssituasjon.SELVSTENDIGNÆRINGSDRIVENDE),
                      landkode: String = "DK",
-                     mottakerAvDagerNorskIdentifikator: String = "26104500284"
+                     fnrMottaker: String = "26104500284"
         ): String {
             //language=JSON
             val arbeidssituasjonSomJson = jacksonObjectMapper().dusseldorfConfigured().writerWithDefaultPrettyPrinter().writeValueAsString(arbeidssituasjon)
@@ -28,7 +28,7 @@ class SøknadOverføreDagerUtils {
                   "harForståttRettigheterOgPlikter": true,
                   "harBekreftetOpplysninger": true,
                   "antallDager": 5,
-                  "mottakerAvDagerNorskIdentifikator": "$mottakerAvDagerNorskIdentifikator",
+                  "fnrMottaker": "$fnrMottaker",
                   "harSamfunnskritiskJobb": $harSamfunnskritiskJobb
                 }
             """.trimIndent()
@@ -36,7 +36,7 @@ class SøknadOverføreDagerUtils {
 
         fun fullBodyMedMedlemskap(arbeidssituasjon: List<Arbeidssituasjon> = listOf(Arbeidssituasjon.SELVSTENDIGNÆRINGSDRIVENDE),
                      landkode: String = "DK",
-                     mottakerAvDagerNorskIdentifikator: String = "26104500284"
+                                  fnrMottaker: String = "26104500284"
         ): String {
             //language=JSON
             val arbeidssituasjonSomJson = jacksonObjectMapper().dusseldorfConfigured().writerWithDefaultPrettyPrinter().writeValueAsString(arbeidssituasjon)
@@ -68,7 +68,7 @@ class SøknadOverføreDagerUtils {
                   "harForståttRettigheterOgPlikter": true,
                   "harBekreftetOpplysninger": true,
                   "antallDager": 5,
-                  "mottakerAvDagerNorskIdentifikator": "$mottakerAvDagerNorskIdentifikator"
+                  "fnrMottaker": "$fnrMottaker"
                 }
             """.trimIndent()
         }

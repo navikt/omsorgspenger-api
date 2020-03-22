@@ -20,7 +20,7 @@ internal class SøknadOverføreDagerValideringsTest {
         val søknadOverføreDager = SøknadOverføreDager(
             språk = "nb",
             antallDager = 5,
-            mottakerAvDagerNorskIdentifikator = gyldigFodselsnummerA,
+            fnrMottaker = gyldigFodselsnummerA,
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -47,7 +47,7 @@ internal class SøknadOverføreDagerValideringsTest {
         val søknadOverføreDager = SøknadOverføreDager(
             språk = "nb",
             antallDager = 5,
-            mottakerAvDagerNorskIdentifikator = dNummerA,
+            fnrMottaker = dNummerA,
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -76,7 +76,7 @@ internal class SøknadOverføreDagerValideringsTest {
         val søknadOverføreDager = SøknadOverføreDager(
             språk = "nb",
             antallDager = 5,
-            mottakerAvDagerNorskIdentifikator = gyldigFodselsnummerA,
+            fnrMottaker = gyldigFodselsnummerA,
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -103,7 +103,7 @@ internal class SøknadOverføreDagerValideringsTest {
         val søknadOverføreDager = SøknadOverføreDager(
             språk = "nb",
             antallDager = 5,
-            mottakerAvDagerNorskIdentifikator = gyldigFodselsnummerA,
+            fnrMottaker = gyldigFodselsnummerA,
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -130,7 +130,7 @@ internal class SøknadOverføreDagerValideringsTest {
         val søknadOverføreDager = SøknadOverføreDager(
             språk = "nb",
             antallDager = 5,
-            mottakerAvDagerNorskIdentifikator = gyldigFodselsnummerA,
+            fnrMottaker = gyldigFodselsnummerA,
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -155,7 +155,7 @@ internal class SøknadOverføreDagerValideringsTest {
         val søknadOverføreDager = SøknadOverføreDager(
             språk = "nb",
             antallDager = 5,
-            mottakerAvDagerNorskIdentifikator = "111111111",
+            fnrMottaker = "111111111",
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
