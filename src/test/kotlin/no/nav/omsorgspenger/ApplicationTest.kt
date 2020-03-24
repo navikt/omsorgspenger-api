@@ -646,6 +646,36 @@ class ApplicationTest {
         )
     }
 
+    @Test
+    fun `Sende full søknad for overføring av dager hvor personnummer for fosterbarn er ugyldig`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-omsorgsdager",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "fosterbarn[0].fødselsnummer",
+                      "reason": "Ikke gyldig fødselsnummer.",
+                      "invalid_value": "111"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.fullBodyMedMedlemskap(fnrFosterbarn = "111")
+        )
+    }
+
     private fun requestAndAssert(
         httpMethod: HttpMethod,
         path: String,

@@ -28,14 +28,22 @@ class SøknadOverføreDagerUtils {
                   "harBekreftetOpplysninger": true,
                   "antallDager": 5,
                   "fnrMottaker": "$fnrMottaker",
-                  "antallBarn": 2
+                  "antallBarn": 2,
+                  "fosterbarn": [
+                    {
+                      "fornavn": "fornavnsen",
+                      "etternavn": "etternavnsen",
+                      "fødselsnummer": "30116404369"
+                    }
+                  ]
                 }
             """.trimIndent()
         }
 
         fun fullBodyMedMedlemskap(arbeidssituasjon: List<Arbeidssituasjon> = listOf(Arbeidssituasjon.SELVSTENDIGNÆRINGSDRIVENDE),
-                     landkode: String = "DK",
-                                  fnrMottaker: String = "26104500284"
+                                  landkode: String = "DK",
+                                  fnrMottaker: String = "26104500284",
+                                  fnrFosterbarn: String = "30116404369"
         ): String {
             //language=JSON
             val arbeidssituasjonSomJson = jacksonObjectMapper().dusseldorfConfigured().writerWithDefaultPrettyPrinter().writeValueAsString(arbeidssituasjon)
@@ -68,7 +76,14 @@ class SøknadOverføreDagerUtils {
                   "harBekreftetOpplysninger": true,
                   "antallDager": 5,
                   "fnrMottaker": "$fnrMottaker",
-                  "antallBarn": 2
+                  "antallBarn": 2,
+                  "fosterbarn": [
+                    {
+                      "fornavn": "fornavnsen",
+                      "etternavn": "etternavnsen",
+                      "fødselsnummer": "$fnrFosterbarn"
+                    }
+                  ]
                 }
             """.trimIndent()
         }

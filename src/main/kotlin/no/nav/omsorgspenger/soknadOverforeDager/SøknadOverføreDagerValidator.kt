@@ -23,6 +23,8 @@ internal fun SøknadOverføreDager.valider() {
 
     violations.addAll(medlemskap.valider())
 
+    fosterbarn?.let { violations.addAll(validerFosterbarn(it)) }
+
     if (!harBekreftetOpplysninger) {
         violations.add(
             Violation(
@@ -61,4 +63,19 @@ internal fun SøknadOverføreDager.valider() {
         throw Throwblem(ValidationProblemDetails(violations))
     }
 
+}
+
+private fun validerFosterbarn(fosterbarn: List<Fosterbarn>) = mutableSetOf<Violation>().apply {
+    fosterbarn.mapIndexed { index, barn ->
+        if (!barn.fødselsnummer.erGyldigNorskIdentifikator()) {
+            add(
+                Violation(
+                    parameterName = "fosterbarn[$index].fødselsnummer",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Ikke gyldig fødselsnummer.",
+                    invalidValue = barn.fødselsnummer
+                )
+            )
+        }
+    }
 }
