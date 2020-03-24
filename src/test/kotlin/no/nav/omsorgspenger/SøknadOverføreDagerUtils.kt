@@ -8,7 +8,6 @@ class SøknadOverføreDagerUtils {
     companion object {
 
         fun fullBody(arbeidssituasjon: List<Arbeidssituasjon> = listOf(Arbeidssituasjon.SELVSTENDIGNÆRINGSDRIVENDE),
-                     landkode: String = "DK",
                      fnrMottaker: String = "26104500284"
         ): String {
             //language=JSON
@@ -28,7 +27,6 @@ class SøknadOverføreDagerUtils {
                   "harBekreftetOpplysninger": true,
                   "antallDager": 5,
                   "fnrMottaker": "$fnrMottaker",
-                  "antallBarn": 2,
                   "fosterbarn": [
                     {
                       "fornavn": "fornavnsen",
@@ -76,7 +74,6 @@ class SøknadOverføreDagerUtils {
                   "harBekreftetOpplysninger": true,
                   "antallDager": 5,
                   "fnrMottaker": "$fnrMottaker",
-                  "antallBarn": 2,
                   "fosterbarn": [
                     {
                       "fornavn": "fornavnsen",

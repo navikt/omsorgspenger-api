@@ -38,8 +38,7 @@ internal class SøknadOverføreDagerValideringsTest {
             harBekreftetOpplysninger = true,
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
-            ),
-            antallBarn = 2
+            )
         )
         søknadOverføreDager.valider()
     }
@@ -66,8 +65,7 @@ internal class SøknadOverføreDagerValideringsTest {
             harBekreftetOpplysninger = true,
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
-            ),
-            antallBarn = 2
+            )
         )
         søknadOverføreDager.valider()
     }
@@ -96,8 +94,7 @@ internal class SøknadOverføreDagerValideringsTest {
             harBekreftetOpplysninger = false,
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
-            ),
-            antallBarn = 2
+            )
         )
         søknadOverføreDager.valider()
     }
@@ -124,8 +121,7 @@ internal class SøknadOverføreDagerValideringsTest {
             harBekreftetOpplysninger = true,
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
-            ),
-            antallBarn = 2
+            )
         )
         søknadOverføreDager.valider()
     }
@@ -150,8 +146,7 @@ internal class SøknadOverføreDagerValideringsTest {
             ),
             harForståttRettigheterOgPlikter = true,
             harBekreftetOpplysninger = true,
-            arbeidssituasjon = listOf(),
-            antallBarn = 2
+            arbeidssituasjon = listOf()
         )
         søknadOverføreDager.valider()
     }
@@ -178,8 +173,7 @@ internal class SøknadOverføreDagerValideringsTest {
             harBekreftetOpplysninger = true,
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
-            ),
-            antallBarn = 2
+            )
         )
         søknadOverføreDager.valider()
     }
@@ -207,7 +201,6 @@ internal class SøknadOverføreDagerValideringsTest {
             arbeidssituasjon = listOf(
                 Arbeidssituasjon.ARBEIDSTAKER
             ),
-            antallBarn = 2,
             fosterbarn = listOf(
                 Fosterbarn(
                     fornavn = "forvansen",

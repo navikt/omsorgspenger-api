@@ -43,7 +43,6 @@ class SøknadOverføreDagerService(
             harForståttRettigheterOgPlikter = søknadOverføreDager.harForståttRettigheterOgPlikter,
             harBekreftetOpplysninger = søknadOverføreDager.harBekreftetOpplysninger,
             arbeidssituasjon = søknadOverføreDager.arbeidssituasjon,
-            antallBarn = søknadOverføreDager.antallBarn,
             fosterbarn = søknadOverføreDager.fosterbarn
         )
 
