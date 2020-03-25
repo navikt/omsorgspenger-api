@@ -441,7 +441,6 @@ class ApplicationTest {
         )
     }
 
-
     @Test
     fun `Test haandtering av vedlegg`() {
         val cookie = getAuthCookie(fnr)
@@ -673,6 +672,56 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadOverføreDagerUtils.fullBodyMedMedlemskap(fnrFosterbarn = "111")
+        )
+    }
+
+    @Test
+    fun `Sende full gyldig søknad for ettersending`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/ettersend",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SøknadEttersendingUtils.fullBody(jpegUrl, pdfUrl)
+        )
+    }
+
+    @Test
+    fun `Sende søknad for ettersending hvor et vedlegg ikke finnes`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val finnesIkkeUrl = jpegUrl.substringBeforeLast("/").plus("/").plus(UUID.randomUUID().toString())
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/ettersend",
+            expectedResponse ="""
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "vedlegg",
+                  "reason": "Mottok referanse til 2 vedlegg, men fant kun 1 vedlegg.",
+                  "invalid_value": [
+                    "$jpegUrl",
+                    "$finnesIkkeUrl"
+                  ]
+                }
+              ]
+            }""".trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadEttersendingUtils.fullBody(jpegUrl, finnesIkkeUrl)
         )
     }
 

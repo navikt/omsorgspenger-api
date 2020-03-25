@@ -14,7 +14,28 @@ private val vedleggTooLargeProblemDetails = DefaultProblemDetails( //TODO: Denne
 internal fun SøknadEttersending.valider() {
     val violations: MutableSet<Violation> = mutableSetOf<Violation>()
 
-    //TODO:Validering
+    if (!harBekreftetOpplysninger) {
+        violations.add(
+            Violation(
+                parameterName = "harBekreftetOpplysninger",
+                parameterType = ParameterType.ENTITY,
+                reason = "Opplysningene må bekreftes for å sende inn søknad.",
+                invalidValue = false
+
+            )
+        )
+    }
+
+    if (!harForståttRettigheterOgPlikter) {
+        violations.add(
+            Violation(
+                parameterName = "harForståttRettigheterOgPlikter",
+                parameterType = ParameterType.ENTITY,
+                reason = "Må ha forstått rettigheter og plikter for å sende inn søknad.",
+                invalidValue = false
+            )
+        )
+    }
 
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
