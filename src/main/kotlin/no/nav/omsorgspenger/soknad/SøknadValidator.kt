@@ -144,7 +144,7 @@ internal fun Søknad.valider() {
     }
 }
 
-private fun Medlemskap.valider(): MutableSet<Violation> {
+internal fun Medlemskap.valider(): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
     // Booleans (For å forsikre at de er satt og ikke blir default false)

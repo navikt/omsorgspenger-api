@@ -49,7 +49,8 @@ class ApplicationTest {
             .stubK9DokumentHealth()
             .stubOmsorgsoknadMottakHealth()
             .stubOppslagHealth()
-            .stubLeggSoknadTilProsessering()
+            .stubLeggSoknadTilProsessering("v1/soknad")
+            .stubLeggSoknadTilProsessering("v1/soknad/overfore-dager")
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9Dokument()
@@ -494,6 +495,184 @@ class ApplicationTest {
             contentType = "image/png",
             fileName = "big_picture.png",
             expectedCode = HttpStatusCode.PayloadTooLarge
+        )
+    }
+
+    @Test
+    fun `Sende full gyldig søknad for overføring av dager`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-omsorgsdager",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.fullBody()
+        )
+    }
+
+    @Test
+    fun `Sende full søknad for overføring av dager hvor listen over arbeidssituasjon er tom`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-omsorgsdager",
+            expectedResponse = """
+                    {
+                      "type": "/problem-details/invalid-request-parameters",
+                      "title": "invalid-request-parameters",
+                      "status": 400,
+                      "detail": "Requesten inneholder ugyldige paramtere.",
+                      "instance": "about:blank",
+                      "invalid_parameters": [
+                        {
+                          "type": "entity",
+                          "name": "arbeidssituasjon",
+                          "reason": "List over arbeidssituasjon kan ikke være tomt. Må inneholde minst 1 verdi",
+                          "invalid_value": []
+                        }
+                      ]
+                    }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.fullBody(arbeidssituasjon = listOf())
+        )
+    }
+
+    @Test
+    fun `Sende full søknad for overføring av dager hvor landkode er tom`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-omsorgsdager",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "Utenlandsopphold[0].landkode",
+                      "reason": "Landkode er ikke satt",
+                      "invalid_value": "landkode"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.fullBodyMedMedlemskap(landkode = "")
+        )
+    }
+
+    @Test
+    fun `Sende full søknad for overføring av dager hvor personnummer for mottaker er ugyldig`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-omsorgsdager",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "fnrMottaker",
+                      "reason": "Ikke gyldig norskIdentifikator på mottaker av dager",
+                      "invalid_value": "123456789"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.fullBody(fnrMottaker = "123456789")
+        )
+    }
+
+    @Test
+    fun `Sende full søknad for overføring av dager hvor det er flere feil`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-omsorgsdager",
+            expectedResponse = """
+                        {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "arbeidssituasjon",
+                  "reason": "List over arbeidssituasjon kan ikke være tomt. Må inneholde minst 1 verdi",
+                  "invalid_value": [
+                    
+                  ]
+                },
+                {
+                  "type": "entity",
+                  "name": "Utenlandsopphold[0].landkode",
+                  "reason": "Landkode er ikke satt",
+                  "invalid_value": "landkode"
+                },
+                {
+                  "type": "entity",
+                  "name": "fnrMottaker",
+                  "reason": "Ikke gyldig norskIdentifikator på mottaker av dager",
+                  "invalid_value": "123456789"
+                }
+              ]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.fullBodyMedMedlemskap(fnrMottaker = "123456789", arbeidssituasjon = listOf(), landkode = "")
+        )
+    }
+
+    @Test
+    fun `Sende full søknad for overføring av dager hvor personnummer for fosterbarn er ugyldig`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-omsorgsdager",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "fosterbarn[0].fødselsnummer",
+                      "reason": "Ikke gyldig fødselsnummer.",
+                      "invalid_value": "111"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.fullBodyMedMedlemskap(fnrFosterbarn = "111")
         )
     }
 
