@@ -8,6 +8,9 @@ import io.ktor.locations.post
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import no.nav.omsorgspenger.ettersending.SøknadEttersending
+import no.nav.omsorgspenger.ettersending.SøknadEttersendingService
+import no.nav.omsorgspenger.ettersending.valider
 import no.nav.omsorgspenger.general.auth.IdTokenProvider
 import no.nav.omsorgspenger.general.getCallId
 import no.nav.omsorgspenger.soknadOverforeDager.SøknadOverføreDager
@@ -22,6 +25,7 @@ private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 fun Route.søknadApis(
     søknadService: SøknadService,
     søknadOverføreDagerService: SøknadOverføreDagerService,
+    søknadEttersendingService: SøknadEttersendingService,
     idTokenProvider: IdTokenProvider
 ) {
 
@@ -64,6 +68,27 @@ fun Route.søknadApis(
         )
 
         logger.trace("Søknad registrert.")
+        call.respond(HttpStatusCode.Accepted)
+    }
+
+    @Location("/soknad/ettersend")
+    class sendSoknadEttersending
+
+    post { _ : sendSoknadEttersending ->
+        logger.trace("Mottatt ny søknad for ettersending. Mapper søknad.")
+        val søknadEttersending = call.receive<SøknadEttersending>()
+        logger.trace("Søknad for ettersending mappet. Validerer")
+
+        søknadEttersending.valider()
+        logger.trace("Validering OK. Registrerer søknad for ettersending.")
+
+        søknadEttersendingService.registrer(
+            søknadEttersending = søknadEttersending,
+            callId = call.getCallId(),
+            idToken = idTokenProvider.getIdToken(call)
+        )
+
+        logger.trace("Søknad for ettersending registrert.")
         call.respond(HttpStatusCode.Accepted)
     }
 

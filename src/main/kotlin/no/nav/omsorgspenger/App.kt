@@ -34,6 +34,7 @@ import no.nav.helse.dusseldorf.ktor.metrics.init
 import no.nav.omsorgspenger.barn.BarnGateway
 import no.nav.omsorgspenger.barn.BarnService
 import no.nav.omsorgspenger.barn.barnApis
+import no.nav.omsorgspenger.ettersending.SøknadEttersendingService
 import no.nav.omsorgspenger.general.auth.IdTokenProvider
 import no.nav.omsorgspenger.general.auth.authorizationStatusPages
 import no.nav.omsorgspenger.general.systemauth.AccessTokenClientResolver
@@ -195,6 +196,11 @@ fun Application.omsorgpengesoknadapi() {
                 søknadOverføreDagerService = SøknadOverføreDagerService(
                     omsorgpengesøknadMottakGateway = omsorgpengesoknadMottakGateway,
                     søkerService = søkerService
+                ),
+                søknadEttersendingService = SøknadEttersendingService(
+                    omsorgpengesøknadMottakGateway = omsorgpengesoknadMottakGateway,
+                    søkerService = søkerService,
+                    vedleggService = vedleggService
                 )
             )
         }
