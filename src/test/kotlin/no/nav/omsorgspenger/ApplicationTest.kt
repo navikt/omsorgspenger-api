@@ -51,6 +51,7 @@ class ApplicationTest {
             .stubOppslagHealth()
             .stubLeggSoknadTilProsessering("v1/soknad")
             .stubLeggSoknadTilProsessering("v1/soknad/overfore-dager")
+            .stubLeggSoknadTilProsessering("v1/soknad/ettersend")
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9Dokument()
