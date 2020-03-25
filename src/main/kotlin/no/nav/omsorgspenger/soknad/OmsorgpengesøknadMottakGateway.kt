@@ -122,7 +122,7 @@ class OmsorgpengesøknadMottakGateway(
 
         val (request, _, result) = Operation.monitored(
             app = "omsorgspenger-api",
-            operation = "sende-soknad-til-prosessering",
+            operation = "sende-overfore-soknad-til-prosessering",
             resultResolver = { 202 == it.second.statusCode }
         ) { httpRequet.awaitStringResponseResult() }
 
@@ -131,7 +131,7 @@ class OmsorgpengesøknadMottakGateway(
             { error ->
                 logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
                 logger.error(error.toString())
-                throw IllegalStateException("Feil ved sending av søknad til prosessering.")
+                throw IllegalStateException("Feil ved sending av søknad om overføring av dager til prosessering.")
             }
         )
     }
