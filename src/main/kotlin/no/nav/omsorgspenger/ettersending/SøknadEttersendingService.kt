@@ -32,14 +32,26 @@ class SøknadEttersendingService(
 
         logger.info("Søker hentet. Validerer søker.")
         søker.validate()
+        logger.info("Søker Validert.")
 
         //TODO: Her må vedlegg hentes og validers
+        logger.trace("Henter ${søknadEttersending.vedlegg.size} vedlegg.")
+        val vedlegg = vedleggService.hentVedlegg(
+            idToken = idToken,
+            vedleggUrls = søknadEttersending.vedlegg,
+            callId = callId
+        )
+
+        logger.trace("Vedlegg hentet. Validerer vedlegg.")
+        vedlegg.validerVedlegg(søknadEttersending.vedlegg)
+        logger.info("Vedlegg validert")
 
         logger.info("Legger søknad for ettersending til prosessering")
 
         val komplettSøknadEttersending = KomplettSøknadEttersending(
             språk = søknadEttersending.språk,
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
+            vedlegg = vedlegg,
             harForståttRettigheterOgPlikter = søknadEttersending.harForståttRettigheterOgPlikter,
             harBekreftetOpplysninger = søknadEttersending.harBekreftetOpplysninger
         )
@@ -49,6 +61,14 @@ class SøknadEttersendingService(
             callId = callId
         )
 
-        logger.trace("Søknad for ettersending lagt til prosessering.")
+        logger.trace("Søknad lagt til prosessering. Sletter vedlegg.")
+
+        vedleggService.slettVedlegg(
+            vedleggUrls = søknadEttersending.vedlegg,
+            callId = callId,
+            idToken = idToken
+        )
+
+        logger.trace("Vedlegg slettet.")
     }
 }

@@ -93,14 +93,14 @@ class SøknadService(
         logger.trace("Søknad lagt til prosessering. Sletter vedlegg.")
 
         søknad.samværsavtale?.let {
-            vedleggService.slettVedleg(
+            vedleggService.slettVedlegg(
                 vedleggUrls = it,
                 callId = callId,
                 idToken = idToken
             )
         }
 
-        vedleggService.slettVedleg(
+        vedleggService.slettVedlegg(
             vedleggUrls = søknad.legeerklæring,
             callId = callId,
             idToken = idToken
