@@ -48,6 +48,7 @@ class SøknadEttersendingService(
         logger.info("Legger søknad for ettersending til prosessering")
 
         val komplettSøknadEttersending = KomplettSøknadEttersending(
+            søker = søker,
             språk = søknadEttersending.språk,
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
             vedlegg = vedlegg,
