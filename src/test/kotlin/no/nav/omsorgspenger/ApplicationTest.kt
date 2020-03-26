@@ -684,7 +684,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad/ettersend",
+            path = "/ettersend",
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
@@ -700,7 +700,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad/ettersend",
+            path = "/ettersend",
             expectedResponse ="""
             {
               "type": "/problem-details/invalid-request-parameters",
