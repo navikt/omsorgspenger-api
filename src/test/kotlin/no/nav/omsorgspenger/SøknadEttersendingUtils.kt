@@ -16,7 +16,9 @@ class SøknadEttersendingUtils {
                     "$vedleggUrl2"
                   ],
                   "harForståttRettigheterOgPlikter": true,
-                  "harBekreftetOpplysninger": true
+                  "harBekreftetOpplysninger": true,
+                  "beskrivelse": "Masse tekst",
+                  "søknadstype": "omsorgspenger"
                 }
             """.trimIndent()
         }

@@ -34,7 +34,6 @@ class SøknadEttersendingService(
         søker.validate()
         logger.info("Søker Validert.")
 
-        //TODO: Her må vedlegg hentes og validers
         logger.trace("Henter ${søknadEttersending.vedlegg.size} vedlegg.")
         val vedlegg = vedleggService.hentVedlegg(
             idToken = idToken,
@@ -53,7 +52,9 @@ class SøknadEttersendingService(
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
             vedlegg = vedlegg,
             harForståttRettigheterOgPlikter = søknadEttersending.harForståttRettigheterOgPlikter,
-            harBekreftetOpplysninger = søknadEttersending.harBekreftetOpplysninger
+            harBekreftetOpplysninger = søknadEttersending.harBekreftetOpplysninger,
+            beskrivelse = søknadEttersending.beskrivelse,
+            søknadstype = søknadEttersending.søknadstype
         )
 
         omsorgpengesøknadMottakGateway.leggTilProsesseringEttersending(

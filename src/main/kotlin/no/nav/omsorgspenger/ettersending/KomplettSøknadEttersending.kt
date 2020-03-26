@@ -8,5 +8,7 @@ data class KomplettSøknadEttersending (
     val mottatt: ZonedDateTime,
     val vedlegg: List<Vedlegg>,
     val harForståttRettigheterOgPlikter: Boolean,
-    val harBekreftetOpplysninger: Boolean
+    val harBekreftetOpplysninger: Boolean,
+    val beskrivelse: String,
+    val søknadstype: Søknadstype
 )
