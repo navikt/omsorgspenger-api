@@ -45,6 +45,7 @@ internal fun Søknad.valider() {
         }
     }
 
+/*
     // legeerklaring
     if (legeerklæring.isEmpty()) {
         violations.add(
@@ -56,7 +57,7 @@ internal fun Søknad.valider() {
             )
         )
     }
-
+*/
     // samvarsavtale
     if (samværsavtale != null) {
         if (samværsavtale.isEmpty()) {
