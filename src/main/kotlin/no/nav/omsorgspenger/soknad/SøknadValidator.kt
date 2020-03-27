@@ -44,6 +44,7 @@ internal fun Søknad.valider() {
             )
         }
     }
+
 /*
     // legeerklaring
     if (legeerklæring.isEmpty()) {
