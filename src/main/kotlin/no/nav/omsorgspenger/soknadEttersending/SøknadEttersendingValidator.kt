@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.ettersending
+package no.nav.omsorgspenger.soknadEttersending
 
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.omsorgspenger.vedlegg.Vedlegg

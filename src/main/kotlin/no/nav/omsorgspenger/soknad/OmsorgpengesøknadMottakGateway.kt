@@ -16,7 +16,7 @@ import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
-import no.nav.omsorgspenger.ettersending.KomplettSøknadEttersending
+import no.nav.omsorgspenger.soknadEttersending.KomplettSøknadEttersending
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.auth.ApiGatewayApiKey
 import no.nav.omsorgspenger.soknadOverforeDager.KomplettSøknadOverføreDager

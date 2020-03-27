@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.ettersending
+package no.nav.omsorgspenger.soknadEttersending
 
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.auth.IdToken
@@ -55,7 +55,8 @@ class SøknadEttersendingService(
             harForståttRettigheterOgPlikter = søknadEttersending.harForståttRettigheterOgPlikter,
             harBekreftetOpplysninger = søknadEttersending.harBekreftetOpplysninger,
             beskrivelse = søknadEttersending.beskrivelse,
-            søknadstype = søknadEttersending.søknadstype
+            søknadstype = søknadEttersending.søknadstype,
+            medlemskap = søknadEttersending.medlemskap
         )
 
         omsorgpengesøknadMottakGateway.leggTilProsesseringEttersending(

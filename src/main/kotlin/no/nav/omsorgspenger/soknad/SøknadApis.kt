@@ -8,9 +8,9 @@ import io.ktor.locations.post
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
-import no.nav.omsorgspenger.ettersending.SøknadEttersending
-import no.nav.omsorgspenger.ettersending.SøknadEttersendingService
-import no.nav.omsorgspenger.ettersending.valider
+import no.nav.omsorgspenger.soknadEttersending.SøknadEttersending
+import no.nav.omsorgspenger.soknadEttersending.SøknadEttersendingService
+import no.nav.omsorgspenger.soknadEttersending.valider
 import no.nav.omsorgspenger.general.auth.IdTokenProvider
 import no.nav.omsorgspenger.general.getCallId
 import no.nav.omsorgspenger.soknadOverforeDager.SøknadOverføreDager

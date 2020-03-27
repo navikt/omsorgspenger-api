@@ -1,6 +1,7 @@
-package no.nav.omsorgspenger.ettersending
+package no.nav.omsorgspenger.soknadEttersending
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import no.nav.omsorgspenger.soknad.Medlemskap
 import java.net.URL
 
 data class SøknadEttersending(
@@ -9,7 +10,8 @@ data class SøknadEttersending(
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
     val beskrivelse: String,
-    val søknadstype: Søknadstype
+    val søknadstype: Søknadstype,
+    val medlemskap: Medlemskap
 )
 
 enum class Søknadstype() {

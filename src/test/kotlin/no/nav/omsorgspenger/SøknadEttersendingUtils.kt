@@ -18,7 +18,13 @@ class SøknadEttersendingUtils {
                   "harForståttRettigheterOgPlikter": true,
                   "harBekreftetOpplysninger": true,
                   "beskrivelse": "Masse tekst",
-                  "søknadstype": "omsorgspenger"
+                  "søknadstype": "omsorgspenger",
+                  "medlemskap": {
+                    "harBoddIUtlandetSiste12Mnd": false,
+                    "utenlandsoppholdSiste12Mnd": [],
+                    "skalBoIUtlandetNeste12Mnd": false,
+                    "utenlandsoppholdNeste12Mnd": []
+                  }
                 }
             """.trimIndent()
         }
