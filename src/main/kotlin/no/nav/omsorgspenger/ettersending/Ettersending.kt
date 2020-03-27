@@ -10,9 +10,5 @@ data class Ettersending(
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
     val beskrivelse: String,
-    val søknadstype: Søknadstype //TODO: Mulig vi endrer til string
+    val søknadstype: String
 )
-
-enum class Søknadstype() {
-    @JsonProperty("omsorgspenger") OMSORGSPENGER
-}
