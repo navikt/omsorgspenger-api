@@ -51,7 +51,7 @@ class ApplicationTest {
             .stubOppslagHealth()
             .stubLeggSoknadTilProsessering("v1/soknad")
             .stubLeggSoknadTilProsessering("v1/soknad/overfore-dager")
-            .stubLeggSoknadTilProsessering("v1/soknad/ettersend")
+            .stubLeggSoknadTilProsessering("v1/ettersend")
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9Dokument()
@@ -677,7 +677,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende full gyldig søknad for ettersending`(){
+    fun `Sende full gyldig ettersending`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -688,12 +688,12 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SøknadEttersendingUtils.fullBody(jpegUrl, pdfUrl)
+            requestEntity = EttersendingUtils.fullBody(jpegUrl, pdfUrl)
         )
     }
 
     @Test
-    fun `Sende søknad for ettersending hvor et vedlegg ikke finnes`(){
+    fun `Sende ettersending hvor et vedlegg ikke finnes`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val finnesIkkeUrl = jpegUrl.substringBeforeLast("/").plus("/").plus(UUID.randomUUID().toString())
@@ -722,7 +722,7 @@ class ApplicationTest {
             }""".trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SøknadEttersendingUtils.fullBody(jpegUrl, finnesIkkeUrl)
+            requestEntity = EttersendingUtils.fullBody(jpegUrl, finnesIkkeUrl)
         )
     }
 

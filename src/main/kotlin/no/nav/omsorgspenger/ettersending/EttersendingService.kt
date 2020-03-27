@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.soknadEttersending
+package no.nav.omsorgspenger.ettersending
 
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.auth.IdToken
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
-class SøknadEttersendingService(
+class EttersendingService(
     private val omsorgpengesøknadMottakGateway: OmsorgpengesøknadMottakGateway,
     private val søkerService: SøkerService,
     private val vedleggService: VedleggService
@@ -23,51 +23,50 @@ class SøknadEttersendingService(
     }
 
     suspend fun registrer(
-        søknadEttersending: SøknadEttersending,
+        ettersending: Ettersending,
         idToken: IdToken,
         callId: CallId
     ){
-        logger.info("Registrerer søknad for ettersending. Henter søker")
+        logger.info("Registrerer ettersending. Henter søker")
         val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
 
         logger.info("Søker hentet. Validerer søker.")
         søker.validate()
         logger.info("Søker Validert.")
 
-        logger.trace("Henter ${søknadEttersending.vedlegg.size} vedlegg.")
+        logger.trace("Henter ${ettersending.vedlegg.size} vedlegg.")
         val vedlegg = vedleggService.hentVedlegg(
             idToken = idToken,
-            vedleggUrls = søknadEttersending.vedlegg,
+            vedleggUrls = ettersending.vedlegg,
             callId = callId
         )
 
         logger.trace("Vedlegg hentet. Validerer vedlegg.")
-        vedlegg.validerVedlegg(søknadEttersending.vedlegg)
+        vedlegg.validerVedlegg(ettersending.vedlegg)
         logger.info("Vedlegg validert")
 
-        logger.info("Legger søknad for ettersending til prosessering")
+        logger.info("Legger ettersending til prosessering")
 
-        val komplettSøknadEttersending = KomplettSøknadEttersending(
+        val komplettEttersending = KomplettEttersending(
             søker = søker,
-            språk = søknadEttersending.språk,
+            språk = ettersending.språk,
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
             vedlegg = vedlegg,
-            harForståttRettigheterOgPlikter = søknadEttersending.harForståttRettigheterOgPlikter,
-            harBekreftetOpplysninger = søknadEttersending.harBekreftetOpplysninger,
-            beskrivelse = søknadEttersending.beskrivelse,
-            søknadstype = søknadEttersending.søknadstype,
-            medlemskap = søknadEttersending.medlemskap
+            harForståttRettigheterOgPlikter = ettersending.harForståttRettigheterOgPlikter,
+            harBekreftetOpplysninger = ettersending.harBekreftetOpplysninger,
+            beskrivelse = ettersending.beskrivelse,
+            søknadstype = ettersending.søknadstype
         )
 
         omsorgpengesøknadMottakGateway.leggTilProsesseringEttersending(
-            soknad = komplettSøknadEttersending,
+            ettersending = komplettEttersending,
             callId = callId
         )
 
-        logger.trace("Søknad lagt til prosessering. Sletter vedlegg.")
+        logger.trace("Ettersending lagt til prosessering. Sletter vedlegg.")
 
         vedleggService.slettVedlegg(
-            vedleggUrls = søknadEttersending.vedlegg,
+            vedleggUrls = ettersending.vedlegg,
             callId = callId,
             idToken = idToken
         )

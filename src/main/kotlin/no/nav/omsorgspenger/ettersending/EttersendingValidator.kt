@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.soknadEttersending
+package no.nav.omsorgspenger.ettersending
 
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.omsorgspenger.vedlegg.Vedlegg
@@ -11,7 +11,7 @@ private val vedleggTooLargeProblemDetails = DefaultProblemDetails( //TODO: Denne
     detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB."
 )
 
-internal fun SøknadEttersending.valider() {
+internal fun Ettersending.valider() {
     val violations: MutableSet<Violation> = mutableSetOf<Violation>()
 
     if (!harBekreftetOpplysninger) {
@@ -19,7 +19,7 @@ internal fun SøknadEttersending.valider() {
             Violation(
                 parameterName = "harBekreftetOpplysninger",
                 parameterType = ParameterType.ENTITY,
-                reason = "Opplysningene må bekreftes for å sende inn søknad.",
+                reason = "Opplysningene må bekreftes for å sende inn ettersending.",
                 invalidValue = false
 
             )
@@ -31,7 +31,7 @@ internal fun SøknadEttersending.valider() {
             Violation(
                 parameterName = "harForståttRettigheterOgPlikter",
                 parameterType = ParameterType.ENTITY,
-                reason = "Må ha forstått rettigheter og plikter for å sende inn søknad.",
+                reason = "Må ha forstått rettigheter og plikter for å sende inn ettersending.",
                 invalidValue = false
             )
         )

@@ -8,9 +8,9 @@ import io.ktor.locations.post
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
-import no.nav.omsorgspenger.soknadEttersending.SøknadEttersending
-import no.nav.omsorgspenger.soknadEttersending.SøknadEttersendingService
-import no.nav.omsorgspenger.soknadEttersending.valider
+import no.nav.omsorgspenger.ettersending.Ettersending
+import no.nav.omsorgspenger.ettersending.EttersendingService
+import no.nav.omsorgspenger.ettersending.valider
 import no.nav.omsorgspenger.general.auth.IdTokenProvider
 import no.nav.omsorgspenger.general.getCallId
 import no.nav.omsorgspenger.soknadOverforeDager.SøknadOverføreDager
@@ -25,7 +25,7 @@ private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 fun Route.søknadApis(
     søknadService: SøknadService,
     søknadOverføreDagerService: SøknadOverføreDagerService,
-    søknadEttersendingService: SøknadEttersendingService,
+    ettersendingService: EttersendingService,
     idTokenProvider: IdTokenProvider
 ) {
 
@@ -72,23 +72,23 @@ fun Route.søknadApis(
     }
 
     @Location("/ettersend")
-    class sendSoknadEttersending
+    class sendEttersending
 
-    post { _ : sendSoknadEttersending ->
-        logger.trace("Mottatt ny søknad for ettersending. Mapper søknad.")
-        val søknadEttersending = call.receive<SøknadEttersending>()
-        logger.trace("Søknad for ettersending mappet. Validerer")
+    post { _ : sendEttersending ->
+        logger.trace("Mottatt ettersending. Mapper søknad.")
+        val ettersending = call.receive<Ettersending>()
+        logger.trace("Ettersending mappet. Validerer")
 
-        søknadEttersending.valider()
-        logger.trace("Validering OK. Registrerer søknad for ettersending.")
+        ettersending.valider()
+        logger.trace("Validering OK. Registrerer ettersending.")
 
-        søknadEttersendingService.registrer(
-            søknadEttersending = søknadEttersending,
+        ettersendingService.registrer(
+            ettersending = ettersending,
             callId = call.getCallId(),
             idToken = idTokenProvider.getIdToken(call)
         )
 
-        logger.trace("Søknad for ettersending registrert.")
+        logger.trace("Ettersending registrert.")
         call.respond(HttpStatusCode.Accepted)
     }
 

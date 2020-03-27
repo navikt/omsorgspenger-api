@@ -16,7 +16,7 @@ import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
-import no.nav.omsorgspenger.soknadEttersending.KomplettSøknadEttersending
+import no.nav.omsorgspenger.ettersending.KomplettEttersending
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.auth.ApiGatewayApiKey
 import no.nav.omsorgspenger.soknadOverforeDager.KomplettSøknadOverføreDager
@@ -51,7 +51,7 @@ class OmsorgpengesøknadMottakGateway(
 
     private val komplettUrlEttersend = Url.buildURL(
         baseUrl = baseUrl,
-        pathParts = listOf("v1", "soknad/ettersend")
+        pathParts = listOf("v1", "ettersend")
     ).toString()
 
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
@@ -143,13 +143,13 @@ class OmsorgpengesøknadMottakGateway(
     }
 
     suspend fun leggTilProsesseringEttersending(
-        soknad: KomplettSøknadEttersending,
+        ettersending: KomplettEttersending,
         callId: CallId
     ) {
         val authorizationHeader =
             cachedAccessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes).asAuthoriationHeader()
 
-        val body = objectMapper.writeValueAsBytes(soknad)
+        val body = objectMapper.writeValueAsBytes(ettersending)
         val contentStream = { ByteArrayInputStream(body) }
 
         val httpRequet = komplettUrlEttersend
@@ -166,7 +166,7 @@ class OmsorgpengesøknadMottakGateway(
 
         val (request, _, result) = Operation.monitored(
             app = "omsorgspenger-api",
-            operation = "sende-ettersending-soknad-til-prosessering",
+            operation = "sende-ettersending-til-prosessering",
             resultResolver = { 202 == it.second.statusCode }
         ) { httpRequet.awaitStringResponseResult() }
 
@@ -175,7 +175,7 @@ class OmsorgpengesøknadMottakGateway(
             { error ->
                 logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
                 logger.error(error.toString())
-                throw IllegalStateException("Feil ved sending av søknad for ettersending til prosessering.")
+                throw IllegalStateException("Feil ved sending av ettersending til prosessering.")
             }
         )
     }

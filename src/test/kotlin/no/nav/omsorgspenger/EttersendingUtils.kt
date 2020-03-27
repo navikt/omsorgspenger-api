@@ -1,6 +1,6 @@
 package no.nav.omsorgspenger
 
-class SøknadEttersendingUtils {
+class EttersendingUtils {
     companion object {
         fun fullBody(
             vedleggUrl1: String,
