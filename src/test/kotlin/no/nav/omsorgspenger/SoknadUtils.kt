@@ -26,9 +26,7 @@ class SoknadUtils {
                   },
                   "sammeAddresse": true,
                   "relasjonTilBarnet": "$relasjonTilBarnet",
-                  "legeerklæring": [
-                    "$legeerklæringUrl"
-                  ],
+                  "legeerklæring": [],
                   "samværsavtale": [
                     "$samværsavtaleUrl"
                   ],
@@ -77,9 +75,7 @@ class SoknadUtils {
                   },
                   "sammeAddresse": true,
                   "relasjonTilBarnet": "mor",
-                  "legeerklæring": [
-                    "$legeerklæringUrl"
-                  ],
+                  "legeerklæring": [],
                   "samværsavtale": [
                     "$samværsavtaleUrl"
                   ],
@@ -126,9 +122,7 @@ class SoknadUtils {
                   },
                   "sammeAddresse": true,
                   "relasjonTilBarnet": "mor",
-                  "legeerklæring": [
-                    "$legeerklæringUrl"
-                  ],
+                  "legeerklæring": [],
                   "samværsavtale": [
                     "$samværsavtaleUrl"
                   ],

@@ -26,6 +26,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+
 private const val fnr = "290990123456"
 private const val ikkeMyndigFnr = "12125012345"
 private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()

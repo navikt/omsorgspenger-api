@@ -49,10 +49,13 @@ internal class SøknadValideringsTest {
                 URL("http://localhost:8080/vedlegg/1"),
                 URL("http://localhost:8080/vedlegg/2")
             ),
+            /*
             legeerklæring = listOf(
                 URL("http://localhost:8080/vedlegg/3"),
                 URL("http://localhost:8080/vedlegg/4")
             )
+            */
+            legeerklæring = emptyList()
         ).valider()
     }
 
@@ -85,9 +88,12 @@ internal class SøknadValideringsTest {
                 )
             ),
             samværsavtale = null,
+            legeerklæring = emptyList()
+            /*
             legeerklæring = listOf(
                 URL("http://localhost:8080/vedlegg/1")
             )
+            */
         ).valider()
     }
 
@@ -118,9 +124,12 @@ internal class SøknadValideringsTest {
                 skalBoIUtlandetNeste12Mnd = false
             ),
             samværsavtale = null,
+            legeerklæring = emptyList()
+            /*
             legeerklæring = listOf(
                 URL("http://localhodt:8080/vedlegg/1")
             )
+            */
         ).valider()
     }
 
@@ -145,9 +154,12 @@ internal class SøknadValideringsTest {
                 skalBoIUtlandetNeste12Mnd = false
             ),
             samværsavtale = null,
+            /*
             legeerklæring = listOf(
                 URL("http://localhodt:8080/vedlegg/1")
             )
+            */
+            legeerklæring = emptyList()
         ).valider()
     }
 
@@ -174,9 +186,12 @@ internal class SøknadValideringsTest {
             ),
             samværsavtale = listOf(
             ),
+            /*
             legeerklæring = listOf(
                 URL("http://localhost:8080/vedlegg/1")
             )
+            */
+            legeerklæring = emptyList()
         ).valider()
     }
 }
