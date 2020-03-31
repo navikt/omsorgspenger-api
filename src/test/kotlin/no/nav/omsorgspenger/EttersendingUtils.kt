@@ -4,7 +4,9 @@ class EttersendingUtils {
     companion object {
         fun fullBody(
             vedleggUrl1: String,
-            vedleggUrl2: String
+            vedleggUrl2: String,
+            beskrivelse : String = "Masse tekst",
+            søknadstype: String = "omsorgspenger"
         ): String {
             //language=JSON
 
@@ -17,14 +19,8 @@ class EttersendingUtils {
                   ],
                   "harForståttRettigheterOgPlikter": true,
                   "harBekreftetOpplysninger": true,
-                  "beskrivelse": "Masse tekst",
-                  "søknadstype": "omsorgspenger",
-                  "medlemskap": {
-                    "harBoddIUtlandetSiste12Mnd": false,
-                    "utenlandsoppholdSiste12Mnd": [],
-                    "skalBoIUtlandetNeste12Mnd": false,
-                    "utenlandsoppholdNeste12Mnd": []
-                  }
+                  "beskrivelse": "$beskrivelse",
+                  "søknadstype": "$søknadstype"
                 }
             """.trimIndent()
         }

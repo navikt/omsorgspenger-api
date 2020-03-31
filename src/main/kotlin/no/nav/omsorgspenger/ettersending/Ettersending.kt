@@ -1,7 +1,5 @@
 package no.nav.omsorgspenger.ettersending
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import no.nav.omsorgspenger.soknad.Medlemskap
 import java.net.URL
 
 data class Ettersending(

@@ -727,6 +727,82 @@ class ApplicationTest {
         )
     }
 
+    @Test
+    fun `Sende ettersending med tom beskrivelse og tom søknadstype`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/ettersend",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "Søknadstype",
+                      "reason": "Søknadstype kan ikke være tom eller blank",
+                      "invalid_value": ""
+                    },
+                    {
+                      "type": "entity",
+                      "name": "beskrivelse",
+                      "reason": "Beskrivelse kan ikke være tom eller blank",
+                      "invalid_value": ""
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = EttersendingUtils.fullBody(jpegUrl, pdfUrl,"","")
+        )
+    }
+
+    @Test
+    fun `Sende ettersending med whitespace beskrivelse og whitespace søknadstype`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/ettersend",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "Søknadstype",
+                      "reason": "Søknadstype kan ikke være tom eller blank",
+                      "invalid_value": "  "
+                    },
+                    {
+                      "type": "entity",
+                      "name": "beskrivelse",
+                      "reason": "Beskrivelse kan ikke være tom eller blank",
+                      "invalid_value": "  "
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = EttersendingUtils.fullBody(jpegUrl, pdfUrl,"  ","  ")
+        )
+    }
+
     private fun requestAndAssert(
         httpMethod: HttpMethod,
         path: String,

@@ -4,8 +4,8 @@ import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.omsorgspenger.vedlegg.Vedlegg
 import java.net.URL
 
-private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB //TODO: Må oppdaters i henhold til hvor mange vedlegg vi tillater, sjekk med klient
-private val vedleggTooLargeProblemDetails = DefaultProblemDetails( //TODO: Denne feilmeldingen må oppdaters i henhold til MAX_VEDLEGG_SIZE
+private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
+private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
     title = "attachments-too-large",
     status = 413,
     detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB."
@@ -13,6 +13,28 @@ private val vedleggTooLargeProblemDetails = DefaultProblemDetails( //TODO: Denne
 
 internal fun Ettersending.valider() {
     val violations: MutableSet<Violation> = mutableSetOf<Violation>()
+
+    if(søknadstype.isNullOrBlank()){
+        violations.add(
+            Violation(
+                parameterName = "Søknadstype",
+                parameterType = ParameterType.ENTITY,
+                reason = "Søknadstype kan ikke være tom eller blank",
+                invalidValue = søknadstype
+            )
+        )
+    }
+
+    if(beskrivelse.isNullOrBlank()){
+        violations.add(
+            Violation(
+                parameterName = "beskrivelse",
+                parameterType = ParameterType.ENTITY,
+                reason = "Beskrivelse kan ikke være tom eller blank",
+                invalidValue = beskrivelse
+            )
+        )
+    }
 
     if (!harBekreftetOpplysninger) {
         violations.add(

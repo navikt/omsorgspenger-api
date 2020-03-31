@@ -23,7 +23,25 @@ class EttersendingValidatorTest{
         Ettersending("nb", listOf(), false, true, "Masse forklaringer", "omsorgspenger").valider()
     }
 
-    //TODO: Flere tester når søknaden utvides
+    @Test(expected = Throwblem::class)
+    fun `Skal feile dersom beskrivelse er tom`(){
+        Ettersending("nb", listOf(), true, true, "", "omsorgspenger").valider()
+    }
+
+    @Test(expected = Throwblem::class)
+    fun `Skal feile dersom beskrivelse kun består av tomrom`(){
+        Ettersending("nb", listOf(), true, true, "    ", "omsorgspenger").valider()
+    }
+
+    @Test(expected = Throwblem::class)
+    fun `Skal feile dersom søknadstype er tom`(){
+        Ettersending("nb", listOf(), true, true, "forklaringer", "").valider()
+    }
+
+    @Test(expected = Throwblem::class)
+    fun `Skal feile dersom søknadstype kun består av tomrom`(){
+        Ettersending("nb", listOf(), true, true, "forklaringer", "  ").valider()
+    }
 
     private fun hentGyldigEttersending() = Ettersending(
         språk = "nb",
