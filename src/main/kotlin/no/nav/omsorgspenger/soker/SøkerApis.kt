@@ -24,9 +24,35 @@ fun Route.søkerApis(
     class getSoker
 
     get { _: getSoker ->
-        call.respond(søkerService.getSoker(
-            idToken = idTokenProvider.getIdToken(call),
-            callId = call.getCallId()
-        ))
+        call.respond(
+            søkerService.getSoker(
+                idToken = idTokenProvider.getIdToken(call),
+                callId = call.getCallId()
+            )
+        )
+    }
+
+    @Location("/ettersending/soker")
+    class ettersendingSøker
+
+    get { _: ettersendingSøker ->
+        call.respond(
+            søkerService.getSoker(
+                idToken = idTokenProvider.getIdToken(call),
+                callId = call.getCallId()
+            )
+        )
+    }
+
+    @Location("/overforing/soker")
+    class overføringSøker
+
+    get { _: overføringSøker ->
+        call.respond(
+            søkerService.getSoker(
+                idToken = idTokenProvider.getIdToken(call),
+                callId = call.getCallId()
+            )
+        )
     }
 }
