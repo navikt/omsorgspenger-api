@@ -1,7 +1,8 @@
 package no.nav.omsorgspenger
 
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
-import no.nav.omsorgspenger.soknad.*
+import no.nav.omsorgspenger.soknad.Medlemskap
+import no.nav.omsorgspenger.soknad.Utenlandsopphold
 import no.nav.omsorgspenger.soknadOverforeDager.Arbeidssituasjon
 import no.nav.omsorgspenger.soknadOverforeDager.Fosterbarn
 import no.nav.omsorgspenger.soknadOverforeDager.SøknadOverføreDager
@@ -203,8 +204,6 @@ internal class SøknadOverføreDagerValideringsTest {
             ),
             fosterbarn = listOf(
                 Fosterbarn(
-                    fornavn = "forvansen",
-                    etternavn = "etternavnsen",
                     fødselsnummer = "111"
                 )
             )
