@@ -14,6 +14,18 @@ private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
 internal fun Ettersending.valider() {
     val violations: MutableSet<Violation> = mutableSetOf<Violation>()
 
+    if (søknadstype != "omsorgspenger") {
+        violations.add(
+            Violation(
+                parameterName = "søknadstype",
+                parameterType = ParameterType.ENTITY,
+                reason = "Feil søknadstype. Kun 'omsorgspenger' er tillatt.",
+                invalidValue = søknadstype
+
+            )
+        )
+    }
+
     if(søknadstype.isNullOrBlank()){
         violations.add(
             Violation(

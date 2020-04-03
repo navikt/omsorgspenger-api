@@ -43,6 +43,13 @@ class EttersendingValidatorTest{
         Ettersending("nb", listOf(), true, true, "forklaringer", "  ").valider()
     }
 
+    @Test(expected = Throwblem::class)
+    fun `Skal feile dersom søknadstype er pleiepenger`(){
+        Ettersending("nb", listOf(), true, true, "forklaringer", "pleiepenger").valider()
+    }
+
+
+
     private fun hentGyldigEttersending() = Ettersending(
         språk = "nb",
         harBekreftetOpplysninger = true,

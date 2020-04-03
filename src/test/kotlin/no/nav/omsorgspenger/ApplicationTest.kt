@@ -744,6 +744,12 @@ class ApplicationTest {
                   "detail": "Requesten inneholder ugyldige paramtere.",
                   "instance": "about:blank",
                   "invalid_parameters": [
+                      {
+                        "type": "entity",
+                        "name": "søknadstype",
+                        "reason": "Feil søknadstype. Kun 'omsorgspenger' er tillatt.",
+                        "invalid_value": ""
+                      },
                     {
                       "type": "entity",
                       "name": "Søknadstype",
@@ -782,6 +788,12 @@ class ApplicationTest {
                   "detail": "Requesten inneholder ugyldige paramtere.",
                   "instance": "about:blank",
                   "invalid_parameters": [
+                      {
+                        "type": "entity",
+                        "name": "søknadstype",
+                        "reason": "Feil søknadstype. Kun 'omsorgspenger' er tillatt.",
+                        "invalid_value": "  "
+                      },
                     {
                       "type": "entity",
                       "name": "Søknadstype",
@@ -800,6 +812,38 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = EttersendingUtils.fullBody(jpegUrl, pdfUrl,"  ","  ")
+        )
+    }
+
+    @Test
+    fun `Sende ettersending hvor søknadstype er pleiepenger`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/ettersend",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "søknadstype",
+                      "reason": "Feil søknadstype. Kun 'omsorgspenger' er tillatt.",
+                      "invalid_value": "pleiepenger"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = EttersendingUtils.fullBody(jpegUrl, pdfUrl,"Blablabla","pleiepenger")
         )
     }
 
