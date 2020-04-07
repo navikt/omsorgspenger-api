@@ -52,6 +52,7 @@ class ApplicationTest {
             .stubOppslagHealth()
             .stubLeggSoknadTilProsessering("v1/soknad")
             .stubLeggSoknadTilProsessering("v1/soknad/overfore-dager")
+            .stubLeggSoknadTilProsessering("v1/ettersend")
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9Dokument()
@@ -442,7 +443,6 @@ class ApplicationTest {
         )
     }
 
-
     @Test
     fun `Test haandtering av vedlegg`() {
         val cookie = getAuthCookie(fnr)
@@ -674,6 +674,176 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadOverføreDagerUtils.fullBodyMedMedlemskap(fnrFosterbarn = "111")
+        )
+    }
+
+    @Test
+    fun `Sende full gyldig ettersending`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/ettersend",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = EttersendingUtils.fullBody(jpegUrl, pdfUrl)
+        )
+    }
+
+    @Test
+    fun `Sende ettersending hvor et vedlegg ikke finnes`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val finnesIkkeUrl = jpegUrl.substringBeforeLast("/").plus("/").plus(UUID.randomUUID().toString())
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/ettersend",
+            expectedResponse ="""
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "vedlegg",
+                  "reason": "Mottok referanse til 2 vedlegg, men fant kun 1 vedlegg.",
+                  "invalid_value": [
+                    "$jpegUrl",
+                    "$finnesIkkeUrl"
+                  ]
+                }
+              ]
+            }""".trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = EttersendingUtils.fullBody(jpegUrl, finnesIkkeUrl)
+        )
+    }
+
+    @Test
+    fun `Sende ettersending med tom beskrivelse og tom søknadstype`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/ettersend",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                      {
+                        "type": "entity",
+                        "name": "søknadstype",
+                        "reason": "Feil søknadstype. Kun 'omsorgspenger' er tillatt.",
+                        "invalid_value": ""
+                      },
+                    {
+                      "type": "entity",
+                      "name": "Søknadstype",
+                      "reason": "Søknadstype kan ikke være tom eller blank",
+                      "invalid_value": ""
+                    },
+                    {
+                      "type": "entity",
+                      "name": "beskrivelse",
+                      "reason": "Beskrivelse kan ikke være tom eller blank",
+                      "invalid_value": ""
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = EttersendingUtils.fullBody(jpegUrl, pdfUrl,"","")
+        )
+    }
+
+    @Test
+    fun `Sende ettersending med whitespace beskrivelse og whitespace søknadstype`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/ettersend",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                      {
+                        "type": "entity",
+                        "name": "søknadstype",
+                        "reason": "Feil søknadstype. Kun 'omsorgspenger' er tillatt.",
+                        "invalid_value": "  "
+                      },
+                    {
+                      "type": "entity",
+                      "name": "Søknadstype",
+                      "reason": "Søknadstype kan ikke være tom eller blank",
+                      "invalid_value": "  "
+                    },
+                    {
+                      "type": "entity",
+                      "name": "beskrivelse",
+                      "reason": "Beskrivelse kan ikke være tom eller blank",
+                      "invalid_value": "  "
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = EttersendingUtils.fullBody(jpegUrl, pdfUrl,"  ","  ")
+        )
+    }
+
+    @Test
+    fun `Sende ettersending hvor søknadstype er pleiepenger`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/ettersend",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "søknadstype",
+                      "reason": "Feil søknadstype. Kun 'omsorgspenger' er tillatt.",
+                      "invalid_value": "pleiepenger"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = EttersendingUtils.fullBody(jpegUrl, pdfUrl,"Blablabla","pleiepenger")
         )
     }
 

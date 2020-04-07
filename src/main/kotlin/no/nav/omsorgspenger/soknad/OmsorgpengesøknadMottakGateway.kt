@@ -16,6 +16,7 @@ import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
+import no.nav.omsorgspenger.ettersending.KomplettEttersending
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.auth.ApiGatewayApiKey
 import no.nav.omsorgspenger.soknadOverforeDager.KomplettSøknadOverføreDager
@@ -46,6 +47,11 @@ class OmsorgpengesøknadMottakGateway(
     private val komplettUrlOverforeDager = Url.buildURL(
     baseUrl = baseUrl,
     pathParts = listOf("v1", "soknad/overfore-dager")
+    ).toString()
+
+    private val komplettUrlEttersend = Url.buildURL(
+        baseUrl = baseUrl,
+        pathParts = listOf("v1", "ettersend")
     ).toString()
 
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
@@ -132,6 +138,44 @@ class OmsorgpengesøknadMottakGateway(
                 logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
                 logger.error(error.toString())
                 throw IllegalStateException("Feil ved sending av søknad om overføring av dager til prosessering.")
+            }
+        )
+    }
+
+    suspend fun leggTilProsesseringEttersending(
+        ettersending: KomplettEttersending,
+        callId: CallId
+    ) {
+        val authorizationHeader =
+            cachedAccessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes).asAuthoriationHeader()
+
+        val body = objectMapper.writeValueAsBytes(ettersending)
+        val contentStream = { ByteArrayInputStream(body) }
+
+        val httpRequet = komplettUrlEttersend
+            .httpPost()
+            .timeout(20_000)
+            .timeoutRead(20_000)
+            .body(contentStream)
+            .header(
+                HttpHeaders.ContentType to "application/json",
+                HttpHeaders.XCorrelationId to callId.value,
+                HttpHeaders.Authorization to authorizationHeader,
+                apiGatewayApiKey.headerKey to apiGatewayApiKey.value
+            )
+
+        val (request, _, result) = Operation.monitored(
+            app = "omsorgspenger-api",
+            operation = "sende-ettersending-til-prosessering",
+            resultResolver = { 202 == it.second.statusCode }
+        ) { httpRequet.awaitStringResponseResult() }
+
+        result.fold(
+            { },
+            { error ->
+                logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
+                logger.error(error.toString())
+                throw IllegalStateException("Feil ved sending av ettersending til prosessering.")
             }
         )
     }

@@ -58,6 +58,7 @@ internal fun Søknad.valider() {
         )
     }
 */
+
     // samvarsavtale
     if (samværsavtale != null) {
         if (samværsavtale.isEmpty()) {
