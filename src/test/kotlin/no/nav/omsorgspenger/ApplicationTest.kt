@@ -14,6 +14,8 @@ import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.getAuthCookie
 import no.nav.omsorgspenger.redis.RedisMockUtil
+import no.nav.omsorgspenger.soknadOverforeDager.MAX_ANTALL_DAGER_MAN_KAN_OVERFØRE
+import no.nav.omsorgspenger.soknadOverforeDager.MIN_ANTALL_DAGER_MAN_KAN_OVERFØRE
 import no.nav.omsorgspenger.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -678,7 +680,66 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende full gyldig ettersending`(){
+    fun `Sende full søknad for overføring av dager hvor dager overført er høyere tillatt verdi`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-omsorgsdager",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "antallDager",
+                      "reason": "Tillatt antall dager man kan overføre må ligge mellom $MIN_ANTALL_DAGER_MAN_KAN_OVERFØRE og $MAX_ANTALL_DAGER_MAN_KAN_OVERFØRE dager.",
+                      "invalid_value": 1000
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.søknadOverføreDager.copy(
+                antallDager = 1000
+            ).somJson()
+        )
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad/overfore-omsorgsdager",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "antallDager",
+                      "reason": "Tillatt antall dager man kan overføre må ligge mellom $MIN_ANTALL_DAGER_MAN_KAN_OVERFØRE og $MAX_ANTALL_DAGER_MAN_KAN_OVERFØRE dager.",
+                      "invalid_value": 0
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadOverføreDagerUtils.søknadOverføreDager.copy(
+                antallDager = 0
+            ).somJson()
+        )
+    }
+
+    @Test
+    fun `Sende full gyldig ettersending`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
