@@ -7,6 +7,9 @@ import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.omsorgspenger.soknad.erGyldigNorskIdentifikator
 import no.nav.omsorgspenger.soknad.valider
 
+val MIN_ANTALL_DAGER_MAN_KAN_OVERFØRE = 1
+val MAX_ANTALL_DAGER_MAN_KAN_OVERFØRE = 999
+
 internal fun SøknadOverføreDager.valider() {
     val violations: MutableSet<Violation> = mutableSetOf<Violation>()
 
@@ -17,6 +20,17 @@ internal fun SøknadOverføreDager.valider() {
                 parameterType = ParameterType.ENTITY,
                 reason = "List over arbeidssituasjon kan ikke være tomt. Må inneholde minst 1 verdi",
                 invalidValue = arbeidssituasjon
+            )
+        )
+    }
+
+    if (antallDager !in MIN_ANTALL_DAGER_MAN_KAN_OVERFØRE..MAX_ANTALL_DAGER_MAN_KAN_OVERFØRE) {
+        violations.add(
+            Violation(
+                parameterName = "antallDager",
+                parameterType = ParameterType.ENTITY,
+                reason = "Tillatt antall dager man kan overføre må ligge mellom $MIN_ANTALL_DAGER_MAN_KAN_OVERFØRE og $MAX_ANTALL_DAGER_MAN_KAN_OVERFØRE dager.",
+                invalidValue = antallDager
             )
         )
     }
