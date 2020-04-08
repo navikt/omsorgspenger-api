@@ -56,3 +56,4 @@ fun Route.søkerApis(
         )
     }
 }
+
