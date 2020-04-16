@@ -39,6 +39,7 @@ class SøknadOverføreDagerService(
             søker = søker,
             antallDager = søknadOverføreDager.antallDager,
             fnrMottaker = søknadOverføreDager.fnrMottaker,
+            navnMottaker = søknadOverføreDager.navnMottaker,
             medlemskap = søknadOverføreDager.medlemskap,
             harForståttRettigheterOgPlikter = søknadOverføreDager.harForståttRettigheterOgPlikter,
             harBekreftetOpplysninger = søknadOverføreDager.harBekreftetOpplysninger,

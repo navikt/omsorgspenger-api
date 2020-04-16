@@ -72,6 +72,18 @@ internal fun SøknadOverføreDager.valider() {
         )
     }
 
+    // TODO: Kan ikke skrues på før det har gått litt tid pga brukere med gammel frontend
+//    if(navnMottaker == null){
+//        violations.add(
+//            Violation(
+//                parameterName = "navnMottaker",
+//                parameterType = ParameterType.ENTITY,
+//                reason = "Navn på mottaker mangler",
+//                invalidValue = navnMottaker
+//            )
+//        )
+//    }
+
 // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
