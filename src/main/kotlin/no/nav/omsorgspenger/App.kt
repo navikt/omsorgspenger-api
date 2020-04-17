@@ -65,6 +65,7 @@ private val logger: Logger = LoggerFactory.getLogger("nav.omsorgpengesoknadapi")
 @KtorExperimentalAPI
 @KtorExperimentalLocationsAPI
 fun Application.omsorgpengesoknadapi() {
+    
     val appId = environment.config.id()
     logProxyProperties()
     DefaultExports.initialize()
