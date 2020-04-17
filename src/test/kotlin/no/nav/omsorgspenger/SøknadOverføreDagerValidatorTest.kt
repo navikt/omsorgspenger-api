@@ -23,6 +23,7 @@ internal class SøknadOverføreDagerValideringsTest {
             språk = "nb",
             antallDager = 5,
             fnrMottaker = gyldigFodselsnummerA,
+            navnMottaker = "Navn På Mottaker",
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -50,6 +51,7 @@ internal class SøknadOverføreDagerValideringsTest {
             språk = "nb",
             antallDager = 5,
             fnrMottaker = dNummerA,
+            navnMottaker = "Navn På Mottaker",
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -79,6 +81,7 @@ internal class SøknadOverføreDagerValideringsTest {
             språk = "nb",
             antallDager = 5,
             fnrMottaker = gyldigFodselsnummerA,
+            navnMottaker = "Navn På Mottaker",
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -106,6 +109,7 @@ internal class SøknadOverføreDagerValideringsTest {
             språk = "nb",
             antallDager = 5,
             fnrMottaker = gyldigFodselsnummerA,
+            navnMottaker = "Navn På Mottaker",
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -133,6 +137,7 @@ internal class SøknadOverføreDagerValideringsTest {
             språk = "nb",
             antallDager = 5,
             fnrMottaker = gyldigFodselsnummerA,
+            navnMottaker = "Navn På Mottaker",
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -158,6 +163,7 @@ internal class SøknadOverføreDagerValideringsTest {
             språk = "nb",
             antallDager = 5,
             fnrMottaker = "111111111",
+            navnMottaker = "Navn På Mottaker",
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -185,6 +191,7 @@ internal class SøknadOverføreDagerValideringsTest {
             språk = "nb",
             antallDager = 5,
             fnrMottaker = gyldigFodselsnummerA,
+            navnMottaker = "Navn På Mottaker",
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
