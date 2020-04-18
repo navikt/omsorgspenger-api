@@ -21,6 +21,7 @@ class SøknadOverføreDagerUtils {
             språk = "nb",
             antallDager = 5,
             fnrMottaker = "26104500284",
+            navnMottaker = "Navn På Mottaker",
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
