@@ -109,4 +109,3 @@ class SøknadService(
         logger.trace("Vedlegg slettet.")
     }
 }
-
