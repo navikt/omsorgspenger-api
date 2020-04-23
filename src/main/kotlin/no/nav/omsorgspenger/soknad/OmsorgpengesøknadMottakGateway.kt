@@ -42,11 +42,6 @@ class OmsorgpengesøknadMottakGateway(
         pathParts = listOf("v1", "soknad")
     ).toString()
 
-    private val komplettUrlEttersend = Url.buildURL(
-        baseUrl = baseUrl,
-        pathParts = listOf("v1", "ettersend")
-    ).toString()
-
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
 
     override suspend fun check(): Result {
