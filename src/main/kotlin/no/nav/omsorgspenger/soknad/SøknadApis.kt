@@ -13,9 +13,6 @@ import no.nav.omsorgspenger.ettersending.EttersendingService
 import no.nav.omsorgspenger.ettersending.valider
 import no.nav.omsorgspenger.general.auth.IdTokenProvider
 import no.nav.omsorgspenger.general.getCallId
-import no.nav.omsorgspenger.soknadOverforeDager.SøknadOverføreDager
-import no.nav.omsorgspenger.soknadOverforeDager.SøknadOverføreDagerService
-import no.nav.omsorgspenger.soknadOverforeDager.valider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -24,7 +21,6 @@ private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 @KtorExperimentalLocationsAPI
 fun Route.søknadApis(
     søknadService: SøknadService,
-    søknadOverføreDagerService: SøknadOverføreDagerService,
     ettersendingService: EttersendingService,
     idTokenProvider: IdTokenProvider
 ) {
@@ -42,27 +38,6 @@ fun Route.søknadApis(
 
         søknadService.registrer(
             søknad = søknad,
-            callId = call.getCallId(),
-            idToken = idTokenProvider.getIdToken(call)
-        )
-
-        logger.trace("Søknad registrert.")
-        call.respond(HttpStatusCode.Accepted)
-    }
-
-    @Location("/soknad/overfore-omsorgsdager")
-    class sendSoknadOverforeDager
-
-    post { _ : sendSoknadOverforeDager ->
-        logger.trace("Mottatt ny søknad for overføring av dager. Mapper søknad.")
-        val søknadOverføreDager = call.receive<SøknadOverføreDager>()
-        logger.trace("Søknad mappet. Validerer")
-
-        søknadOverføreDager.valider()
-        logger.trace("Validering OK. Registrerer søknad.")
-
-        søknadOverføreDagerService.registrer(
-            søknadOverføreDager = søknadOverføreDager,
             callId = call.getCallId(),
             idToken = idTokenProvider.getIdToken(call)
         )

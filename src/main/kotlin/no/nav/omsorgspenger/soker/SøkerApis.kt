@@ -43,17 +43,5 @@ fun Route.søkerApis(
             )
         )
     }
-
-    @Location("/overforing/soker")
-    class overføringSøker
-
-    get { _: overføringSøker ->
-        call.respond(
-            søkerService.getSoker(
-                idToken = idTokenProvider.getIdToken(call),
-                callId = call.getCallId()
-            )
-        )
-    }
 }
 
