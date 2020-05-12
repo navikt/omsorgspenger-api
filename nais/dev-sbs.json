@@ -25,5 +25,6 @@
     "SENDE_SOKNAD_TIL_PROSESSERING_SCOPES": "8a37534e-7387-43af-8123-cb5facd5dc44/.default"
   },
   "slack-channel": "sif-alerts-dev",
+  "slack-notify-type": "<!here> | k9-ettersending-api | ",
   "app-alert-ingress": "https://omsorgspengesoknad-api-q.nav.no"
 }
