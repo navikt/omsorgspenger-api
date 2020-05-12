@@ -9,6 +9,9 @@
     "https://omsorgspengesoknad-api-q.nav.no",
     "https://omsorgspenger-api.nais.oera-q.local"
   ],
+  "vaultKvPath": "/kv/preprod/sbs/omsorgspenger-api/default",
+  "azureadKvPath": "/azuread/data/dev/creds/omsorgspenger-api",
+  "apigwKvPath": "/apikey/apigw/dev/helse-reverse-proxy/omsorgspenger-api_q1",
   "env": {
     "REDIS_HOST": "omsorgspenger-api-redis.default.svc.nais.local",
     "CORS_ADDRESSES": "https://www-q0.nav.no",
