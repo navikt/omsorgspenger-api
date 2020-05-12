@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 
-fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 private val logger: Logger = LoggerFactory.getLogger("nav.omsorgpengesoknadapi")
 
@@ -174,9 +174,11 @@ fun Application.omsorgpengesoknadapi() {
                 mellomlagringService = MellomlagringService(
                     RedisStore(
                         RedisConfig(
-                        RedisConfigurationProperties(
-                            configuration.getRedisHost().equals("localhost"))
-                        ).redisClient(configuration)), configuration.getStoragePassphrase()),
+                            RedisConfigurationProperties(
+                                configuration.getRedisHost().equals("localhost")
+                            )
+                        ).redisClient(configuration)
+                    ), configuration.getStoragePassphrase()),
                 idTokenProvider = idTokenProvider
             )
 
