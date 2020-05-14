@@ -1,6 +1,7 @@
 # omsorgspengesoknad-api
 
 ![CI / CD](https://github.com/navikt/omsorgspenger-api/workflows/CI%20/%20CD/badge.svg)
+![NAIS Alerts](https://github.com/navikt/omsorgspenger-mottak/workflows/Alerts/badge.svg)
 
 # Innholdsoversikt
 * [1. Kontekst](#1-kontekst)
@@ -60,6 +61,9 @@ For å kjøre kode, kjør:
 # 11. Drift og støtte
 ## Logging
 [Kibana](https://tinyurl.com/ydkqetfo)
+
+## Alarmer
+Vi bruker [nais-alerts](https://doc.nais.io/observability/alerts) for å sette opp alarmer. Disse finner man konfigurert i [nais/alerterator.yml](nais/alerterator.yml).
 
 # Metrics
 n/a
