@@ -391,8 +391,7 @@ class ApplicationTest {
                     {
                       "type": "entity",
                       "name": "barn",
-                      "reason": "Kan kun sette 'aktørId' eller 'norskIdentifikator' på barnet.",
-                      "invalid_value": null
+                      "reason": "Kan kun sette 'aktørId' eller 'norskIdentifikator' på barnet."
                     },
                     {
                       "type": "entity",
@@ -421,8 +420,7 @@ class ApplicationTest {
                     {
                       "type": "entity",
                       "name": "samværsavtale[1]",
-                      "reason": "Ikke gyldig vedlegg URL.",
-                      "invalid_value": null
+                      "reason": "Ikke gyldig vedlegg URL."
                     },
                     {
                       "type": "entity",
