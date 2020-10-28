@@ -12,12 +12,11 @@ import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.jackson.*
 import io.ktor.locations.*
-import no.nav.helse.dusseldorf.ktor.auth.allIssuers
-import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
-import io.ktor.metrics.micrometer.MicrometerMetrics
-import io.ktor.routing.Routing
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.metrics.micrometer.*
+import io.ktor.routing.*
+import io.ktor.util.*
 import io.prometheus.client.hotspot.DefaultExports
+import no.nav.helse.dusseldorf.ktor.auth.allIssuers
 import no.nav.helse.dusseldorf.ktor.auth.clients
 import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthCheck
@@ -66,6 +65,8 @@ fun Application.omsorgpengesoknadapi() {
     val appId = environment.config.id()
     logProxyProperties()
     DefaultExports.initialize()
+
+    System.setProperty("dusseldorf.ktor.serializeProblemDetailsWithContentNegotiation", "true")
 
     val configuration = Configuration(environment.config)
     val apiGatewayApiKey = configuration.getApiGatewayApiKey()

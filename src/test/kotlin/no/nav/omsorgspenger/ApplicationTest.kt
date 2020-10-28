@@ -2,14 +2,10 @@ package no.nav.omsorgspenger
 
 import com.github.tomakehurst.wiremock.http.Cookie
 import com.typesafe.config.ConfigFactory
-import io.ktor.config.ApplicationConfig
-import io.ktor.config.HoconApplicationConfig
+import io.ktor.config.*
 import io.ktor.http.*
-import io.ktor.server.testing.TestApplicationEngine
-import io.ktor.server.testing.createTestEnvironment
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.setBody
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.server.testing.*
+import io.ktor.util.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.getAuthCookie
@@ -391,7 +387,8 @@ class ApplicationTest {
                     {
                       "type": "entity",
                       "name": "barn",
-                      "reason": "Kan kun sette 'aktørId' eller 'norskIdentifikator' på barnet."
+                      "reason": "Kan kun sette 'aktørId' eller 'norskIdentifikator' på barnet.",
+                      "invalid_value": null
                     },
                     {
                       "type": "entity",
@@ -420,7 +417,8 @@ class ApplicationTest {
                     {
                       "type": "entity",
                       "name": "samværsavtale[1]",
-                      "reason": "Ikke gyldig vedlegg URL."
+                      "reason": "Ikke gyldig vedlegg URL.",
+                      "invalid_value": null
                     },
                     {
                       "type": "entity",
