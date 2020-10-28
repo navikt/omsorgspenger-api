@@ -2,14 +2,10 @@ package no.nav.omsorgspenger
 
 import com.github.tomakehurst.wiremock.http.Cookie
 import com.typesafe.config.ConfigFactory
-import io.ktor.config.ApplicationConfig
-import io.ktor.config.HoconApplicationConfig
+import io.ktor.config.*
 import io.ktor.http.*
-import io.ktor.server.testing.TestApplicationEngine
-import io.ktor.server.testing.createTestEnvironment
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.setBody
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.server.testing.*
+import io.ktor.util.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.getAuthCookie
