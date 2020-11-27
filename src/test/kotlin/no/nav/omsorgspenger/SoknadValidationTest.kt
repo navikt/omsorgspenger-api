@@ -22,7 +22,7 @@ internal class SøknadValideringsTest {
         Søknad(
             nyVersjon = false,
             språk = "nb",
-            arbeidssituasjon = listOf("Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"),
+            arbeidssituasjon = listOf(Arbeidssituasjon.ARBEIDSTAKER),
             kroniskEllerFunksjonshemming = true,
             sammeAdresse = true,
             harBekreftetOpplysninger = true,
@@ -64,8 +64,8 @@ internal class SøknadValideringsTest {
         val søknad = Søknad(
             nyVersjon = false,
             språk = "nb",
-            arbeidssituasjon = listOf("Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"),
             kroniskEllerFunksjonshemming = true,
+            arbeidssituasjon = listOf(Arbeidssituasjon.ARBEIDSTAKER),
             sammeAdresse = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
@@ -108,8 +108,8 @@ internal class SøknadValideringsTest {
         Søknad(
             nyVersjon = false,
             språk = "nb",
-            arbeidssituasjon = listOf("Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"),
             kroniskEllerFunksjonshemming = true,
+            arbeidssituasjon = listOf(Arbeidssituasjon.ARBEIDSTAKER),
             sammeAdresse = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
@@ -138,7 +138,7 @@ internal class SøknadValideringsTest {
         Søknad(
             nyVersjon = false,
             språk = "nb",
-            arbeidssituasjon = listOf("Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"),
+            arbeidssituasjon = listOf(Arbeidssituasjon.ARBEIDSTAKER),
             kroniskEllerFunksjonshemming = true,
             sammeAdresse = true,
             harBekreftetOpplysninger = true,
@@ -168,8 +168,8 @@ internal class SøknadValideringsTest {
         Søknad(
             nyVersjon = false,
             språk = "nb",
-            arbeidssituasjon = listOf("Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"),
             kroniskEllerFunksjonshemming = true,
+            arbeidssituasjon = listOf(Arbeidssituasjon.ARBEIDSTAKER),
             sammeAdresse = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
