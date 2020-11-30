@@ -10,7 +10,7 @@ data class KomplettSoknad(
     val mottatt: ZonedDateTime,
     val kroniskEllerFunksjonshemming: Boolean,
     val søker: Søker,
-    val arbeidssituasjon: List<String>,
+    val arbeidssituasjon: List<Arbeidssituasjon>,
     val barn: BarnDetaljer,
     val relasjonTilBarnet: SøkerBarnRelasjon? = null,
     val sammeAdresse: Boolean?,

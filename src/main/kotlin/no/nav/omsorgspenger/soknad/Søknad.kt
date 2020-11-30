@@ -1,5 +1,6 @@
 package no.nav.omsorgspenger.soknad
 
+import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonValue
 import java.net.URL
@@ -8,7 +9,7 @@ import java.time.LocalDate
 data class Søknad(
     val nyVersjon: Boolean,
     val språk: String,
-    val arbeidssituasjon: List<String>,
+    val arbeidssituasjon: List<Arbeidssituasjon>,
     val kroniskEllerFunksjonshemming: Boolean,
     val barn: BarnDetaljer,
     val sammeAdresse: Boolean?,
@@ -55,3 +56,8 @@ enum class SøkerBarnRelasjon(@JsonValue val relasjon: String) {
     FOSTERFORELDER("fosterforelder")
 }
 
+enum class Arbeidssituasjon(){
+    @JsonAlias("selvstendigNæringsdrivende") SELVSTENDIG_NÆRINGSDRIVENDE,
+    @JsonAlias("arbeidstaker") ARBEIDSTAKER,
+    @JsonAlias("frilanser") FRILANSER
+}

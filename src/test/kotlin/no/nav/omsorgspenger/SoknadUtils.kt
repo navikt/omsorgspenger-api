@@ -16,7 +16,7 @@ class SoknadUtils {
                 {
                   "nyVersjon": true,
                   "språk": "nb",
-                  "arbeidssituasjon": ["Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"],
+                  "arbeidssituasjon": ["arbeidstaker", "frilanser", "selvstendigNæringsdrivende"],
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
                     "navn": "Ole Dole Doffen",
@@ -67,7 +67,7 @@ class SoknadUtils {
                 {
                   "nyVersjon": true,
                   "språk": "nb",
-                  "arbeidssituasjon": ["Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"],
+                  "arbeidssituasjon": ["arbeidstaker", "frilanser", "selvstendigNæringsdrivende"],
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
                     "fødselsdato": "2005-02-23",
@@ -115,7 +115,7 @@ class SoknadUtils {
                 {
                   "nyVersjon": true,
                   "språk": "nb",
-                  "arbeidssituasjon": ["Arbeidstaker", "Frilans", "Selvstendig Næringsdrivende"],
+                  "arbeidssituasjon": ["arbeidstaker", "frilanser", "selvstendigNæringsdrivende"],
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
                     "fødselsdato": "2005-01-23"

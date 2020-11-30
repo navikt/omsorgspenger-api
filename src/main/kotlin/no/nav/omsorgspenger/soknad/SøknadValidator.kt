@@ -32,18 +32,6 @@ internal fun Søknad.valider() {
             )
         )
     }
-    arbeidssituasjon.mapIndexed { index, situasjon ->
-        if (situasjon.isNullOrBlank()) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidssituasjon[$index]",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "List over arbeidssituasjon kan ikke inneholde null eller tomme verdier",
-                    invalidValue = situasjon
-                )
-            )
-        }
-    }
 
 /*
     // legeerklaring
