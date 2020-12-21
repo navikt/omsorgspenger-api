@@ -8,7 +8,7 @@ dependencies {
     compile 'io.ktor:ktor-locations:1.4.3'
     compile 'no.nav.helse:dusseldorf-ktor-client:1.4.3.c883096'
     compile 'no.nav.helse:dusseldorf-oauth2-client:1.4.3.c883096'
-    compile 'io.lettuce:lettuce-core:5.2.1.RELEASE'
+    compile 'io.lettuce:lettuce-core:5.3.5.RELEASE'
     compile 'com.github.fppt:jedis-mock:0.1.16'
     testCompile 'no.nav.helse:dusseldorf-test-support:1.4.3.c883096'
     testCompile 'io.ktor:ktor-server-test-host:1.4.3'
@@ -21,6 +21,6 @@ dependencies {
     testCompile 'io.ktor:ktor-locations:1.4.3'
     testCompile 'no.nav.helse:dusseldorf-ktor-client:1.4.3.c883096'
     testCompile 'no.nav.helse:dusseldorf-oauth2-client:1.4.3.c883096'
-    testCompile 'io.lettuce:lettuce-core:5.2.1.RELEASE'
+    testCompile 'io.lettuce:lettuce-core:5.3.5.RELEASE'
     testCompile 'com.github.fppt:jedis-mock:0.1.16'
 }
