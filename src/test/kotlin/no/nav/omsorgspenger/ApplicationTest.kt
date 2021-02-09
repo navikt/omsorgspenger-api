@@ -1,5 +1,6 @@
 package no.nav.omsorgspenger
 
+import com.github.fppt.jedismock.RedisServer
 import com.github.tomakehurst.wiremock.http.Cookie
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
@@ -9,7 +10,7 @@ import io.ktor.util.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.getAuthCookie
-import no.nav.omsorgspenger.redis.RedisMockUtil
+import no.nav.omsorgspenger.mellomlagring.started
 import no.nav.omsorgspenger.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -52,10 +53,16 @@ class ApplicationTest {
             .stubK9OppslagBarn()
             .stubK9Dokument()
 
+
+        val redisServer: RedisServer = RedisServer.newRedisServer(6379).started()
+
         fun getConfig(): ApplicationConfig {
 
             val fileConfig = ConfigFactory.load()
-            val testConfig = ConfigFactory.parseMap(TestConfiguration.asMap(wireMockServer = wireMockServer))
+            val testConfig = ConfigFactory.parseMap(TestConfiguration.asMap(
+                wireMockServer = wireMockServer,
+                redisServer = redisServer
+            ))
             val mergedConfig = testConfig.withFallback(fileConfig)
 
             return HoconApplicationConfig(mergedConfig)
@@ -78,7 +85,7 @@ class ApplicationTest {
         fun tearDown() {
             logger.info("Tearing down")
             wireMockServer.stop()
-            RedisMockUtil.stopRedisMocked()
+            redisServer.stop()
             logger.info("Tear down complete")
         }
     }

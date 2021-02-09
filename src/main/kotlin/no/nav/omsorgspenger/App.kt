@@ -39,7 +39,6 @@ import no.nav.omsorgspenger.general.systemauth.AccessTokenClientResolver
 import no.nav.omsorgspenger.mellomlagring.MellomlagringService
 import no.nav.omsorgspenger.mellomlagring.mellomlagringApis
 import no.nav.omsorgspenger.redis.RedisConfig
-import no.nav.omsorgspenger.redis.RedisConfigurationProperties
 import no.nav.omsorgspenger.redis.RedisStore
 import no.nav.omsorgspenger.soker.SøkerGateway
 import no.nav.omsorgspenger.soker.SøkerService
@@ -161,12 +160,13 @@ fun Application.omsorgpengesoknadapi() {
             mellomlagringApis(
                 mellomlagringService = MellomlagringService(
                     RedisStore(
-                        RedisConfig(
-                            RedisConfigurationProperties(
-                                configuration.getRedisHost().equals("localhost")
-                            )
-                        ).redisClient(configuration)
-                    ), configuration.getStoragePassphrase()),
+                        redisClient = RedisConfig.redisClient(
+                            redisHost = configuration.getRedisHost(),
+                            redisPort = configuration.getRedisPort()
+                        )
+                    ),
+                    passphrase = configuration.getStoragePassphrase(),
+                ),
                 idTokenProvider = idTokenProvider
             )
 
