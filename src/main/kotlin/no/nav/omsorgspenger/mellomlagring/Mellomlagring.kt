@@ -1,12 +1,10 @@
 package no.nav.omsorgspenger.mellomlagring
 
-import io.ktor.application.call
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
+import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.locations.*
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.response.respondText
+import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.routing.Route
 import no.nav.omsorgspenger.general.auth.IdTokenProvider
 import org.slf4j.Logger
@@ -27,6 +25,13 @@ fun Route.mellomlagringApis(
         val midlertidigSøknad = call.receive<String>()
         val idToken = idTokenProvider.getIdToken(call)
         mellomlagringService.setMellomlagring(idToken.getSubject()!!, midlertidigSøknad)
+        call.respond(HttpStatusCode.NoContent)
+    }
+
+    put { _: mellomlagring ->
+        val midlertidigSøknad = call.receive<String>()
+        val idToken = idTokenProvider.getIdToken(call)
+        mellomlagringService.updateMellomlagring(idToken.getSubject()!!, midlertidigSøknad)
         call.respond(HttpStatusCode.NoContent)
     }
 
