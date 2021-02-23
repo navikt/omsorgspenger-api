@@ -17,85 +17,7 @@ internal class SøknadValideringsTest {
         private val dNummerA = "55125314561"
     }
 
-    @Test(expected = Throwblem::class)
-    internal fun `Til dato kan ikke være før fra dato`() {
-        Søknad(
-            nyVersjon = false,
-            språk = "nb",
-            arbeidssituasjon = listOf(Arbeidssituasjon.ARBEIDSTAKER),
-            kroniskEllerFunksjonshemming = true,
-            sammeAdresse = true,
-            harBekreftetOpplysninger = true,
-            harForståttRettigheterOgPlikter = true,
-            relasjonTilBarnet = SøkerBarnRelasjon.FAR,
-            barn = BarnDetaljer(
-                navn = "Ole Dole Doffen",
-                fødselsdato = LocalDate.now().minusDays(895),
-                aktørId = "123456"
-            ),
-            medlemskap = Medlemskap(
-                harBoddIUtlandetSiste12Mnd = false,
-                skalBoIUtlandetNeste12Mnd = true,
-                utenlandsoppholdNeste12Mnd = listOf(
-                    Utenlandsopphold(
-                        fraOgMed = LocalDate.now(),
-                        tilOgMed = LocalDate.now().minusDays(1),
-                        landkode = "NO",
-                        landnavn = "Norge"
-                    )
-                )
-            ),
-            samværsavtale = listOf(
-                URL("http://localhost:8080/vedlegg/1"),
-                URL("http://localhost:8080/vedlegg/2")
-            ),
-            /*
-            legeerklæring = listOf(
-                URL("http://localhost:8080/vedlegg/3"),
-                URL("http://localhost:8080/vedlegg/4")
-            )
-            */
-            legeerklæring = emptyList()
-        ).valider()
-    }
-
-    @Test(expected = Throwblem::class)
-    internal fun `Mangler landkode`() {
-        val søknad = Søknad(
-            nyVersjon = false,
-            språk = "nb",
-            kroniskEllerFunksjonshemming = true,
-            arbeidssituasjon = listOf(Arbeidssituasjon.ARBEIDSTAKER),
-            sammeAdresse = true,
-            harBekreftetOpplysninger = true,
-            harForståttRettigheterOgPlikter = true,
-            relasjonTilBarnet = SøkerBarnRelasjon.FAR,
-            barn = BarnDetaljer(
-                navn = "Ole Dole Doffen",
-                fødselsdato = LocalDate.now().minusDays(895),
-                aktørId = "123456"
-            ),
-            medlemskap = Medlemskap(
-                harBoddIUtlandetSiste12Mnd = false,
-                skalBoIUtlandetNeste12Mnd = true,
-                utenlandsoppholdNeste12Mnd = listOf(
-                    Utenlandsopphold(
-                        fraOgMed = LocalDate.now().minusDays(5),
-                        tilOgMed = LocalDate.now(),
-                        landkode = "",
-                        landnavn = "Norge"
-                    )
-                )
-            ),
-            samværsavtale = null,
-            legeerklæring = emptyList()
-            /*
-            legeerklæring = listOf(
-                URL("http://localhost:8080/vedlegg/1")
-            )
-            */
-        ).valider()
-    }
+    //TODO 23.02.2021 - Burde flytte flere valideringstester inn her, i stedet for applicationTest
 
     @Test
     fun `Tester gyldig fødselsdato dersom dnunmer`() {
@@ -104,41 +26,10 @@ internal class SøknadValideringsTest {
     }
 
     @Test(expected = Throwblem::class)
-    fun `Forvent violation dersom barn har både fødselsdato og norskIdentnummer`() {
+    fun `Forvent violation dersom barn mangler både aktørID og norskIdentnummer`() {
         Søknad(
             nyVersjon = false,
             språk = "nb",
-            kroniskEllerFunksjonshemming = true,
-            arbeidssituasjon = listOf(Arbeidssituasjon.ARBEIDSTAKER),
-            sammeAdresse = true,
-            harBekreftetOpplysninger = true,
-            harForståttRettigheterOgPlikter = true,
-            relasjonTilBarnet = SøkerBarnRelasjon.FAR,
-            barn = BarnDetaljer(
-                navn = "Ole Dole Doffen",
-                fødselsdato = LocalDate.now().minusDays(895),
-                norskIdentifikator = gyldigFodselsnummerA
-            ),
-            medlemskap = Medlemskap(
-                harBoddIUtlandetSiste12Mnd = false,
-                skalBoIUtlandetNeste12Mnd = false
-            ),
-            samværsavtale = null,
-            legeerklæring = emptyList()
-            /*
-            legeerklæring = listOf(
-                URL("http://localhodt:8080/vedlegg/1")
-            )
-            */
-        ).valider()
-    }
-
-    @Test(expected = Throwblem::class)
-    fun `Forvent violation dersom barn mangler både fødselsdato og norskIdentnummer`() {
-        Søknad(
-            nyVersjon = false,
-            språk = "nb",
-            arbeidssituasjon = listOf(Arbeidssituasjon.ARBEIDSTAKER),
             kroniskEllerFunksjonshemming = true,
             sammeAdresse = true,
             harBekreftetOpplysninger = true,
@@ -146,12 +37,8 @@ internal class SøknadValideringsTest {
             relasjonTilBarnet = SøkerBarnRelasjon.FAR,
             barn = BarnDetaljer(
                 navn = "Ole Dole Doffen",
-                fødselsdato = null,
-                norskIdentifikator = null
-            ),
-            medlemskap = Medlemskap(
-                harBoddIUtlandetSiste12Mnd = false,
-                skalBoIUtlandetNeste12Mnd = false
+                norskIdentifikator = null,
+                aktørId = null
             ),
             samværsavtale = null,
             /*
@@ -164,31 +51,24 @@ internal class SøknadValideringsTest {
     }
 
     @Test(expected = Throwblem::class)
-    internal fun `Forvent violation dersom harBoddIUtlandetSiste12Mnd er true, men utenlandsoppholdSiste12Mnd er tom eller null`() {
+    fun `Forvent violation dersom barn har både aktørID og norskIdentnummer`() {
         Søknad(
             nyVersjon = false,
             språk = "nb",
             kroniskEllerFunksjonshemming = true,
-            arbeidssituasjon = listOf(Arbeidssituasjon.ARBEIDSTAKER),
             sammeAdresse = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
             relasjonTilBarnet = SøkerBarnRelasjon.FAR,
             barn = BarnDetaljer(
                 navn = "Ole Dole Doffen",
-                fødselsdato = LocalDate.now().minusDays(895),
-                aktørId = "123456"
+                norskIdentifikator = "02119970078",
+                aktørId = "1234"
             ),
-            medlemskap = Medlemskap(
-                harBoddIUtlandetSiste12Mnd = true,
-                skalBoIUtlandetNeste12Mnd = false,
-                utenlandsoppholdSiste12Mnd = listOf()
-            ),
-            samværsavtale = listOf(
-            ),
+            samværsavtale = null,
             /*
             legeerklæring = listOf(
-                URL("http://localhost:8080/vedlegg/1")
+                URL("http://localhodt:8080/vedlegg/1")
             )
             */
             legeerklæring = emptyList()

@@ -5,7 +5,10 @@ class SoknadUtils {
         fun forLangtNavn() =
             "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
 
-        fun bodyMedFodselsnummerPaaBarn(
+        //TODO 23.02.2021 - Burde heller lage en standard gydlig søknad også bruke copy for å endre til spesielle tilfeller.
+        // Bruke en .somJson metode for å mappe fra objekt til json
+
+        fun gyldigSøknadJson(
             fodselsnummer: String,
             legeerklæringUrl: String,
             samværsavtaleUrl: String,
@@ -16,13 +19,10 @@ class SoknadUtils {
                 {
                   "nyVersjon": true,
                   "språk": "nb",
-                  "arbeidssituasjon": ["arbeidstaker", "frilanser", "selvstendigNæringsdrivende"],
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
                     "navn": "Ole Dole Doffen",
-                    "fødselsdato": "2005-02-23",
-                    "fødselsnummer": "$fodselsnummer",
-                    "aktørId": "123456"
+                    "norskIdentifikator": "$fodselsnummer"
                   },
                   "sammeAddresse": true,
                   "relasjonTilBarnet": "$relasjonTilBarnet",
@@ -30,26 +30,6 @@ class SoknadUtils {
                   "samværsavtale": [
                     "$samværsavtaleUrl"
                   ],
-                  "medlemskap": {
-                    "harBoddIUtlandetSiste12Mnd": true,
-                    "utenlandsoppholdSiste12Mnd": [
-                      {
-                        "fraOgMed": "2020-01-31",
-                        "tilOgMed": "2020-02-31",
-                        "landkode": "DK",
-                        "landnavn": "Danmark"
-                      }
-                    ],
-                    "skalBoIUtlandetNeste12Mnd": true,
-                    "utenlandsoppholdNeste12Mnd": [
-                      {
-                        "fraOgMed": "2020-01-31",
-                        "tilOgMed": "2020-02-31",
-                        "landkode": "DK",
-                        "landnavn": "Danmark"
-                      }
-                    ]
-                  },
                   "harForståttRettigheterOgPlikter": true,
                   "harBekreftetOpplysninger": true
                 }

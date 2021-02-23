@@ -22,18 +22,7 @@ private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
 internal fun Søknad.valider() {
     val violations: MutableSet<Violation> = this.barn.valider(relasjonTilBarnet = relasjonTilBarnet?.name)
 
-    if (arbeidssituasjon.isEmpty()) {
-        violations.add(
-            Violation(
-                parameterName = "arbeidssituasjon",
-                parameterType = ParameterType.ENTITY,
-                reason = "List over arbeidssituasjon kan ikke være tomt. Må inneholde minst 1 verdi.",
-                invalidValue = listOf<String>()
-            )
-        )
-    }
-
-/*
+    /*
     // legeerklaring
     if (legeerklæring.isEmpty()) {
         violations.add(
@@ -45,9 +34,8 @@ internal fun Søknad.valider() {
             )
         )
     }
-*/
+    */
 
-    // samvarsavtale
     if (samværsavtale != null) {
         if (samværsavtale.isEmpty()) {
             violations.add(
@@ -103,8 +91,6 @@ internal fun Søknad.valider() {
         }
     }
 
-    violations.addAll(medlemskap.valider())
-
     if (!harBekreftetOpplysninger) {
         violations.add(
             Violation(
@@ -132,58 +118,6 @@ internal fun Søknad.valider() {
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
     }
-}
-
-internal fun Medlemskap.valider(): MutableSet<Violation> {
-    val violations = mutableSetOf<Violation>()
-
-    // Booleans (For å forsikre at de er satt og ikke blir default false)
-    fun booleanIkkeSatt(parameterName: String) {
-        violations.add(
-            Violation(
-                parameterName = parameterName,
-                parameterType = ParameterType.ENTITY,
-                reason = "Må settes til true eller false.",
-                invalidValue = null
-            )
-        )
-    }
-
-    when (harBoddIUtlandetSiste12Mnd) {
-        null -> {
-            booleanIkkeSatt("medlemskap.harBoddIUtlandetSiste12Mnd")
-        }
-        true -> {
-            violations.addAll(
-                validerUtenlandopphold(
-                    "medlemskap.harBoddIUtlandetSiste12Mnd",
-                    "medlemskap.utenlandsoppholdSiste12Mnd",
-                    utenlandsoppholdSiste12Mnd
-                )
-            )
-        }
-        else -> {
-        }
-    }
-
-    when (skalBoIUtlandetNeste12Mnd) {
-        null -> {
-            booleanIkkeSatt("medlemskap.skalBoIUtlandetNeste12Mnd")
-        }
-        true -> {
-            violations.addAll(
-                validerUtenlandopphold(
-                    "medlemskap.skalBoIUtlandetNeste12Mnd",
-                    "medlemskap.utenlandsoppholdNeste12Mnd",
-                    utenlandsoppholdNeste12Mnd
-                )
-            )
-        }
-        else -> {
-        }
-    }
-
-    return violations
 }
 
 private fun BarnDetaljer.gyldigAntallIder(): Boolean {
@@ -216,46 +150,13 @@ private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violati
         )
     }
 
-    if (norskIdentifikator.isNullOrBlank() && fødselsdato == null) {
+    if (norskIdentifikator.isNullOrBlank() && aktørId.isNullOrBlank()) {
         violations.add(
             Violation(
                 parameterName = "barn",
                 parameterType = ParameterType.ENTITY,
-                reason = "Ikke tillatt med barn som mangler både fødselsdato og norskIdentifikator.",
+                reason = "Ikke tillatt med barn som mangler norskIdentifikator og aktørID.",
                 invalidValue = norskIdentifikator
-            )
-        )
-    }
-
-    if (!norskIdentifikator.isNullOrBlank() && fødselsdato != null) {
-        violations.add(
-            Violation(
-                parameterName = "barn",
-                parameterType = ParameterType.ENTITY,
-                reason = "Ikke tillatt med barn som har både fødselsdato og norskIdentifikator.",
-                invalidValue = norskIdentifikator
-            )
-        )
-    }
-
-    if (norskIdentifikator != null && !norskIdentifikator.erKunSiffer()) {
-        violations.add(
-            Violation(
-                parameterName = "barn.norskIdentifikator",
-                parameterType = ParameterType.ENTITY,
-                reason = "Ikke gyldig fødselsnummer.",
-                invalidValue = norskIdentifikator
-            )
-        )
-    }
-
-    if (fødselsdato != null && (fødselsdato.isAfter(LocalDate.now()))) {
-        violations.add(
-            Violation(
-                parameterName = "barn.fodselsdato",
-                parameterType = ParameterType.ENTITY,
-                reason = "Fødselsdato kan ikke være in fremtiden",
-                invalidValue = fødselsdato
             )
         )
     }
@@ -283,60 +184,6 @@ private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violati
         )
     }
 
-    return violations
-}
-
-private fun validerUtenlandopphold(
-    relatertFelt: String,
-    felt: String,
-    utenlandsOpphold: List<Utenlandsopphold>
-): MutableSet<Violation> {
-    val violations = mutableSetOf<Violation>()
-
-    if (utenlandsOpphold.isNullOrEmpty()) {
-        violations.add(
-            Violation(
-                parameterName = "$felt",
-                parameterType = ParameterType.ENTITY,
-                reason = "$relatertFelt er satt til true, men $relatertFelt var tomt eller null.",
-                invalidValue = utenlandsOpphold
-            )
-        )
-    }
-
-    utenlandsOpphold.mapIndexed { index, utenlandsopphold ->
-        val fraDataErEtterTilDato = utenlandsopphold.fraOgMed.isAfter(utenlandsopphold.tilOgMed)
-        if (fraDataErEtterTilDato) {
-            violations.add(
-                Violation(
-                    parameterName = "Utenlandsopphold[$index].fraOgMed eller Utenlandsopphold[$index].tilOgMed",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Til dato kan ikke være før fra dato",
-                    invalidValue = "fraOgMed eller tilOgMed"
-                )
-            )
-        }
-        if (utenlandsopphold.landkode.isEmpty()) {
-            violations.add(
-                Violation(
-                    parameterName = "Utenlandsopphold[$index].landkode",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Landkode er ikke satt",
-                    invalidValue = "landkode"
-                )
-            )
-        }
-        if (utenlandsopphold.landnavn.isEmpty()) {
-            violations.add(
-                Violation(
-                    parameterName = "Utenlandsopphold[$index].landnavn",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Landnavn er ikke satt",
-                    invalidValue = "landnavn"
-                )
-            )
-        }
-    }
     return violations
 }
 

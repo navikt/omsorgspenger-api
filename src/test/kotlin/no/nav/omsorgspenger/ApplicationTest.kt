@@ -222,7 +222,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+            requestEntity = SoknadUtils.gyldigSøknadJson(
                 fodselsnummer = gyldigFodselsnummerA,
                 legeerklæringUrl = jpegUrl,
                 samværsavtaleUrl = pdfUrl
@@ -250,7 +250,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.Forbidden,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+            requestEntity = SoknadUtils.gyldigSøknadJson(
                 fodselsnummer = gyldigFodselsnummerA,
                 legeerklæringUrl = jpegUrl,
                 samværsavtaleUrl = pdfUrl
@@ -275,25 +275,6 @@ class ApplicationTest {
                 legeerklæringUrl = jpegUrl,
                 samværsavtaleUrl = pdfUrl,
                 barnetsNorskIdentifikator = null
-            )
-        )
-    }
-
-    @Test
-    fun `Sende soknad uten ID på barnet`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = "/soknad",
-            expectedResponse = null,
-            expectedCode = HttpStatusCode.Accepted,
-            cookie = cookie,
-            requestEntity = SoknadUtils.bodyUtenIdPaaBarn(
-                legeerklæringUrl = jpegUrl,
-                samværsavtaleUrl = pdfUrl
             )
         )
     }
@@ -324,7 +305,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+            requestEntity = SoknadUtils.gyldigSøknadJson(
                 fodselsnummer = gyldigFodselsnummerA,
                 legeerklæringUrl = jpegUrl,
                 samværsavtaleUrl = finnesIkkeUrl
@@ -348,7 +329,6 @@ class ApplicationTest {
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
                     "navn": "$forlangtNavn",
-                    "fødselsdato": "1990-09-26",
                     "norskIdentifikator": "29099012345",
                     "aktørId": "123456"
                   },
@@ -399,21 +379,9 @@ class ApplicationTest {
                     },
                     {
                       "type": "entity",
-                      "name": "barn",
-                      "reason": "Ikke tillatt med barn som har både fødselsdato og norskIdentifikator.",
-                      "invalid_value": "29099012345"
-                    },
-                    {
-                      "type": "entity",
                       "name": "barn.navn",
                       "reason": "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
                       "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "arbeidssituasjon",
-                      "reason": "List over arbeidssituasjon kan ikke være tomt. Må inneholde minst 1 verdi.",
-                      "invalid_value": []
                     },
                     {
                       "type": "entity",
