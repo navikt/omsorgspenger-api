@@ -1,5 +1,15 @@
 package no.nav.omsorgspenger
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
+import no.nav.omsorgspenger.soknad.BarnDetaljer
+import no.nav.omsorgspenger.soknad.SøkerBarnRelasjon
+import no.nav.omsorgspenger.soknad.Søknad
+import java.net.URL
+
 class SoknadUtils {
     companion object {
         fun forLangtNavn() =
@@ -7,6 +17,27 @@ class SoknadUtils {
 
         //TODO 23.02.2021 - Burde heller lage en standard gydlig søknad også bruke copy for å endre til spesielle tilfeller.
         // Bruke en .somJson metode for å mappe fra objekt til json
+
+        fun gyldigSøknad(legeerklæringURL: String, samværsavtalURL: String? = null): Søknad{
+            val legeerklæring = if(legeerklæringURL != null) listOf(URL(legeerklæringURL)) else listOf()
+            val samværsavtale = if(samværsavtalURL != null) listOf(URL(samværsavtalURL)) else listOf()
+
+            return Søknad(
+                nyVersjon = false,
+                språk = "nb",
+                kroniskEllerFunksjonshemming = false,
+                barn = BarnDetaljer(
+                    norskIdentifikator = "02119970078",
+                    navn = "Ole Dole Doffen"
+                ),
+                sammeAdresse = true,
+                relasjonTilBarnet = SøkerBarnRelasjon.FAR,
+                legeerklæring = legeerklæring,
+                samværsavtale = samværsavtale,
+                harForståttRettigheterOgPlikter = true,
+                harBekreftetOpplysninger = true
+            )
+        }
 
         fun gyldigSøknadJson(
             fodselsnummer: String,
@@ -133,3 +164,9 @@ class SoknadUtils {
         }
     }
 }
+
+val objectMapper: ObjectMapper = jacksonObjectMapper().dusseldorfConfigured()
+    .setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE)
+    .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+
+fun Any.somJson() = objectMapper.writeValueAsString(this)

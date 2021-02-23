@@ -174,16 +174,16 @@ class ApplicationTest {
         fodselsdato: String = "1997-05-25",
         myndig: Boolean = true
     ) = """
-    {
-        "etternavn": "MORSEN",
-        "fornavn": "MOR",
-        "mellomnavn": "HEISANN",
-        "fødselsnummer": "$fodselsnummer",
-        "aktørId": "12345",
-        "fødselsdato": "$fodselsdato",
-        "myndig": $myndig
-    }
-""".trimIndent()
+        {
+            "etternavn": "MORSEN",
+            "fornavn": "MOR",
+            "mellomnavn": "HEISANN",
+            "fødselsnummer": "$fodselsnummer",
+            "aktørId": "12345",
+            "fødselsdato": "$fodselsdato",
+            "myndig": $myndig
+        } 
+    """.trimIndent()
 
     @Test
     fun `Hente soeker`() {
@@ -222,11 +222,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.gyldigSøknadJson(
-                fodselsnummer = gyldigFodselsnummerA,
-                legeerklæringUrl = jpegUrl,
-                samværsavtaleUrl = pdfUrl
-            )
+            requestEntity = SoknadUtils.gyldigSøknad(pdfUrl, jpegUrl).somJson()
         )
     }
 
