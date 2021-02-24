@@ -34,7 +34,6 @@ private val ikkeMyndigDato = "2050-12-12"
 class ApplicationTest {
 
     private companion object {
-
         private val logger: Logger = LoggerFactory.getLogger(ApplicationTest::class.java)
 
         val wireMockServer = WireMockBuilder()
@@ -52,7 +51,6 @@ class ApplicationTest {
             .stubK9OppslagBarn()
             .stubK9Dokument()
 
-
         val redisServer: RedisServer = RedisServer.newRedisServer(6379).started()
 
         fun getConfig(): ApplicationConfig {
@@ -67,11 +65,9 @@ class ApplicationTest {
             return HoconApplicationConfig(mergedConfig)
         }
 
-
         val engine = TestApplicationEngine(createTestEnvironment {
             config = getConfig()
         })
-
 
         @BeforeClass
         @JvmStatic
