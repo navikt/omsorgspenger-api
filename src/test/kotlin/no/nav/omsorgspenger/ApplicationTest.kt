@@ -18,7 +18,6 @@ import org.junit.BeforeClass
 import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.Duration
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,7 +26,6 @@ import kotlin.test.assertTrue
 private const val forLangtNavn = "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
 private const val fnr = "290990123456"
 private const val ikkeMyndigFnr = "12125012345"
-private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
 // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
 private val gyldigFodselsnummerA = "02119970078"
 private val ikkeMyndigDato = "2050-12-12"

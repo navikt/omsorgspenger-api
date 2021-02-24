@@ -13,7 +13,7 @@ import java.net.URL
 class SøknadUtils {
     companion object {
 
-        fun gyldigSøknad(legeerklæringURL: String, samværsavtalURL: String? = null): Søknad{
+        fun gyldigSøknad(legeerklæringURL: String? = null, samværsavtalURL: String? = null): Søknad{
             val legeerklæring = if(legeerklæringURL != null) listOf(URL(legeerklæringURL)) else listOf()
             val samværsavtale = if(samværsavtalURL != null) listOf(URL(samværsavtalURL)) else listOf()
 
