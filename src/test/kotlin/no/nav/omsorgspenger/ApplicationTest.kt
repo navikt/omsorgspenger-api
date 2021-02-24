@@ -11,6 +11,7 @@ import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.getAuthCookie
 import no.nav.omsorgspenger.mellomlagring.started
+import no.nav.omsorgspenger.soknad.BarnDetaljer
 import no.nav.omsorgspenger.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -23,7 +24,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-
+private const val forLangtNavn = "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
 private const val fnr = "290990123456"
 private const val ikkeMyndigFnr = "12125012345"
 private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
@@ -186,7 +187,7 @@ class ApplicationTest {
     """.trimIndent()
 
     @Test
-    fun `Hente soeker`() {
+    fun `Hente søker`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/soker",
@@ -211,7 +212,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad`() {
+    fun `Sende søknad`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -222,12 +223,12 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.gyldigSøknad(pdfUrl, jpegUrl).somJson()
+            requestEntity = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).somJson()
         )
     }
 
     @Test
-    fun `Sende soknad ikke myndig`() {
+    fun `Sende søknad ikke myndig`() {
         val cookie = getAuthCookie(ikkeMyndigFnr)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -246,16 +247,12 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.Forbidden,
             cookie = cookie,
-            requestEntity = SoknadUtils.gyldigSøknadJson(
-                fodselsnummer = gyldigFodselsnummerA,
-                legeerklæringUrl = jpegUrl,
-                samværsavtaleUrl = pdfUrl
-            )
+            requestEntity = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).somJson()
         )
     }
 
     @Test //Denne testen fanger ikke opp om barnets navn blir satt eller ikke. Må undersøke loggen.
-    fun `Sende soknad med AktørID som ID på barnet`() {
+    fun `Sende søknad med AktørID som ID på barnet`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -266,17 +263,16 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedAktoerIdPaaBarn(
-                aktoerId = "10000000001",
-                legeerklæringUrl = jpegUrl,
-                samværsavtaleUrl = pdfUrl,
-                barnetsNorskIdentifikator = null
-            )
+            requestEntity = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).copy(
+                barn = BarnDetaljer(
+                    aktørId = "12345"
+                )
+            ).somJson()
         )
     }
 
     @Test
-    fun `Sende soknad hvor et av vedleggene peker på et ikke eksisterende vedlegg`() {
+    fun `Sende søknad hvor et av vedleggene peker på et ikke eksisterende vedlegg`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val finnesIkkeUrl = jpegUrl.substringBeforeLast("/").plus("/").plus(UUID.randomUUID().toString())
@@ -301,17 +297,12 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.gyldigSøknadJson(
-                fodselsnummer = gyldigFodselsnummerA,
-                legeerklæringUrl = jpegUrl,
-                samværsavtaleUrl = finnesIkkeUrl
-            )
+            requestEntity = SøknadUtils.gyldigSøknad(jpegUrl, finnesIkkeUrl).somJson()
         )
     }
 
     @Test
-    fun `Sende soknad med ugylidge parametre gir feil`() {
-        val forlangtNavn = SoknadUtils.forLangtNavn()
+    fun `Sende søknad med ugylidge parametre gir feil`() {
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = "/soknad",
@@ -324,7 +315,7 @@ class ApplicationTest {
                   "arbeidssituasjon": [],
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
-                    "navn": "$forlangtNavn",
+                    "navn": "$forLangtNavn",
                     "norskIdentifikator": "29099012345",
                     "aktørId": "123456"
                   },
@@ -410,7 +401,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Test haandtering av vedlegg`() {
+    fun `Test håndtering av vedlegg`() {
         val cookie = getAuthCookie(fnr)
         val jpeg = "vedlegg/iPhone_6.jpg".fromResources().readBytes()
 
@@ -444,7 +435,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Test opplasting av ikke stottet vedleggformat`() {
+    fun `Test opplasting av ikke støttet vedleggformat`() {
         engine.handleRequestUploadImage(
             cookie = getAuthCookie(gyldigFodselsnummerA),
             vedlegg = "jwkset.json".fromResources().readBytes(),
