@@ -139,6 +139,17 @@ private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violati
         )
     }
 
+    if (norskIdentifikator.isNullOrBlank() && aktørId.isNullOrBlank()) {
+        violations.add(
+            Violation(
+                parameterName = "barn",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke tillatt med barn som mangler norskIdentifikator og aktørID.",
+                invalidValue = norskIdentifikator
+            )
+        )
+    }
+
     if (!gyldigAntallIder()) {
         violations.add(
             Violation(
@@ -150,16 +161,6 @@ private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violati
         )
     }
 
-    if (norskIdentifikator.isNullOrBlank() && aktørId.isNullOrBlank()) {
-        violations.add(
-            Violation(
-                parameterName = "barn",
-                parameterType = ParameterType.ENTITY,
-                reason = "Ikke tillatt med barn som mangler norskIdentifikator og aktørID.",
-                invalidValue = norskIdentifikator
-            )
-        )
-    }
 
     val kreverNavnPaaBarnet = norskIdentifikator != null
     if ((kreverNavnPaaBarnet || navn != null) && (navn == null || navn.erBlankEllerLengreEnn(100))) {
