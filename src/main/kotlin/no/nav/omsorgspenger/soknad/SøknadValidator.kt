@@ -3,7 +3,6 @@ package no.nav.omsorgspenger.soknad
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.omsorgspenger.vedlegg.Vedlegg
 import java.net.URL
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 private val KUN_SIFFER = Regex("\\d+")
@@ -139,12 +138,26 @@ private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violati
         )
     }
 
+    /* //TODO 25.02.2021 - Sett på validering når fjerning av fødselsdato er prodsatt i frontend
     if (norskIdentifikator.isNullOrBlank() && aktørId.isNullOrBlank()) {
         violations.add(
             Violation(
                 parameterName = "barn",
                 parameterType = ParameterType.ENTITY,
                 reason = "Ikke tillatt med barn som mangler norskIdentifikator og aktørID.",
+                invalidValue = norskIdentifikator
+            )
+        )
+    }
+    */
+
+    //TODO 25.02.2021 - Fjerne denne når fødselsdato er fjernet
+    if(norskIdentifikator.isNullOrBlank() && fødselsdato == null && aktørId.isNullOrBlank()){
+        violations.add(
+            Violation(
+                parameterName = "barn",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke tillatt med barn som mangler både fødselsdato, aktørID og norskIdentifikator.",
                 invalidValue = norskIdentifikator
             )
         )
