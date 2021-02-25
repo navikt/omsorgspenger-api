@@ -2,7 +2,6 @@ package no.nav.omsorgspenger.soknad
 
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonValue
 import java.net.URL
 import java.time.LocalDate
 
@@ -47,13 +46,11 @@ data class Utenlandsopphold( //TODO 23.02.2021 - Fjernes når frontend er oppdat
     val landnavn: String
 )
 
-enum class SøkerBarnRelasjon(@JsonValue val relasjon: String) {
-    MOR("mor"),
-    FAR("far"),
-    ADOPTIVFORELDER("adoptivforelder"),
-    SAMVÆRSFORELDER("samværsforelder"),
-    STEFORELDER("steforelder"),
-    FOSTERFORELDER("fosterforelder")
+enum class SøkerBarnRelasjon() {
+    @JsonAlias("mor") MOR(),
+    @JsonAlias("far") FAR(),
+    @JsonAlias("adoptivforelder") ADOPTIVFORELDER(),
+    @JsonAlias("fosterforelder") FOSTERFORELDER()
 }
 
 enum class Arbeidssituasjon(){ //TODO 23.02.2021 - Fjernes når frontend er oppdatert
