@@ -31,7 +31,7 @@ class Medlemskap( //TODO 23.02.2021 - Fjernes når frontend er oppdatert
 data class BarnDetaljer(
     val norskIdentifikator: String? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
-    val fødselsdato: LocalDate? = null, //TODO 23.02.2021 - Fjernes når frontend er oppdatert
+    val fødselsdato: LocalDate? = null,
     val aktørId: String? = null,
     val navn: String? = null
 ) {
