@@ -1,9 +1,6 @@
 package no.nav.omsorgspenger
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.*
@@ -39,7 +36,6 @@ import no.nav.omsorgspenger.general.systemauth.AccessTokenClientResolver
 import no.nav.omsorgspenger.mellomlagring.MellomlagringService
 import no.nav.omsorgspenger.mellomlagring.mellomlagringApis
 import no.nav.omsorgspenger.redis.RedisConfig
-import no.nav.omsorgspenger.redis.RedisConfigurationProperties
 import no.nav.omsorgspenger.redis.RedisStore
 import no.nav.omsorgspenger.soker.SøkerGateway
 import no.nav.omsorgspenger.soker.SøkerService
@@ -75,7 +71,7 @@ fun Application.omsorgpengesoknadapi() {
     install(ContentNegotiation) {
         jackson {
             dusseldorfConfigured()
-                .setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE)
+                .setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
                 .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
         }
     }
@@ -84,6 +80,7 @@ fun Application.omsorgpengesoknadapi() {
         method(HttpMethod.Options)
         method(HttpMethod.Get)
         method(HttpMethod.Post)
+        method(HttpMethod.Put)
         method(HttpMethod.Delete)
         allowNonSimpleContentTypes = true
         allowCredentials = true
@@ -161,12 +158,13 @@ fun Application.omsorgpengesoknadapi() {
             mellomlagringApis(
                 mellomlagringService = MellomlagringService(
                     RedisStore(
-                        RedisConfig(
-                            RedisConfigurationProperties(
-                                configuration.getRedisHost().equals("localhost")
-                            )
-                        ).redisClient(configuration)
-                    ), configuration.getStoragePassphrase()),
+                        redisClient = RedisConfig.redisClient(
+                            redisHost = configuration.getRedisHost(),
+                            redisPort = configuration.getRedisPort()
+                        )
+                    ),
+                    passphrase = configuration.getStoragePassphrase(),
+                ),
                 idTokenProvider = idTokenProvider
             )
 

@@ -2,7 +2,6 @@ package no.nav.omsorgspenger.soknad
 
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonValue
 import java.net.URL
 import java.time.LocalDate
 import java.util.*
@@ -11,19 +10,19 @@ data class Søknad(
     val nyVersjon: Boolean,
     val søknadId: String = UUID.randomUUID().toString(),
     val språk: String,
-    val arbeidssituasjon: List<Arbeidssituasjon>,
+    val arbeidssituasjon: List<Arbeidssituasjon>? = null, //TODO 23.02.2021 - Fjernes når frontend er oppdatert
     val kroniskEllerFunksjonshemming: Boolean,
     val barn: BarnDetaljer,
     val sammeAdresse: Boolean?,
     val relasjonTilBarnet: SøkerBarnRelasjon? = null,
     val legeerklæring: List<URL>,
     val samværsavtale: List<URL>? = null,
-    val medlemskap: Medlemskap,
+    val medlemskap: Medlemskap? = null, //TODO 23.02.2021 - Fjernes når frontend er oppdatert
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean
 )
 
-class Medlemskap(
+class Medlemskap( //TODO 23.02.2021 - Fjernes når frontend er oppdatert
     val harBoddIUtlandetSiste12Mnd: Boolean,
     val utenlandsoppholdSiste12Mnd: List<Utenlandsopphold> = listOf(),
     val skalBoIUtlandetNeste12Mnd: Boolean,
@@ -42,24 +41,29 @@ data class BarnDetaljer(
     }
 }
 
-data class Utenlandsopphold(
+data class Utenlandsopphold( //TODO 23.02.2021 - Fjernes når frontend er oppdatert
     @JsonFormat(pattern = "yyyy-MM-dd") val fraOgMed: LocalDate,
     @JsonFormat(pattern = "yyyy-MM-dd") val tilOgMed: LocalDate,
     val landkode: String,
     val landnavn: String
 )
 
-enum class SøkerBarnRelasjon(@JsonValue val relasjon: String) {
-    MOR("mor"),
-    FAR("far"),
-    ADOPTIVFORELDER("adoptivforelder"),
-    SAMVÆRSFORELDER("samværsforelder"),
-    STEFORELDER("steforelder"),
-    FOSTERFORELDER("fosterforelder")
+enum class SøkerBarnRelasjon() {
+    @JsonAlias("mor")
+    MOR(),
+    @JsonAlias("far")
+    FAR(),
+    @JsonAlias("adoptivforelder")
+    ADOPTIVFORELDER(),
+    @JsonAlias("fosterforelder")
+    FOSTERFORELDER()
 }
 
-enum class Arbeidssituasjon(){
-    @JsonAlias("selvstendigNæringsdrivende") SELVSTENDIG_NÆRINGSDRIVENDE,
-    @JsonAlias("arbeidstaker") ARBEIDSTAKER,
-    @JsonAlias("frilanser") FRILANSER
+enum class Arbeidssituasjon() { //TODO 23.02.2021 - Fjernes når frontend er oppdatert
+    @JsonAlias("selvstendigNæringsdrivende")
+    SELVSTENDIG_NÆRINGSDRIVENDE,
+    @JsonAlias("arbeidstaker")
+    ARBEIDSTAKER,
+    @JsonAlias("frilanser")
+    FRILANSER
 }

@@ -1,5 +1,6 @@
 package no.nav.omsorgspenger
 
+import com.github.fppt.jedismock.RedisServer
 import com.github.tomakehurst.wiremock.http.Cookie
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
@@ -9,23 +10,23 @@ import io.ktor.util.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.getAuthCookie
-import no.nav.omsorgspenger.redis.RedisMockUtil
+import no.nav.omsorgspenger.mellomlagring.started
+import no.nav.omsorgspenger.soknad.BarnDetaljer
 import no.nav.omsorgspenger.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.Duration
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-
+private const val forLangtNavn =
+    "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
 private const val fnr = "290990123456"
 private const val ikkeMyndigFnr = "12125012345"
-private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
 // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
 private val gyldigFodselsnummerA = "02119970078"
 private val ikkeMyndigDato = "2050-12-12"
@@ -34,7 +35,6 @@ private val ikkeMyndigDato = "2050-12-12"
 class ApplicationTest {
 
     private companion object {
-
         private val logger: Logger = LoggerFactory.getLogger(ApplicationTest::class.java)
 
         val wireMockServer = WireMockBuilder()
@@ -52,20 +52,25 @@ class ApplicationTest {
             .stubK9OppslagBarn()
             .stubK9Dokument()
 
+        val redisServer: RedisServer = RedisServer.newRedisServer(6379).started()
+
         fun getConfig(): ApplicationConfig {
 
             val fileConfig = ConfigFactory.load()
-            val testConfig = ConfigFactory.parseMap(TestConfiguration.asMap(wireMockServer = wireMockServer))
+            val testConfig = ConfigFactory.parseMap(
+                TestConfiguration.asMap(
+                    wireMockServer = wireMockServer,
+                    redisServer = redisServer
+                )
+            )
             val mergedConfig = testConfig.withFallback(fileConfig)
 
             return HoconApplicationConfig(mergedConfig)
         }
 
-
         val engine = TestApplicationEngine(createTestEnvironment {
             config = getConfig()
         })
-
 
         @BeforeClass
         @JvmStatic
@@ -78,7 +83,7 @@ class ApplicationTest {
         fun tearDown() {
             logger.info("Tearing down")
             wireMockServer.stop()
-            RedisMockUtil.stopRedisMocked()
+            redisServer.stop()
             logger.info("Tear down complete")
         }
     }
@@ -167,19 +172,19 @@ class ApplicationTest {
         fodselsdato: String = "1997-05-25",
         myndig: Boolean = true
     ) = """
-    {
-        "etternavn": "MORSEN",
-        "fornavn": "MOR",
-        "mellomnavn": "HEISANN",
-        "fødselsnummer": "$fodselsnummer",
-        "aktørId": "12345",
-        "fødselsdato": "$fodselsdato",
-        "myndig": $myndig
-    }
-""".trimIndent()
+        {
+            "etternavn": "MORSEN",
+            "fornavn": "MOR",
+            "mellomnavn": "HEISANN",
+            "fødselsnummer": "$fodselsnummer",
+            "aktørId": "12345",
+            "fødselsdato": "$fodselsdato",
+            "myndig": $myndig
+        } 
+    """.trimIndent()
 
     @Test
-    fun `Hente soeker`() {
+    fun `Hente søker`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/soker",
@@ -204,7 +209,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad`() {
+    fun `Sende søknad`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -215,16 +220,12 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
-                fodselsnummer = gyldigFodselsnummerA,
-                legeerklæringUrl = jpegUrl,
-                samværsavtaleUrl = pdfUrl
-            )
+            requestEntity = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).somJson()
         )
     }
 
     @Test
-    fun `Sende soknad ikke myndig`() {
+    fun `Sende søknad ikke myndig`() {
         val cookie = getAuthCookie(ikkeMyndigFnr)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -243,16 +244,12 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.Forbidden,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
-                fodselsnummer = gyldigFodselsnummerA,
-                legeerklæringUrl = jpegUrl,
-                samværsavtaleUrl = pdfUrl
-            )
+            requestEntity = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).somJson()
         )
     }
 
     @Test //Denne testen fanger ikke opp om barnets navn blir satt eller ikke. Må undersøke loggen.
-    fun `Sende soknad med AktørID som ID på barnet`() {
+    fun `Sende søknad med AktørID som ID på barnet`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -263,36 +260,16 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedAktoerIdPaaBarn(
-                aktoerId = "10000000001",
-                legeerklæringUrl = jpegUrl,
-                samværsavtaleUrl = pdfUrl,
-                barnetsNorskIdentifikator = null
-            )
+            requestEntity = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).copy(
+                barn = BarnDetaljer(
+                    aktørId = "12345"
+                )
+            ).somJson()
         )
     }
 
     @Test
-    fun `Sende soknad uten ID på barnet`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = "/soknad",
-            expectedResponse = null,
-            expectedCode = HttpStatusCode.Accepted,
-            cookie = cookie,
-            requestEntity = SoknadUtils.bodyUtenIdPaaBarn(
-                legeerklæringUrl = jpegUrl,
-                samværsavtaleUrl = pdfUrl
-            )
-        )
-    }
-
-    @Test
-    fun `Sende soknad hvor et av vedleggene peker på et ikke eksisterende vedlegg`() {
+    fun `Sende søknad hvor et av vedleggene peker på et ikke eksisterende vedlegg`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val finnesIkkeUrl = jpegUrl.substringBeforeLast("/").plus("/").plus(UUID.randomUUID().toString())
@@ -317,17 +294,12 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
-                fodselsnummer = gyldigFodselsnummerA,
-                legeerklæringUrl = jpegUrl,
-                samværsavtaleUrl = finnesIkkeUrl
-            )
+            requestEntity = SøknadUtils.gyldigSøknad(jpegUrl, finnesIkkeUrl).somJson()
         )
     }
 
     @Test
-    fun `Sende soknad med ugylidge parametre gir feil`() {
-        val forlangtNavn = SoknadUtils.forLangtNavn()
+    fun `Sende søknad med ugylidge parametre gir feil`() {
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = "/soknad",
@@ -340,8 +312,7 @@ class ApplicationTest {
                   "arbeidssituasjon": [],
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
-                    "navn": "$forlangtNavn",
-                    "fødselsdato": "1990-09-26",
+                    "navn": "$forLangtNavn",
                     "norskIdentifikator": "29099012345",
                     "aktørId": "123456"
                   },
@@ -392,21 +363,9 @@ class ApplicationTest {
                     },
                     {
                       "type": "entity",
-                      "name": "barn",
-                      "reason": "Ikke tillatt med barn som har både fødselsdato og norskIdentifikator.",
-                      "invalid_value": "29099012345"
-                    },
-                    {
-                      "type": "entity",
                       "name": "barn.navn",
                       "reason": "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
                       "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "arbeidssituasjon",
-                      "reason": "List over arbeidssituasjon kan ikke være tomt. Må inneholde minst 1 verdi.",
-                      "invalid_value": []
                     },
                     {
                       "type": "entity",
@@ -439,7 +398,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Test haandtering av vedlegg`() {
+    fun `Test håndtering av vedlegg`() {
         val cookie = getAuthCookie(fnr)
         val jpeg = "vedlegg/iPhone_6.jpg".fromResources().readBytes()
 
@@ -473,7 +432,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Test opplasting av ikke stottet vedleggformat`() {
+    fun `Test opplasting av ikke støttet vedleggformat`() {
         engine.handleRequestUploadImage(
             cookie = getAuthCookie(gyldigFodselsnummerA),
             vedlegg = "jwkset.json".fromResources().readBytes(),

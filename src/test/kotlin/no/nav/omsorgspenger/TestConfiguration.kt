@@ -1,5 +1,6 @@
 package no.nav.omsorgspenger
 
+import com.github.fppt.jedismock.RedisServer
 import com.github.tomakehurst.wiremock.WireMockServer
 import no.nav.helse.dusseldorf.testsupport.jws.ClientCredentials
 import no.nav.helse.dusseldorf.testsupport.jws.LoginService
@@ -13,11 +14,12 @@ object TestConfiguration {
 
     fun asMap(
         wireMockServer: WireMockServer? = null,
-        port : Int = 8080,
+        port: Int = 8080,
         k9OppslagUrl: String? = wireMockServer?.getK9OppslagUrl(),
-        omsorgpengesoknadMottakUrl : String? = wireMockServer?.getOmsorgpengesoknadMottakUrl(),
-        k9DokumentUrl : String? = wireMockServer?.getK9DokumentUrl(),
-        corsAdresses : String = "http://localhost:8080"
+        omsorgpengesoknadMottakUrl: String? = wireMockServer?.getOmsorgpengesoknadMottakUrl(),
+        k9DokumentUrl: String? = wireMockServer?.getK9DokumentUrl(),
+        corsAdresses: String = "http://localhost:8080",
+        redisServer: RedisServer
     ) : Map<String, String> {
 
         val map = mutableMapOf(
@@ -46,8 +48,8 @@ object TestConfiguration {
             map["nav.auth.issuers.1.audience"] = LoginService.V1_0.getAudience()
         }
 
-        map["nav.redis.host"] = "localhost"
-        map["nav.redis.port"] = "6379"
+        map["nav.redis.host"] = redisServer.host
+        map["nav.redis.port"] = "${redisServer.bindPort}"
         map["nav.storage.passphrase"] = "verySecret"
 
         return map.toMap()
