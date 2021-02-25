@@ -8,6 +8,7 @@ import java.time.ZonedDateTime
 data class KomplettSoknad(
     val nyVersjon: Boolean,
     val språk: String,
+    val søknadId: String,
     val mottatt: ZonedDateTime,
     val kroniskEllerFunksjonshemming: Boolean,
     val søker: Søker,

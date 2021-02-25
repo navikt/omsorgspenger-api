@@ -6,7 +6,6 @@ import no.nav.omsorgspenger.soker.Søker
 import no.nav.omsorgspenger.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 
@@ -60,7 +59,8 @@ class SøknadService(
 
         val komplettSoknad = KomplettSoknad(
             språk = søknad.språk,
-            mottatt = ZonedDateTime.now(ZoneOffset.UTC),
+            mottatt = mottatt,
+            søknadId = søknad.søknadId,
             søker = søker,
             barn = BarnDetaljer(
                 fødselsdato = søknad.barn.fødselsdato,
