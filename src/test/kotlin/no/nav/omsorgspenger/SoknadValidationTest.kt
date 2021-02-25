@@ -1,10 +1,12 @@
 package no.nav.omsorgspenger
 
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
+import no.nav.omsorgspenger.k9format.tilK9Format
 import no.nav.omsorgspenger.soknad.*
 import org.junit.Test
 import java.net.URL
 import java.time.LocalDate
+import java.time.ZonedDateTime
 import kotlin.test.assertTrue
 
 
@@ -19,7 +21,7 @@ internal class SøknadValideringsTest {
 
     @Test(expected = Throwblem::class)
     internal fun `Til dato kan ikke være før fra dato`() {
-        Søknad(
+        val søknad = Søknad(
             nyVersjon = false,
             språk = "nb",
             arbeidssituasjon = listOf(Arbeidssituasjon.ARBEIDSTAKER),
@@ -56,7 +58,9 @@ internal class SøknadValideringsTest {
             )
             */
             legeerklæring = emptyList()
-        ).valider()
+        )
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SoknadUtils.søker)
+        søknad.valider(k9Format)
     }
 
     @Test(expected = Throwblem::class)
@@ -94,7 +98,10 @@ internal class SøknadValideringsTest {
                 URL("http://localhost:8080/vedlegg/1")
             )
             */
-        ).valider()
+        )
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SoknadUtils.søker)
+        søknad.valider(k9Format)
+
     }
 
     @Test
@@ -105,7 +112,7 @@ internal class SøknadValideringsTest {
 
     @Test(expected = Throwblem::class)
     fun `Forvent violation dersom barn har både fødselsdato og norskIdentnummer`() {
-        Søknad(
+        val søknad = Søknad(
             nyVersjon = false,
             språk = "nb",
             kroniskEllerFunksjonshemming = true,
@@ -130,12 +137,14 @@ internal class SøknadValideringsTest {
                 URL("http://localhodt:8080/vedlegg/1")
             )
             */
-        ).valider()
+        )
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SoknadUtils.søker)
+        søknad.valider(k9Format)
     }
 
     @Test(expected = Throwblem::class)
     fun `Forvent violation dersom barn mangler både fødselsdato og norskIdentnummer`() {
-        Søknad(
+        val søknad = Søknad(
             nyVersjon = false,
             språk = "nb",
             arbeidssituasjon = listOf(Arbeidssituasjon.ARBEIDSTAKER),
@@ -160,12 +169,14 @@ internal class SøknadValideringsTest {
             )
             */
             legeerklæring = emptyList()
-        ).valider()
+        )
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SoknadUtils.søker)
+        søknad.valider(k9Format)
     }
 
     @Test(expected = Throwblem::class)
     internal fun `Forvent violation dersom harBoddIUtlandetSiste12Mnd er true, men utenlandsoppholdSiste12Mnd er tom eller null`() {
-        Søknad(
+        val søknad = Søknad(
             nyVersjon = false,
             språk = "nb",
             kroniskEllerFunksjonshemming = true,
@@ -192,6 +203,8 @@ internal class SøknadValideringsTest {
             )
             */
             legeerklæring = emptyList()
-        ).valider()
+        )
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SoknadUtils.søker)
+        søknad.valider(k9Format)
     }
 }

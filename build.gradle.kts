@@ -2,6 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val dusseldorfKtorVersion = "1.5.0.3315e68"
+val k9FormatVersion = "5.1.16"
 val ktorVersion = ext.get("ktorVersion").toString()
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
@@ -17,17 +18,21 @@ buildscript {
 
 dependencies {
     // Server
-    implementation ( "no.nav.helse:dusseldorf-ktor-core:$dusseldorfKtorVersion")
-    implementation ( "no.nav.helse:dusseldorf-ktor-jackson:$dusseldorfKtorVersion")
-    implementation ( "no.nav.helse:dusseldorf-ktor-metrics:$dusseldorfKtorVersion")
-    implementation ( "no.nav.helse:dusseldorf-ktor-health:$dusseldorfKtorVersion")
-    implementation ( "no.nav.helse:dusseldorf-ktor-auth:$dusseldorfKtorVersion")
+    implementation("no.nav.helse:dusseldorf-ktor-core:$dusseldorfKtorVersion")
+    implementation("no.nav.helse:dusseldorf-ktor-jackson:$dusseldorfKtorVersion")
+    implementation("no.nav.helse:dusseldorf-ktor-metrics:$dusseldorfKtorVersion")
+    implementation("no.nav.helse:dusseldorf-ktor-health:$dusseldorfKtorVersion")
+    implementation("no.nav.helse:dusseldorf-ktor-auth:$dusseldorfKtorVersion")
     implementation("io.ktor:ktor-locations:$ktorVersion")
 
+    //K9-format
+    implementation("no.nav.k9:soknad:$k9FormatVersion")
+    implementation("org.glassfish:jakarta.el:3.0.3")
+
     // Client
-    implementation ( "no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
-    implementation ( "no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
-    implementation ("io.lettuce:lettuce-core:5.3.5.RELEASE")
+    implementation("no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
+    implementation("no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
+    implementation("io.lettuce:lettuce-core:5.3.5.RELEASE")
     implementation("com.github.fppt:jedis-mock:0.1.16")
 
     // Test
@@ -36,7 +41,7 @@ dependencies {
         exclude(group = "org.eclipse.jetty")
     }
 
-    testImplementation ("org.skyscreamer:jsonassert:1.5.0")
+    testImplementation("org.skyscreamer:jsonassert:1.5.0")
 }
 
 repositories {

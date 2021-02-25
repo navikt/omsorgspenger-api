@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonValue
 import java.net.URL
 import java.time.LocalDate
+import java.util.*
 
 data class Søknad(
     val nyVersjon: Boolean,
+    val søknadId: String = UUID.randomUUID().toString(),
     val språk: String,
     val arbeidssituasjon: List<Arbeidssituasjon>,
     val kroniskEllerFunksjonshemming: Boolean,

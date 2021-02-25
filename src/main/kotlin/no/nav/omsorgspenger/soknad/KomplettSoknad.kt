@@ -1,5 +1,6 @@
 package no.nav.omsorgspenger.soknad
 
+import no.nav.k9.søknad.Søknad
 import no.nav.omsorgspenger.soker.Søker
 import no.nav.omsorgspenger.vedlegg.Vedlegg
 import java.time.ZonedDateTime
@@ -18,5 +19,6 @@ data class KomplettSoknad(
     val legeerklæring: List<Vedlegg>,
     val samværsavtale: List<Vedlegg>?,
     val harForståttRettigheterOgPlikter: Boolean,
-    val harBekreftetOpplysninger: Boolean
+    val harBekreftetOpplysninger: Boolean,
+    val k9FormatSøknad: Søknad
 )

@@ -179,9 +179,9 @@ fun Application.omsorgpengesoknadapi() {
                 idTokenProvider = idTokenProvider,
                 søknadService = SøknadService(
                     omsorgpengesøknadMottakGateway = omsorgpengesoknadMottakGateway,
-                    søkerService = søkerService,
                     vedleggService = vedleggService
-                )
+                ),
+                søkerService = søkerService
             )
         }
 
