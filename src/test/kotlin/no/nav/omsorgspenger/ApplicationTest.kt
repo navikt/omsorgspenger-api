@@ -23,7 +23,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-private const val forLangtNavn = "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
+private const val forLangtNavn =
+    "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
 private const val fnr = "290990123456"
 private const val ikkeMyndigFnr = "12125012345"
 // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
@@ -56,10 +57,12 @@ class ApplicationTest {
         fun getConfig(): ApplicationConfig {
 
             val fileConfig = ConfigFactory.load()
-            val testConfig = ConfigFactory.parseMap(TestConfiguration.asMap(
-                wireMockServer = wireMockServer,
-                redisServer = redisServer
-            ))
+            val testConfig = ConfigFactory.parseMap(
+                TestConfiguration.asMap(
+                    wireMockServer = wireMockServer,
+                    redisServer = redisServer
+                )
+            )
             val mergedConfig = testConfig.withFallback(fileConfig)
 
             return HoconApplicationConfig(mergedConfig)

@@ -1,6 +1,7 @@
 package no.nav.omsorgspenger.soknad
 
 import no.nav.helse.dusseldorf.ktor.core.*
+import no.nav.k9.søknad.ytelse.omsorgspenger.utvidetrett.v1.OmsorgspengerKroniskSyktBarn
 import no.nav.omsorgspenger.vedlegg.Vedlegg
 import java.net.URL
 import java.time.format.DateTimeFormatter
@@ -18,7 +19,7 @@ private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
     detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB."
 )
 
-internal fun Søknad.valider() {
+internal fun Søknad.valider(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     val violations: MutableSet<Violation> = this.barn.valider(relasjonTilBarnet = relasjonTilBarnet?.name)
 
     /*
@@ -113,11 +114,23 @@ internal fun Søknad.valider() {
         )
     }
 
+    violations.addAll(validerK9Format(k9FormatSøknad))
+
 // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
     }
 }
+
+private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): MutableSet<Violation> =
+    OmsorgspengerKroniskSyktBarn.MinValidator().valider(k9FormatSøknad.getYtelse<OmsorgspengerKroniskSyktBarn>()).map {
+        Violation(
+            parameterName = it.felt,
+            parameterType = ParameterType.ENTITY,
+            reason = it.feilmelding,
+            invalidValue = "K9-format feilkode: ${it.feilkode}"
+        )
+    }.sortedBy { it.reason }.toMutableSet()
 
 private fun BarnDetaljer.gyldigAntallIder(): Boolean {
     val antallIderSatt = listOfNotNull(aktørId, norskIdentifikator).size
@@ -152,7 +165,7 @@ private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violati
     */
 
     //TODO 25.02.2021 - Fjerne denne når fødselsdato er fjernet
-    if(norskIdentifikator.isNullOrBlank() && fødselsdato == null && aktørId.isNullOrBlank()){
+    if (norskIdentifikator.isNullOrBlank() && fødselsdato == null && aktørId.isNullOrBlank()) {
         violations.add(
             Violation(
                 parameterName = "barn",

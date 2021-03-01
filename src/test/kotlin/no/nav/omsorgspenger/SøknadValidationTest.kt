@@ -1,11 +1,13 @@
 package no.nav.omsorgspenger
 
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
+import no.nav.omsorgspenger.k9format.tilK9Format
 import no.nav.omsorgspenger.soknad.BarnDetaljer
 import no.nav.omsorgspenger.soknad.starterMedFodselsdato
 import no.nav.omsorgspenger.soknad.valider
 import org.junit.Test
 import java.net.URL
+import java.time.ZonedDateTime
 import kotlin.test.assertTrue
 
 internal class SøknadValideringsTest {
@@ -14,8 +16,8 @@ internal class SøknadValideringsTest {
     }
 
     @Test
-    fun `Skal ikke feile på gyldig søknad`(){
-        gyldigSøknad.valider()
+    fun `Skal ikke feile på gyldig søknad`() {
+        gyldigSøknad.valider(gyldigSøknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker))
     }
 
     @Test
@@ -25,74 +27,80 @@ internal class SøknadValideringsTest {
     }
 
     @Test(expected = Throwblem::class)
-    fun `Forvent violation dersom barn mangler både aktørID og norskIdentnummer 1`(){
-        gyldigSøknad.copy(
+    fun `Forvent violation dersom barn mangler både aktørID og norskIdentnummer 1`() {
+        val søknad = gyldigSøknad.copy(
             barn = BarnDetaljer(
                 navn = "Ole Dole Doffen",
                 norskIdentifikator = null,
                 aktørId = null
             )
-        ).valider()
+        )
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker))
     }
 
     @Test(expected = Throwblem::class)
-    fun `Forvent violation dersom barn har både aktørID og norskIdentnummer`(){
-        gyldigSøknad.copy(
+    fun `Forvent violation dersom barn har både aktørID og norskIdentnummer`() {
+        val søknad = gyldigSøknad.copy(
             barn = BarnDetaljer(
                 navn = "Ole Dole Doffen",
                 norskIdentifikator = "02119970078",
                 aktørId = "1234"
             )
-        ).valider()
+        )
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker))
     }
 
     @Test(expected = Throwblem::class)
-    fun `Forvent violation dersom barn norskIdentnummer er null`(){
-        gyldigSøknad.copy(
+    fun `Forvent violation dersom barn norskIdentnummer er null`() {
+        val søknad = gyldigSøknad.copy(
             barn = BarnDetaljer(
                 navn = "Ole Dole Doffen",
                 norskIdentifikator = null
             )
-        ).valider()
+        )
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker))
     }
 
     @Test(expected = Throwblem::class)
-    fun `Forvent violation dersom barn norskIdentnummer er bare whitespace`(){
-        gyldigSøknad.copy(
+    fun `Forvent violation dersom barn norskIdentnummer er bare whitespace`() {
+        val søknad = gyldigSøknad.copy(
             barn = BarnDetaljer(
                 navn = "Ole Dole Doffen",
                 norskIdentifikator = "  "
             )
-        ).valider()
+        )
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker))
     }
 
     @Test(expected = Throwblem::class)
-    fun `Forvent violation dersom samvæsavtale er tom`(){
-        gyldigSøknad.copy(
+    fun `Forvent violation dersom samvæsavtale er tom`() {
+        val søknad = gyldigSøknad.copy(
             samværsavtale = listOf()
-        ).valider()
+        )
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker))
     }
 
     @Test(expected = Throwblem::class)
-    fun `Forvent violation dersom samvæsavtaleURL er ugydlig format`(){
-        gyldigSøknad.copy(
+    fun `Forvent violation dersom samvæsavtaleURL er ugydlig format`() {
+        val søknad = gyldigSøknad.copy(
             samværsavtale = listOf(URL("http://localhost/FEIL/1"))
-        ).valider()
+        )
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker))
     }
 
     @Test(expected = Throwblem::class)
-    fun `Forvent feil dersom harBekreftetOpplysninger er false`(){
-        gyldigSøknad.copy(
+    fun `Forvent feil dersom harBekreftetOpplysninger er false`() {
+        val søknad = gyldigSøknad.copy(
             harBekreftetOpplysninger = false
-        ).valider()
+        )
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker))
     }
 
     @Test(expected = Throwblem::class)
-    fun `Forvent feil dersom harForståttRettigheterOgPlikter er false`(){
-        gyldigSøknad.copy(
+    fun `Forvent feil dersom harForståttRettigheterOgPlikter er false`() {
+        val søknad = gyldigSøknad.copy(
             harForståttRettigheterOgPlikter = false
-        ).valider()
+        )
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker))
     }
-
-
 }

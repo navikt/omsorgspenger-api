@@ -5,17 +5,26 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
+import no.nav.omsorgspenger.soker.Søker
 import no.nav.omsorgspenger.soknad.BarnDetaljer
 import no.nav.omsorgspenger.soknad.SøkerBarnRelasjon
 import no.nav.omsorgspenger.soknad.Søknad
 import java.net.URL
+import java.time.LocalDate
 
 class SøknadUtils {
     companion object {
 
-        fun gyldigSøknad(legeerklæringURL: String? = null, samværsavtalURL: String? = null): Søknad{
-            val legeerklæring = if(legeerklæringURL != null) listOf(URL(legeerklæringURL)) else listOf()
-            val samværsavtale = if(samværsavtalURL != null) listOf(URL(samværsavtalURL)) else listOf()
+        val søker = Søker(
+            aktørId = "12345",
+            fødselsdato = LocalDate.parse("2000-01-01"),
+            fornavn = "Kjell",
+            fødselsnummer = "26104500284"
+        )
+
+        fun gyldigSøknad(legeerklæringURL: String? = null, samværsavtalURL: String? = null): Søknad {
+            val legeerklæring = if (legeerklæringURL != null) listOf(URL(legeerklæringURL)) else listOf()
+            val samværsavtale = if (samværsavtalURL != null) listOf(URL(samværsavtalURL)) else listOf()
 
             return Søknad(
                 nyVersjon = false,

@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
 import java.net.URL
 import java.time.LocalDate
+import java.util.*
 
 data class Søknad(
     val nyVersjon: Boolean,
+    val søknadId: String = UUID.randomUUID().toString(),
     val språk: String,
     val arbeidssituasjon: List<Arbeidssituasjon>? = null, //TODO 23.02.2021 - Fjernes når frontend er oppdatert
     val kroniskEllerFunksjonshemming: Boolean,
@@ -47,14 +49,21 @@ data class Utenlandsopphold( //TODO 23.02.2021 - Fjernes når frontend er oppdat
 )
 
 enum class SøkerBarnRelasjon() {
-    @JsonAlias("mor") MOR(),
-    @JsonAlias("far") FAR(),
-    @JsonAlias("adoptivforelder") ADOPTIVFORELDER(),
-    @JsonAlias("fosterforelder") FOSTERFORELDER()
+    @JsonAlias("mor")
+    MOR(),
+    @JsonAlias("far")
+    FAR(),
+    @JsonAlias("adoptivforelder")
+    ADOPTIVFORELDER(),
+    @JsonAlias("fosterforelder")
+    FOSTERFORELDER()
 }
 
-enum class Arbeidssituasjon(){ //TODO 23.02.2021 - Fjernes når frontend er oppdatert
-    @JsonAlias("selvstendigNæringsdrivende") SELVSTENDIG_NÆRINGSDRIVENDE,
-    @JsonAlias("arbeidstaker") ARBEIDSTAKER,
-    @JsonAlias("frilanser") FRILANSER
+enum class Arbeidssituasjon() { //TODO 23.02.2021 - Fjernes når frontend er oppdatert
+    @JsonAlias("selvstendigNæringsdrivende")
+    SELVSTENDIG_NÆRINGSDRIVENDE,
+    @JsonAlias("arbeidstaker")
+    ARBEIDSTAKER,
+    @JsonAlias("frilanser")
+    FRILANSER
 }

@@ -3,18 +3,14 @@ package no.nav.omsorgspenger.soknad
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.auth.IdToken
 import no.nav.omsorgspenger.soker.Søker
-import no.nav.omsorgspenger.soker.SøkerService
-import no.nav.omsorgspenger.soker.validate
 import no.nav.omsorgspenger.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 
 class SøknadService(
     private val omsorgpengesøknadMottakGateway: OmsorgpengesøknadMottakGateway,
-    private val søkerService: SøkerService,
     private val vedleggService: VedleggService
 ) {
 
@@ -25,15 +21,13 @@ class SøknadService(
     suspend fun registrer(
         søknad: Søknad,
         idToken: IdToken,
-        callId: CallId
+        callId: CallId,
+        k9FormatSøknad: no.nav.k9.søknad.Søknad,
+        søker: Søker,
+        mottatt: ZonedDateTime
     ) {
-        logger.info("Registrerer søknad. Henter søker")
-        val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
+        logger.info("Registrerer søknad")
 
-        logger.info("Søker hentet. Validerer søker.")
-        søker.validate()
-
-        logger.info("Søker Validert.")
         logger.info("Henter ${søknad.legeerklæring.size} legeerklæringsvedlegg.")
         val legeerklæring = vedleggService.hentVedlegg(
             idToken = idToken,
@@ -65,7 +59,8 @@ class SøknadService(
 
         val komplettSoknad = KomplettSoknad(
             språk = søknad.språk,
-            mottatt = ZonedDateTime.now(ZoneOffset.UTC),
+            mottatt = mottatt,
+            søknadId = søknad.søknadId,
             søker = søker,
             barn = BarnDetaljer(
                 fødselsdato = søknad.barn.fødselsdato,
@@ -82,7 +77,8 @@ class SøknadService(
             arbeidssituasjon = søknad.arbeidssituasjon,
             kroniskEllerFunksjonshemming = søknad.kroniskEllerFunksjonshemming,
             nyVersjon = søknad.nyVersjon,
-            sammeAdresse = søknad.sammeAdresse
+            sammeAdresse = søknad.sammeAdresse,
+            k9FormatSøknad = k9FormatSøknad
         )
 
         omsorgpengesøknadMottakGateway.leggTilProsessering(
