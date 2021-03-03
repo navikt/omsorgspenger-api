@@ -12,11 +12,9 @@ data class KomplettSoknad(
     val mottatt: ZonedDateTime,
     val kroniskEllerFunksjonshemming: Boolean,
     val søker: Søker,
-    val arbeidssituasjon: List<Arbeidssituasjon>? = null, //TODO 23.02.2021 - Fjernes når frontend er oppdatert
     val barn: BarnDetaljer,
     val relasjonTilBarnet: SøkerBarnRelasjon? = null,
     val sammeAdresse: Boolean?,
-    val medlemskap: Medlemskap? = null, //TODO 23.02.2021 - Fjernes når frontend er oppdatert
     val legeerklæring: List<Vedlegg>,
     val samværsavtale: List<Vedlegg>?,
     val harForståttRettigheterOgPlikter: Boolean,

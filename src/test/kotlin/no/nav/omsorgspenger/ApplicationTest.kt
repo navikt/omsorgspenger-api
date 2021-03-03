@@ -309,7 +309,6 @@ class ApplicationTest {
             """{
                   "nyVersjon": true,
                   "språk": "nb",
-                  "arbeidssituasjon": [],
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
                     "navn": "$forLangtNavn",
@@ -325,18 +324,6 @@ class ApplicationTest {
                    "http://localhost:8080/vedlegg/2",
                    null
                   ],
-                  "medlemskap": {
-                    "harBoddIUtlandetSiste12Mnd": null,
-                    "skalBoIUtlandetNeste12Mnd": null,
-                    "utenlandsoppholdNeste12Mnd": [
-                      {
-                        "fraOgMed": "2020-01-31",
-                        "tilOgMed": "2020-01-31",
-                        "landkode": "dk",
-                        "landnavn": "danmark"
-                      }
-                    ]
-                  },
                   "harForståttRettigheterOgPlikter": false,
                   "harBekreftetOpplysninger": false
                 }
