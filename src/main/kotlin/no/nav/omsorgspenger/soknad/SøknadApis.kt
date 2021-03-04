@@ -79,8 +79,9 @@ fun Route.søknadApis(
         val callId = call.getCallId()
 
         val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
+        val barn = resolveBarn(søknad, barnService, idToken, callId)
 
-        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker, søknad.barn)
+        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker, barn)
         søknad.valider(k9FormatSøknad)
         logger.trace("Validering Ok.")
         call.respond(HttpStatusCode.Accepted)
