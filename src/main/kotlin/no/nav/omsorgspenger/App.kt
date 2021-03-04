@@ -139,6 +139,10 @@ fun Application.omsorgpengesoknadapi() {
             baseUrl = configuration.getK9OppslagUrl(),
             apiGatewayApiKey = apiGatewayApiKey
         )
+        val barnService = BarnService(
+            barnGateway = barnGateway,
+            cache = configuration.cache()
+        )
 
         val søkerService = SøkerService(
             søkerGateway = sokerGateway
@@ -151,10 +155,9 @@ fun Application.omsorgpengesoknadapi() {
                 idTokenProvider = idTokenProvider
             )
 
+
             barnApis(
-                barnService = BarnService(
-                    barnGateway = barnGateway
-                ),
+                barnService = barnService,
                 idTokenProvider = idTokenProvider
             )
 
@@ -182,7 +185,8 @@ fun Application.omsorgpengesoknadapi() {
                     omsorgpengesøknadMottakGateway = omsorgpengesoknadMottakGateway,
                     vedleggService = vedleggService
                 ),
-                søkerService = søkerService
+                søkerService = søkerService,
+                barnService = barnService
             )
         }
 

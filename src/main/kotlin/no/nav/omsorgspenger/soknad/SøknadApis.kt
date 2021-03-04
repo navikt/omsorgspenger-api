@@ -6,6 +6,9 @@ import io.ktor.locations.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import no.nav.omsorgspenger.barn.BarnService
+import no.nav.omsorgspenger.general.CallId
+import no.nav.omsorgspenger.general.auth.IdToken
 import no.nav.omsorgspenger.general.auth.IdTokenProvider
 import no.nav.omsorgspenger.general.getCallId
 import no.nav.omsorgspenger.k9format.tilK9Format
@@ -23,7 +26,8 @@ private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 fun Route.søknadApis(
     søknadService: SøknadService,
     idTokenProvider: IdTokenProvider,
-    søkerService: SøkerService
+    søkerService: SøkerService,
+    barnService: BarnService
 ) {
 
     @Location("/soknad")
@@ -43,8 +47,10 @@ fun Route.søknadApis(
         logger.trace("Søker hentet. Validerer søkeren.")
         søker.validate()
 
+        val barn = resolveBarn(søknad, barnService, idToken, callId)
+
         logger.info("Mapper om søknad til k9format.")
-        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
+        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker, barn)
 
         søknad.valider(k9FormatSøknad)
         logger.trace("Validering OK. Registrerer søknad.")
@@ -74,9 +80,40 @@ fun Route.søknadApis(
 
         val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
 
-        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
+        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker, søknad.barn)
         søknad.valider(k9FormatSøknad)
         logger.trace("Validering Ok.")
         call.respond(HttpStatusCode.Accepted)
+    }
+}
+
+private suspend fun resolveBarn(
+    søknad: Søknad,
+    barnService: BarnService,
+    idToken: IdToken,
+    callId: CallId
+): BarnDetaljer = when {
+    // Gjelder annet barn enn fra oppslag
+    søknad.barn.aktørId.isNullOrBlank() -> søknad.barn
+
+    // Oppslagsbarn
+    else -> {
+        val barn = barnService.hentNaaverendeBarn(
+            idToken = idToken,
+            callId = callId
+        ).map {
+            BarnDetaljer(
+                norskIdentifikator = it.identitetsnummer,
+                fødselsdato = it.fødselsdato,
+                aktørId = it.aktørId,
+                navn = when (it.mellomnavn) {
+                    null, "" -> "${it.fornavn} ${it.etternavn}"
+                    else -> "${it.fornavn} ${it.mellomnavn} ${it.etternavn}"
+                }
+            )
+        }
+            .firstOrNull { it.aktørId == søknad.barn.aktørId }
+        barn
+            ?: throw IllegalStateException("Kunne ikke fimme barnets aktørId blant liste over oppslagsbarn.") // Burde ikke forekomme
     }
 }

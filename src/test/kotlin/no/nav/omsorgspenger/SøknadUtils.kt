@@ -22,6 +22,11 @@ class SøknadUtils {
             fødselsnummer = "26104500284"
         )
 
+        val barn = BarnDetaljer(
+            norskIdentifikator = "02119970078",
+            navn = "Ole Dole Doffen"
+        )
+
         fun gyldigSøknad(legeerklæringURL: String? = null, samværsavtalURL: String? = null): Søknad {
             val legeerklæring = if (legeerklæringURL != null) listOf(URL(legeerklæringURL)) else listOf()
             val samværsavtale = if (samværsavtalURL != null) listOf(URL(samværsavtalURL)) else listOf()
@@ -30,10 +35,7 @@ class SøknadUtils {
                 nyVersjon = false,
                 språk = "nb",
                 kroniskEllerFunksjonshemming = false,
-                barn = BarnDetaljer(
-                    norskIdentifikator = "02119970078",
-                    navn = "Ole Dole Doffen"
-                ),
+                barn = barn,
                 sammeAdresse = true,
                 relasjonTilBarnet = SøkerBarnRelasjon.FAR,
                 legeerklæring = legeerklæring,

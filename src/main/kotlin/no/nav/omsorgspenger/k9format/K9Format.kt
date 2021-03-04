@@ -14,7 +14,7 @@ import no.nav.k9.søknad.felles.personopplysninger.Søker as K9Søker
 
 private val k9FormatVersjon = Versjon.of("1.0.0")
 
-fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
+fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker, barn: BarnDetaljer): K9Søknad {
     return K9Søknad(
         SøknadId.of(this.søknadId),
         k9FormatVersjon,
@@ -29,6 +29,6 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
 
 
 fun Søker.tilK9Søker(): K9Søker = K9Søker(NorskIdentitetsnummer.of(fødselsnummer))
-fun BarnDetaljer.tilK9Barn(): K9Barn = K9Barn(NorskIdentitetsnummer.of(this.norskIdentifikator), (fødselsdato))
+fun BarnDetaljer.tilK9Barn(): K9Barn = K9Barn(NorskIdentitetsnummer.of(this.norskIdentifikator), null)
 
 
