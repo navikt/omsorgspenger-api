@@ -14,14 +14,14 @@ import no.nav.k9.søknad.felles.personopplysninger.Søker as K9Søker
 
 private val k9FormatVersjon = Versjon.of("1.0.0")
 
-fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker, barnDetaljer: BarnDetaljer): K9Søknad {
+fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
     return K9Søknad(
         SøknadId.of(this.søknadId),
         k9FormatVersjon,
         mottatt,
         søker.tilK9Søker(),
         OmsorgspengerKroniskSyktBarn(
-            barnDetaljer.tilK9Barn(),
+            barn.tilK9Barn(),
             kroniskEllerFunksjonshemming
         )
     )

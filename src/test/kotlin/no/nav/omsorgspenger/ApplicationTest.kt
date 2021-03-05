@@ -263,6 +263,7 @@ class ApplicationTest {
             cookie = cookie,
             requestEntity = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).copy(
                 barn = BarnDetaljer(
+                    navn = "BARN EN BARNESEN",
                     aktørId = "1000000000001"
                 )
             ).somJson()
@@ -337,18 +338,6 @@ class ApplicationTest {
                   "detail": "Requesten inneholder ugyldige paramtere.",
                   "instance": "about:blank",
                   "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "barn.norskIdentifikator",
-                      "reason": "Ikke gyldig norskIdentifikator.",
-                      "invalid_value": "29099012345"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "barn",
-                      "reason": "Kan kun sette 'aktørId' eller 'norskIdentifikator' på barnet.",
-                      "invalid_value": null
-                    },
                     {
                       "type": "entity",
                       "name": "barn.navn",

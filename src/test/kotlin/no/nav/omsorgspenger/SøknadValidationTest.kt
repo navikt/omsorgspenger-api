@@ -1,7 +1,6 @@
 package no.nav.omsorgspenger
 
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
-import no.nav.omsorgspenger.SøknadUtils.Companion.barn
 import no.nav.omsorgspenger.SøknadUtils.Companion.søker
 import no.nav.omsorgspenger.k9format.tilK9Format
 import no.nav.omsorgspenger.soknad.BarnDetaljer
@@ -19,7 +18,7 @@ internal class SøknadValideringsTest {
 
     @Test
     fun `Skal ikke feile på gyldig søknad`() {
-        gyldigSøknad.valider(gyldigSøknad.tilK9Format(ZonedDateTime.now(), søker, barn))
+        gyldigSøknad.valider(gyldigSøknad.tilK9Format(ZonedDateTime.now(), søker))
     }
 
     @Test
@@ -37,7 +36,7 @@ internal class SøknadValideringsTest {
                 aktørId = null
             )
         )
-        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker, barn))
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
     }
 
     @Test(expected = Throwblem::class)
@@ -49,7 +48,7 @@ internal class SøknadValideringsTest {
                 aktørId = "1234"
             )
         )
-        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker, barn))
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
     }
 
     @Test(expected = Throwblem::class)
@@ -60,7 +59,7 @@ internal class SøknadValideringsTest {
                 norskIdentifikator = null
             )
         )
-        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker, barn))
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
     }
 
     @Test(expected = Throwblem::class)
@@ -71,7 +70,7 @@ internal class SøknadValideringsTest {
                 norskIdentifikator = "  "
             )
         )
-        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker, barn))
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
     }
 
     @Test(expected = Throwblem::class)
@@ -79,7 +78,7 @@ internal class SøknadValideringsTest {
         val søknad = gyldigSøknad.copy(
             samværsavtale = listOf()
         )
-        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker, barn))
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
     }
 
     @Test(expected = Throwblem::class)
@@ -87,7 +86,7 @@ internal class SøknadValideringsTest {
         val søknad = gyldigSøknad.copy(
             samværsavtale = listOf(URL("http://localhost/FEIL/1"))
         )
-        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker, barn))
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
     }
 
     @Test(expected = Throwblem::class)
@@ -95,7 +94,7 @@ internal class SøknadValideringsTest {
         val søknad = gyldigSøknad.copy(
             harBekreftetOpplysninger = false
         )
-        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker, barn))
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
     }
 
     @Test(expected = Throwblem::class)
@@ -103,6 +102,6 @@ internal class SøknadValideringsTest {
         val søknad = gyldigSøknad.copy(
             harForståttRettigheterOgPlikter = false
         )
-        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker, barn))
+        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
     }
 }

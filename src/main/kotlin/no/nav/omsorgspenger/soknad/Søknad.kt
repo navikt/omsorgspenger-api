@@ -11,21 +11,28 @@ data class Søknad(
     val søknadId: String = UUID.randomUUID().toString(),
     val språk: String,
     val kroniskEllerFunksjonshemming: Boolean,
-    val barn: BarnDetaljer,
+    var barn: BarnDetaljer,
     val sammeAdresse: Boolean?,
     val relasjonTilBarnet: SøkerBarnRelasjon? = null,
     val legeerklæring: List<URL>,
     val samværsavtale: List<URL>? = null,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean
-)
+) {
+
+    fun oppdaterBarnsIdentitetsnummer(barn: BarnDetaljer) {
+        this.barn = this.barn.copy(
+            norskIdentifikator = barn.norskIdentifikator
+        )
+    }
+}
 
 data class BarnDetaljer(
     val norskIdentifikator: String? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fødselsdato: LocalDate? = null,
     val aktørId: String? = null,
-    val navn: String? = null
+    val navn: String
 ) {
     override fun toString(): String {
         return "BarnDetaljer(aktoerId=${aktørId}, navn=${navn}, fodselsdato=${fødselsdato}"

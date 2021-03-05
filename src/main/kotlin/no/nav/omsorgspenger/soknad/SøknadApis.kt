@@ -48,9 +48,10 @@ fun Route.søknadApis(
         søker.validate()
 
         val barn = resolveBarn(søknad, barnService, idToken, callId)
+        søknad.oppdaterBarnsIdentitetsnummer(barn)
 
         logger.info("Mapper om søknad til k9format.")
-        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker, barn)
+        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
 
         søknad.valider(k9FormatSøknad)
         logger.trace("Validering OK. Registrerer søknad.")
@@ -80,8 +81,9 @@ fun Route.søknadApis(
 
         val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
         val barn = resolveBarn(søknad, barnService, idToken, callId)
+        søknad.oppdaterBarnsIdentitetsnummer(barn)
 
-        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker, barn)
+        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
         søknad.valider(k9FormatSøknad)
         logger.trace("Validering Ok.")
         call.respond(HttpStatusCode.Accepted)

@@ -9,9 +9,9 @@ data class BarnResponse(
 
 data class Barn(
     val fødselsdato: LocalDate,
-    val fornavn: String?,
+    val fornavn: String,
     val mellomnavn: String?,
-    val etternavn: String?,
+    val etternavn: String,
     val aktørId: String?,
     @JsonIgnore var identitetsnummer: String? = null
 )

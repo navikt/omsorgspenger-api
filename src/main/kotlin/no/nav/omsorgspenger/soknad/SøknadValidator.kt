@@ -154,20 +154,7 @@ private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violati
         )
     }
 
-    if (!gyldigAntallIder()) {
-        violations.add(
-            Violation(
-                parameterName = "barn",
-                parameterType = ParameterType.ENTITY,
-                reason = "Kan kun sette 'aktørId' eller 'norskIdentifikator' på barnet.",
-                invalidValue = null
-            )
-        )
-    }
-
-
-    val kreverNavnPaaBarnet = norskIdentifikator != null
-    if ((kreverNavnPaaBarnet || navn != null) && (navn == null || navn.erBlankEllerLengreEnn(100))) {
+    if (navn.erBlankEllerLengreEnn(100)) {
         violations.add(
             Violation(
                 parameterName = "barn.navn",
