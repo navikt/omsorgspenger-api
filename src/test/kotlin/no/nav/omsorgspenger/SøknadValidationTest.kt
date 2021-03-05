@@ -40,18 +40,6 @@ internal class SøknadValideringsTest {
     }
 
     @Test(expected = Throwblem::class)
-    fun `Forvent violation dersom barn har både aktørID og norskIdentnummer`() {
-        val søknad = gyldigSøknad.copy(
-            barn = BarnDetaljer(
-                navn = "Ole Dole Doffen",
-                norskIdentifikator = "02119970078",
-                aktørId = "1234"
-            )
-        )
-        søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
-    }
-
-    @Test(expected = Throwblem::class)
     fun `Forvent violation dersom barn norskIdentnummer er null`() {
         val søknad = gyldigSøknad.copy(
             barn = BarnDetaljer(
