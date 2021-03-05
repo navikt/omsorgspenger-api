@@ -48,12 +48,7 @@ fun Route.søknadApis(
         søker.validate()
 
         val barn = resolveBarn(søknad, barnService, idToken, callId)
-        logger.info("barn id: {}", barn.norskIdentifikator) // TODO: 05/03/2021 Fjern prodsetting.
         søknad.oppdaterBarnsIdentitetsnummer(barn)
-        logger.info(
-            "oppdatert søknad med barn id: {}",
-            søknad.barn.norskIdentifikator
-        ) // TODO: 05/03/2021 Fjern prodsetting.
 
         logger.info("Mapper om søknad til k9format.")
         val k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
