@@ -37,6 +37,7 @@ class BarnService(
     }
 
     private fun BarnGateway.BarnOppslagDTO.tilBarn() = Barn(
+        identitetsnummer = identitetsnummer,
         fødselsdato = fødselsdato,
         fornavn = fornavn,
         mellomnavn = mellomnavn,
