@@ -26,6 +26,7 @@ import kotlin.test.assertTrue
 private const val forLangtNavn =
     "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
 private const val fnr = "290990123456"
+private const val fnrB = "25118921464"
 private const val ikkeMyndigFnr = "12125012345"
 // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
 private val gyldigFodselsnummerA = "02119970078"
@@ -162,7 +163,7 @@ class ApplicationTest {
                 "barn": []
             }
             """.trimIndent(),
-            cookie = getAuthCookie(fnr)
+            cookie = getAuthCookie(fnrB)
         )
         wireMockServer.stubK9OppslagBarn()
     }
@@ -250,7 +251,7 @@ class ApplicationTest {
 
     @Test //Denne testen fanger ikke opp om barnets navn blir satt eller ikke. Må undersøke loggen.
     fun `Sende søknad med AktørID som ID på barnet`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val cookie = getAuthCookie(fnr)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
 
@@ -262,7 +263,8 @@ class ApplicationTest {
             cookie = cookie,
             requestEntity = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).copy(
                 barn = BarnDetaljer(
-                    aktørId = "12345"
+                    navn = "BARN EN BARNESEN",
+                    aktørId = "1000000000001"
                 )
             ).somJson()
         )
@@ -313,7 +315,7 @@ class ApplicationTest {
                   "barn": {
                     "navn": "$forLangtNavn",
                     "norskIdentifikator": "29099012345",
-                    "aktørId": "123456"
+                    "aktørId": "1000000000001"
                   },
                   "sammeAddresse": true,
                   "relasjonTilBarnet": "mor",
@@ -336,18 +338,6 @@ class ApplicationTest {
                   "detail": "Requesten inneholder ugyldige paramtere.",
                   "instance": "about:blank",
                   "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "barn.norskIdentifikator",
-                      "reason": "Ikke gyldig norskIdentifikator.",
-                      "invalid_value": "29099012345"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "barn",
-                      "reason": "Kan kun sette 'aktørId' eller 'norskIdentifikator' på barnet.",
-                      "invalid_value": null
-                    },
                     {
                       "type": "entity",
                       "name": "barn.navn",

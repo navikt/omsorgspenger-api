@@ -3,7 +3,7 @@ package no.nav.omsorgspenger.barn
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
-import io.ktor.http.Url
+import io.ktor.http.*
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
@@ -18,28 +18,32 @@ import java.net.URI
 import java.time.Duration
 import java.time.LocalDate
 
-class BarnGateway (
+class BarnGateway(
     baseUrl: URI,
     apiGatewayApiKey: ApiGatewayApiKey
-    ) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
+) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger("nav.BarnGateway")
         private const val HENTE_BARN_OPERATION = "hente-barn"
         private val objectMapper = jacksonObjectMapper().k9SelvbetjeningOppslagKonfigurert()
 
-        private val attributter = Pair("a", listOf("barn[].aktør_id",
-            "barn[].fornavn",
-            "barn[].mellomnavn",
-            "barn[].etternavn",
-            "barn[].fødselsdato")
+        private val attributter = Pair(
+            "a", listOf(
+                "barn[].aktør_id",
+                "barn[].fornavn",
+                "barn[].mellomnavn",
+                "barn[].etternavn",
+                "barn[].fødselsdato",
+                "barn[].identitetsnummer"
+            )
         )
     }
 
     suspend fun hentBarn(
         idToken: IdToken,
-        callId : CallId
-    ) : List<BarnOppslagDTO> {
+        callId: CallId
+    ): List<BarnOppslagDTO> {
         val barnUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
@@ -63,9 +67,13 @@ class BarnGateway (
             ) { httpRequest.awaitStringResponseResult() }
 
             result.fold(
-                { success -> objectMapper.readValue<BarnOppslagResponse>(success)},
+                { success -> objectMapper.readValue<BarnOppslagResponse>(success) },
                 { error ->
-                    logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
+                    logger.error(
+                        "Error response = '${
+                            error.response.body().asString("text/plain")
+                        }' fra '${request.url}'"
+                    )
                     logger.error(error.toString())
                     throw IllegalStateException("Feil ved henting av informasjon om søkers barn")
                 }
@@ -76,7 +84,8 @@ class BarnGateway (
 
     private data class BarnOppslagResponse(val barn: List<BarnOppslagDTO>)
 
-    data class BarnOppslagDTO (
+    data class BarnOppslagDTO(
+        val identitetsnummer: String,
         val fødselsdato: LocalDate,
         val fornavn: String,
         val mellomnavn: String? = null,
