@@ -13,5 +13,5 @@ data class Barn(
     val mellomnavn: String?,
     val etternavn: String,
     val aktørId: String?,
-    @JsonIgnore var identitetsnummer: String? = null
+    @JsonIgnore var identitetsnummer: String
 )

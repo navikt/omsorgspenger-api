@@ -85,7 +85,7 @@ class BarnGateway(
     private data class BarnOppslagResponse(val barn: List<BarnOppslagDTO>)
 
     data class BarnOppslagDTO(
-        val identitetsnummer: String? = null,
+        val identitetsnummer: String,
         val fødselsdato: LocalDate,
         val fornavn: String,
         val mellomnavn: String? = null,
