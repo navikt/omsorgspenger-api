@@ -133,7 +133,7 @@ private fun BarnDetaljer.gyldigAntallIder(): Boolean {
 private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
-    if (norskIdentifikator != null && !norskIdentifikator.erGyldigNorskIdentifikator()) {
+    if (norskIdentifikator.isNullOrBlank() || (!norskIdentifikator.erGyldigNorskIdentifikator())) {
         violations.add(
             Violation(
                 parameterName = "barn.norskIdentifikator",
