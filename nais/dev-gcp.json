@@ -1,7 +1,6 @@
 {
   "app": "omsorgspenger-api",
   "cluster": "dev-gcp",
-  "onprem": "false",
   "namespace": "dusseldorf",
   "team": "dusseldorf",
   "minReplicas": "1",
