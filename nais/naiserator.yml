@@ -6,7 +6,7 @@ metadata:
   labels:
     team: {{team}}
 spec:
-  image: {{ image }}
+  image: {{image}}
   port: 8080
   liveness:
     path: isalive
@@ -39,7 +39,7 @@ spec:
   azure:
     application:
       enabled: true
-      tenant: { { tenant } }
+      tenant: {{tenant}}
     accessPolicy:
       outbound:
         rules:
