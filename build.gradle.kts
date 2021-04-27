@@ -7,7 +7,7 @@ val ktorVersion = ext.get("ktorVersion").toString()
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
