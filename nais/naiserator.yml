@@ -56,4 +56,4 @@ spec:
   {{/each}}
   envFrom:
     - secret: {{app}}
-    - configmap: loginservice-idportens
+    - configmap: loginservice-idporten
