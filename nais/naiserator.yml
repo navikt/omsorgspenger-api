@@ -26,9 +26,9 @@ spec:
       cpu: 200m
       memory: 512Mi
   ingresses:
-  { { #each ingresses as |url|}}
-      - {{url } }
-  {{/each}}
+  "{{ #each ingresses as |url|}}
+      - {{url }}
+  {{/each}}"
   replicas:
     min: {{minReplicas}}
     max: {{maxReplicas}}
@@ -46,14 +46,14 @@ spec:
           - application: {{app}}-redis
           - application: k9-mellomlagring
         external:
-          { { #each externalHosts as |host|}}
-              - host: {{host } }
-            {{/each}}
+          "{{#each externalHosts as |host|}}
+              - host: {{host}}
+            {{/each}}"
   env:
-  { { #each env}}
-      - name: {{@key } }
-  value: "{{this}}"
-  {{/each}}
+  "{{#each env}}
+      - name: {{@key}}
+  value: {{this}}
+  {{/each}}"
   envFrom:
     - secret: {{app}}
     - configmap: loginservice-idportens
