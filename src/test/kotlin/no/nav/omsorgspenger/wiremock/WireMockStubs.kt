@@ -4,18 +4,18 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
-import io.ktor.http.HttpHeaders
+import io.ktor.http.*
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 
 internal const val k9OppslagPath = "/helse-reverse-proxy/k9-selvbetjening-oppslag-mock"
 private const val omsorgpengesoknadMottakPath = "/helse-reverse-proxy/omsorgpengesoknad-mottak-mock"
-private const val k9DokumentPath = "/k9-dokument-mock"
+private const val k9MellomlagringPath = "/k9-mellomlagring-mock"
 
 internal fun WireMockBuilder.omsorgspengesoknadApiConfig() = wireMockConfiguration {
     it
         .extensions(SokerResponseTransformer())
         .extensions(BarnResponseTransformer())
-        .extensions(K9DokumentResponseTransformer())
+        .extensions(K9MellomlagringResponseTransformer())
 }
 
 
@@ -85,7 +85,6 @@ private fun WireMockServer.stubHealthEndpointThroughZones(
     return this
 }
 
-internal fun WireMockServer.stubK9DokumentHealth() = stubHealthEndpoint("$k9DokumentPath/health")
 internal fun WireMockServer.stubOmsorgsoknadMottakHealth() = stubHealthEndpointThroughZones("$omsorgpengesoknadMottakPath/health")
 internal fun WireMockServer.stubOppslagHealth() = stubHealthEndpointThroughZones("$k9OppslagPath/health")
 
@@ -101,9 +100,9 @@ internal fun WireMockServer.stubLeggSoknadTilProsessering(path: String) : WireMo
     return this
 }
 
-internal fun WireMockServer.stubK9Dokument() : WireMockServer{
+internal fun WireMockServer.stubK9Mellomlagring(): WireMockServer {
     WireMock.stubFor(
-        WireMock.any(WireMock.urlMatching(".*$k9DokumentPath/v1/dokument.*"))
+        WireMock.any(WireMock.urlMatching(".*$k9MellomlagringPath/v1/dokument.*"))
             .willReturn(
                 WireMock.aResponse()
                     .withTransformers("K9DokumentResponseTransformer")
@@ -114,4 +113,4 @@ internal fun WireMockServer.stubK9Dokument() : WireMockServer{
 
 internal fun WireMockServer.getK9OppslagUrl() = baseUrl() + k9OppslagPath
 internal fun WireMockServer.getOmsorgpengesoknadMottakUrl() = baseUrl() + omsorgpengesoknadMottakPath
-internal fun WireMockServer.getK9DokumentUrl() = baseUrl() + k9DokumentPath
+internal fun WireMockServer.getK9MellomlagringUrl() = baseUrl() + k9MellomlagringPath + "/v1/dokument"

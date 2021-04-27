@@ -46,7 +46,7 @@ import no.nav.omsorgspenger.soker.søkerApis
 import no.nav.omsorgspenger.soknad.OmsorgpengesøknadMottakGateway
 import no.nav.omsorgspenger.soknad.SøknadService
 import no.nav.omsorgspenger.soknad.søknadApis
-import no.nav.omsorgspenger.vedlegg.K9DokumentGateway
+import no.nav.omsorgspenger.vedlegg.K9MellomlagringGateway
 import no.nav.omsorgspenger.vedlegg.VedleggService
 import no.nav.omsorgspenger.vedlegg.vedleggApis
 import org.slf4j.Logger
@@ -116,17 +116,18 @@ fun Application.omsorgpengesoknadapi() {
     install(Locations)
 
     install(Routing) {
-
-        val vedleggService = VedleggService(
-            k9DokumentGateway = K9DokumentGateway(
-                baseUrl = configuration.getK9DokumentUrl()
-            )
+        val k9MellomlagringGateway = K9MellomlagringGateway(
+            baseUrl = configuration.getK9MellomlagringUrl(),
+            accessTokenClient = accessTokenClientResolver.accessTokenClient(),
+            k9MellomlagringScope = configuration.getK9MellomlagringScopes()
         )
+
+        val vedleggService = VedleggService(k9MellomlagringGateway = k9MellomlagringGateway)
 
         val omsorgpengesoknadMottakGateway = OmsorgpengesøknadMottakGateway(
             baseUrl = configuration.getOmsorgpengesoknadMottakBaseUrl(),
             accessTokenClient = accessTokenClientResolver.accessTokenClient(),
-            sendeSoknadTilProsesseringScopes = configuration.getSendSoknadTilProsesseringScopes(),
+            omsorgspengesoknadMottakClientId = configuration.getOmsorgspengesoknadMottakClientId(),
             apiGatewayApiKey = apiGatewayApiKey
         )
 
@@ -194,8 +195,17 @@ fun Application.omsorgpengesoknadapi() {
             healthChecks = setOf(
                 omsorgpengesoknadMottakGateway,
                 HttpRequestHealthCheck(mapOf(
-                    Url.buildURL(baseUrl = configuration.getK9DokumentUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
-                    Url.buildURL(baseUrl = configuration.getOmsorgpengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
+                    Url.buildURL(
+                        baseUrl = configuration.getK9MellomlagringUrl(),
+                        pathParts = listOf("health")
+                    ) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
+                    Url.buildURL(
+                        baseUrl = configuration.getOmsorgpengesoknadMottakBaseUrl(),
+                        pathParts = listOf("health")
+                    ) to HttpRequestHealthConfig(
+                        expectedStatus = HttpStatusCode.OK,
+                        httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value)
+                    )
                 ))
             )
         )
@@ -235,7 +245,7 @@ fun Application.omsorgpengesoknadapi() {
     }
 }
 
-fun ObjectMapper.k9DokumentKonfigurert(): ObjectMapper {
+fun ObjectMapper.k9MellomlagringGatewayKonfigurert(): ObjectMapper {
     return jacksonObjectMapper().dusseldorfConfigured().apply {
         configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
         propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE

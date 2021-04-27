@@ -24,11 +24,10 @@ class ApplicationWithMocks {
                 .withLoginServiceSupport()
                 .omsorgspengesoknadApiConfig()
                 .build()
-                .stubK9DokumentHealth()
                 .stubOmsorgsoknadMottakHealth()
                 .stubOppslagHealth()
                 .stubLeggSoknadTilProsessering("v1/soknad")
-                .stubK9Dokument()
+                .stubK9Mellomlagring()
                 .stubK9OppslagSoker()
                 .stubK9OppslagBarn()
 

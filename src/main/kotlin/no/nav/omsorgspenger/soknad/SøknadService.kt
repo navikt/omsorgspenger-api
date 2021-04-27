@@ -3,6 +3,7 @@ package no.nav.omsorgspenger.soknad
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.auth.IdToken
 import no.nav.omsorgspenger.soker.Søker
+import no.nav.omsorgspenger.vedlegg.DokumentEier
 import no.nav.omsorgspenger.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -32,7 +33,8 @@ class SøknadService(
         val legeerklæring = vedleggService.hentVedlegg(
             idToken = idToken,
             vedleggUrls = søknad.legeerklæring,
-            callId = callId
+            callId = callId,
+            eier = DokumentEier(søker.fødselsnummer)
         )
 
         søknad.samværsavtale?.let { logger.info("Henter ${søknad.samværsavtale.size} samværsavtalevedlegg.") }
@@ -41,7 +43,8 @@ class SøknadService(
                 val samværsavtalevedlegg = vedleggService.hentVedlegg(
                     idToken = idToken,
                     vedleggUrls = søknad.samværsavtale,
-                    callId = callId
+                    callId = callId,
+                    eier = DokumentEier(søker.fødselsnummer)
                 )
                 logger.info("Hentet ${samværsavtalevedlegg.size} samværsavtalevedlegg.")
                 samværsavtalevedlegg
@@ -84,22 +87,6 @@ class SøknadService(
             callId = callId
         )
 
-        logger.trace("Søknad lagt til prosessering. Sletter vedlegg.")
-
-        søknad.samværsavtale?.let {
-            vedleggService.slettVedlegg(
-                vedleggUrls = it,
-                callId = callId,
-                idToken = idToken
-            )
-        }
-
-        vedleggService.slettVedlegg(
-            vedleggUrls = søknad.legeerklæring,
-            callId = callId,
-            idToken = idToken
-        )
-
-        logger.trace("Vedlegg slettet.")
+        logger.trace("Søknad lagt til mottak")
     }
 }

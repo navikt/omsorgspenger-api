@@ -1,23 +1,12 @@
 package no.nav.omsorgspenger.vedlegg
 
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.features.origin
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLBuilder
-import io.ktor.http.content.MultiPartData
-import io.ktor.http.content.PartData
-import io.ktor.http.content.readAllParts
-import io.ktor.http.content.streamProvider
+import io.ktor.application.*
+import io.ktor.features.*
+import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.locations.*
-import io.ktor.request.ApplicationRequest
-import io.ktor.request.contentType
-import io.ktor.request.receiveMultipart
-import io.ktor.response.header
-import io.ktor.response.respond
-import io.ktor.response.respondBytes
+import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.routing.Route
 import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.respondProblemDetails
@@ -30,12 +19,35 @@ private val logger: Logger = LoggerFactory.getLogger("nav.vedleggApis")
 private const val MAX_VEDLEGG_SIZE = 8 * 1024 * 1024
 private val supportedContentTypes = listOf("application/pdf", "image/jpeg", "image/png")
 
-private val hasToBeMultupartTypeProblemDetails = DefaultProblemDetails(title = "multipart-form-required", status = 400, detail = "Requesten må være en 'multipart/form-data' request hvor en 'part' er en fil, har 'name=vedlegg' og har Content-Type header satt.")
-private val vedleggNotFoundProblemDetails = DefaultProblemDetails(title = "attachment-not-found", status = 404, detail = "Inget vedlegg funnet med etterspurt ID.")
-private val vedleggNotAttachedProblemDetails = DefaultProblemDetails(title = "attachment-not-attached", status = 400, detail = "Fant ingen 'part' som er en fil, har 'name=vedlegg' og har Content-Type header satt.")
-private val vedleggTooLargeProblemDetails = DefaultProblemDetails(title = "attachment-too-large", status = 413, detail = "vedlegget var over maks tillatt størrelse på 8MB.")
-private val vedleggContentTypeNotSupportedProblemDetails = DefaultProblemDetails(title = "attachment-content-type-not-supported", status = 400, detail = "Vedleggets type må være en av $supportedContentTypes")
-
+private val hasToBeMultupartTypeProblemDetails = DefaultProblemDetails(
+    title = "multipart-form-required",
+    status = 400,
+    detail = "Requesten må være en 'multipart/form-data' request hvor en 'part' er en fil, har 'name=vedlegg' og har Content-Type header satt."
+)
+private val vedleggNotFoundProblemDetails = DefaultProblemDetails(
+    title = "attachment-not-found",
+    status = 404,
+    detail = "Inget vedlegg funnet med etterspurt ID."
+)
+private val vedleggNotAttachedProblemDetails = DefaultProblemDetails(
+    title = "attachment-not-attached",
+    status = 400,
+    detail = "Fant ingen 'part' som er en fil, har 'name=vedlegg' og har Content-Type header satt."
+)
+private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
+    title = "attachment-too-large",
+    status = 413,
+    detail = "vedlegget var over maks tillatt størrelse på 8MB."
+)
+private val vedleggContentTypeNotSupportedProblemDetails = DefaultProblemDetails(
+    title = "attachment-content-type-not-supported",
+    status = 400,
+    detail = "Vedleggets type må være en av $supportedContentTypes"
+)
+private val feilVedSlettingAvVedlegg =
+    DefaultProblemDetails(title = "feil-ved-sletting", status = 500, detail = "Feil ved sletting av vedlegg")
+private val fantIkkeSubjectPaaToken =
+    DefaultProblemDetails(title = "fant-ikke-subject", status = 413, detail = "Fant ikke subject på idToken")
 
 @KtorExperimentalLocationsAPI
 fun Route.vedleggApis(
@@ -53,33 +65,43 @@ fun Route.vedleggApis(
         val vedleggId = VedleggId(eksisterendeVedlegg.vedleggId)
         logger.info("Henter vedlegg")
         logger.info("$vedleggId")
-        val vedlegg = vedleggService.hentVedlegg(
-            vedleggId = vedleggId,
-            idToken = idTokenProvider.getIdToken(call),
-            callId = call.getCallId()
-        )
-
-        if (vedlegg == null) {
-            call.respondProblemDetails(vedleggNotFoundProblemDetails)
-        } else {
-            call.respondBytes(
-                bytes = vedlegg.content,
-                contentType = ContentType.parse(vedlegg.contentType),
-                status = HttpStatusCode.OK
+        var eier = idTokenProvider.getIdToken(call).getSubject()
+        if (eier == null) call.respond(HttpStatusCode.Forbidden) else {
+            val vedlegg = vedleggService.hentVedlegg(
+                vedleggId = vedleggId,
+                idToken = idTokenProvider.getIdToken(call),
+                callId = call.getCallId(),
+                eier = DokumentEier(eier)
             )
+
+            if (vedlegg == null) {
+                call.respondProblemDetails(vedleggNotFoundProblemDetails)
+            } else {
+                call.respondBytes(
+                    bytes = vedlegg.content,
+                    contentType = ContentType.parse(vedlegg.contentType),
+                    status = HttpStatusCode.OK
+                )
+            }
         }
     }
 
     delete<EksisterendeVedlegg> { eksisterendeVedlegg ->
         val vedleggId = VedleggId(eksisterendeVedlegg.vedleggId)
-        logger.info("Sletter vedlegg")
-        logger.info("$vedleggId")
-        vedleggService.slettVedlegg(
-            vedleggId = vedleggId,
-            idToken = idTokenProvider.getIdToken(call),
-            callId = call.getCallId()
-        )
-        call.respond(HttpStatusCode.NoContent)
+        var eier = idTokenProvider.getIdToken(call).getSubject()
+        if (eier == null) call.respond(HttpStatusCode.Forbidden) else {
+            val resultat = vedleggService.slettVedlegg(
+                vedleggId = vedleggId,
+                idToken = idTokenProvider.getIdToken(call),
+                callId = call.getCallId(),
+                eier = DokumentEier(eier)
+            )
+
+            when (resultat) {
+                true -> call.respond(HttpStatusCode.NoContent)
+                false -> call.respondProblemDetails(feilVedSlettingAvVedlegg)
+            }
+        }
     }
 
     post<NyttVedleg> { _ ->
@@ -88,11 +110,19 @@ fun Route.vedleggApis(
             call.respondProblemDetails(hasToBeMultupartTypeProblemDetails)
         } else {
             val multipart = call.receiveMultipart()
-            val vedlegg = multipart.getVedlegg()
+            var vedlegg: Vedlegg? = null
+
+            var eier = idTokenProvider.getIdToken(call).getSubject()
+            if (eier == null) {
+                call.respondProblemDetails(fantIkkeSubjectPaaToken)
+            } else {
+                vedlegg = multipart.getVedlegg(DokumentEier(eier))
+            }
+
 
             if (vedlegg == null) {
                 call.respondProblemDetails(vedleggNotAttachedProblemDetails)
-            } else if(!vedlegg.isSupportedContentType()) {
+            } else if (!vedlegg.isSupportedContentType()) {
                 call.respondProblemDetails(vedleggContentTypeNotSupportedProblemDetails)
             } else {
                 if (vedlegg.content.size > MAX_VEDLEGG_SIZE) {
@@ -112,13 +142,18 @@ fun Route.vedleggApis(
 }
 
 
-private suspend fun MultiPartData.getVedlegg() : Vedlegg? {
+private suspend fun MultiPartData.getVedlegg(eier: DokumentEier): Vedlegg? {
     for (partData in readAllParts()) {
-        if (partData is PartData.FileItem && "vedlegg".equals(partData.name, ignoreCase = true) && partData.contentType != null) {
+        if (partData is PartData.FileItem && "vedlegg".equals(
+                partData.name,
+                ignoreCase = true
+            ) && partData.contentType != null
+        ) {
             val vedlegg = Vedlegg(
                 content = partData.streamProvider().readBytes(),
                 contentType = partData.contentType.toString(),
-                title = partData.originalFileName?: "Ingen tittel tilgjengelig"
+                title = partData.originalFileName ?: "Ingen tittel tilgjengelig",
+                eier = eier
             )
             partData.dispose()
             return vedlegg

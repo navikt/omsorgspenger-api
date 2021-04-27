@@ -26,8 +26,8 @@ spec:
       cpu: 200m
       memory: 512Mi
   ingresses:
-  {{#each ingresses as |url|}}
-     - {{url}}
+  { { #each ingresses as |url|}}
+      - {{url } }
   {{/each}}
   replicas:
     min: {{minReplicas}}
@@ -36,20 +36,24 @@ spec:
   prometheus:
     enabled: true
     path: /metrics
-  vault:
-    enabled: true
-    paths:
-      - mountPath: /var/run/secrets/nais.io/vault
-        kvPath: {{vaultKvPath}}
-      - mountPath: /var/run/secrets/nais.io/azuread
-        kvPath: {{azureadKvPath}}
-      - mountPath: /var/run/secrets/nais.io/apigw
-        kvPath: {{apigwKvPath}}
-  webproxy: true
+  azure:
+    application:
+      enabled: true
+      tenant: { { tenant } }
+    accessPolicy:
+      outbound:
+        rules:
+          - application: {{app}}-redis
+          - application: k9-mellomlagring
+        external:
+          { { #each externalHosts as |host|}}
+              - host: {{host } }
+            {{/each}}
   env:
-  {{#each env}}
-     - name: {{@key}}
-       value: "{{this}}"
+  { { #each env}}
+      - name: {{@key } }
+  value: "{{this}}"
   {{/each}}
   envFrom:
-    - configmap: loginservice-idporten
+    - secret: {{app}}
+    - configmap: loginservice-idportens

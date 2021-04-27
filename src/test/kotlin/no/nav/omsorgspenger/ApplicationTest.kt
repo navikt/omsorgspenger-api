@@ -28,6 +28,7 @@ private const val forLangtNavn =
 private const val fnr = "290990123456"
 private const val fnrB = "25118921464"
 private const val ikkeMyndigFnr = "12125012345"
+
 // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
 private val gyldigFodselsnummerA = "02119970078"
 private val ikkeMyndigDato = "2050-12-12"
@@ -44,14 +45,13 @@ class ApplicationTest {
             .withLoginServiceSupport()
             .omsorgspengesoknadApiConfig()
             .build()
-            .stubK9DokumentHealth()
             .stubOmsorgsoknadMottakHealth()
             .stubOppslagHealth()
             .stubLeggSoknadTilProsessering("v1/soknad")
             .stubLeggSoknadTilProsessering("v1/ettersend")
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
-            .stubK9Dokument()
+            .stubK9Mellomlagring()
 
         val redisServer: RedisServer = RedisServer.newRedisServer().started()
 
