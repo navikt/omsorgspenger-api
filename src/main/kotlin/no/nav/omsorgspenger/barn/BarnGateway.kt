@@ -8,7 +8,6 @@ import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.omsorgspenger.general.CallId
-import no.nav.omsorgspenger.general.auth.ApiGatewayApiKey
 import no.nav.omsorgspenger.general.auth.IdToken
 import no.nav.omsorgspenger.general.oppslag.K9OppslagGateway
 import no.nav.omsorgspenger.k9SelvbetjeningOppslagKonfigurert
@@ -19,9 +18,8 @@ import java.time.Duration
 import java.time.LocalDate
 
 class BarnGateway(
-    baseUrl: URI,
-    apiGatewayApiKey: ApiGatewayApiKey
-) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
+    baseUrl: URI
+) : K9OppslagGateway(baseUrl) {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger("nav.BarnGateway")
