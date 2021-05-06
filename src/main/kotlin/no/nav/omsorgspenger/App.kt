@@ -132,13 +132,11 @@ fun Application.omsorgpengesoknadapi() {
         )
 
         val sokerGateway = SøkerGateway(
-            baseUrl = configuration.getK9OppslagUrl(),
-            apiGatewayApiKey = apiGatewayApiKey
+            baseUrl = configuration.getK9OppslagUrl()
         )
 
         val barnGateway = BarnGateway(
-            baseUrl = configuration.getK9OppslagUrl(),
-            apiGatewayApiKey = apiGatewayApiKey
+            baseUrl = configuration.getK9OppslagUrl()
         )
         val barnService = BarnService(
             barnGateway = barnGateway,

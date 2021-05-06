@@ -1,17 +1,15 @@
 package no.nav.omsorgspenger.soker
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
-import io.ktor.http.Url
+import io.ktor.http.*
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.omsorgspenger.general.CallId
-import no.nav.omsorgspenger.general.auth.ApiGatewayApiKey
 import no.nav.omsorgspenger.general.auth.IdToken
 import no.nav.omsorgspenger.general.oppslag.K9OppslagGateway
 import org.slf4j.Logger
@@ -21,9 +19,8 @@ import java.time.Duration
 import java.time.LocalDate
 
 class SøkerGateway (
-    baseUrl: URI,
-    apiGatewayApiKey: ApiGatewayApiKey
-) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
+    baseUrl: URI
+) : K9OppslagGateway(baseUrl) {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger("nav.SokerGateway")
