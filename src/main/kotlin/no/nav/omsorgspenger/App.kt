@@ -60,7 +60,7 @@ private val logger: Logger = LoggerFactory.getLogger("nav.omsorgpengesoknadapi")
 @KtorExperimentalAPI
 @KtorExperimentalLocationsAPI
 fun Application.omsorgpengesoknadapi() {
-    
+
     val appId = environment.config.id()
     logProxyProperties()
     DefaultExports.initialize()
@@ -68,7 +68,6 @@ fun Application.omsorgpengesoknadapi() {
     System.setProperty("dusseldorf.ktor.serializeProblemDetailsWithContentNegotiation", "true")
 
     val configuration = Configuration(environment.config)
-    val apiGatewayApiKey = configuration.getApiGatewayApiKey()
     val accessTokenClientResolver = AccessTokenClientResolver(environment.config.clients())
 
     install(ContentNegotiation) {
@@ -127,8 +126,7 @@ fun Application.omsorgpengesoknadapi() {
         val omsorgpengesoknadMottakGateway = OmsorgpengesøknadMottakGateway(
             baseUrl = configuration.getOmsorgpengesoknadMottakBaseUrl(),
             accessTokenClient = accessTokenClientResolver.accessTokenClient(),
-            omsorgspengesoknadMottakClientId = configuration.getOmsorgspengesoknadMottakClientId(),
-            apiGatewayApiKey = apiGatewayApiKey
+            omsorgspengesoknadMottakClientId = configuration.getOmsorgspengesoknadMottakClientId()
         )
 
         val sokerGateway = SøkerGateway(
@@ -200,10 +198,7 @@ fun Application.omsorgpengesoknadapi() {
                     Url.buildURL(
                         baseUrl = configuration.getOmsorgpengesoknadMottakBaseUrl(),
                         pathParts = listOf("health")
-                    ) to HttpRequestHealthConfig(
-                        expectedStatus = HttpStatusCode.OK,
-                        httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value)
-                    )
+                    ) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK)
                 ))
             )
         )

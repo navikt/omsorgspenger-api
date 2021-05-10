@@ -10,7 +10,6 @@ import no.nav.helse.dusseldorf.ktor.auth.withAdditionalClaimRules
 import no.nav.helse.dusseldorf.ktor.core.getOptionalList
 import no.nav.helse.dusseldorf.ktor.core.getRequiredList
 import no.nav.helse.dusseldorf.ktor.core.getRequiredString
-import no.nav.omsorgspenger.general.auth.ApiGatewayApiKey
 import java.net.URI
 import java.time.Duration
 
@@ -49,11 +48,6 @@ data class Configuration(val config : ApplicationConfig) {
 
     internal fun getOmsorgpengesoknadMottakBaseUrl() =
         URI(config.getRequiredString("nav.gateways.omsorgpengesoknad_mottak_base_url", secret = false))
-
-    internal fun getApiGatewayApiKey(): ApiGatewayApiKey {
-        val apiKey = config.getRequiredString(key = "nav.authorization.api_gateway.api_key", secret = true)
-        return ApiGatewayApiKey(value = apiKey)
-    }
 
     private fun getScopesFor(operation: String) =
         config.getRequiredList("nav.auth.scopes.$operation", secret = false, builder = { it }).toSet()

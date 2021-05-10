@@ -8,7 +8,7 @@ import io.ktor.http.*
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 
 internal const val k9OppslagPath = "/k9-selvbetjening-oppslag-mock"
-private const val omsorgpengesoknadMottakPath = "/helse-reverse-proxy/omsorgpengesoknad-mottak-mock"
+private const val omsorgpengesoknadMottakPath = "/omsorgpengesoknad-mottak-mock"
 private const val k9MellomlagringPath = "/k9-mellomlagring-mock"
 
 internal fun WireMockBuilder.omsorgspengesoknadApiConfig() = wireMockConfiguration {
@@ -69,27 +69,12 @@ private fun WireMockServer.stubHealthEndpoint(
     return this
 }
 
-private fun WireMockServer.stubHealthEndpointThroughZones(
-    path : String
-) : WireMockServer{
-    WireMock.stubFor(
-        WireMock.get(WireMock.urlPathMatching(".*$path"))
-            .withHeader("x-nav-apiKey", AnythingPattern())
-            .willReturn(
-            WireMock.aResponse()
-                .withStatus(200)
-        )
-    )
-    return this
-}
-
-internal fun WireMockServer.stubOmsorgsoknadMottakHealth() = stubHealthEndpointThroughZones("$omsorgpengesoknadMottakPath/health")
-internal fun WireMockServer.stubOppslagHealth() = stubHealthEndpointThroughZones("$k9OppslagPath/health")
+internal fun WireMockServer.stubOmsorgsoknadMottakHealth() = stubHealthEndpoint("$omsorgpengesoknadMottakPath/health")
+internal fun WireMockServer.stubOppslagHealth() = stubHealthEndpoint("$k9OppslagPath/health")
 
 internal fun WireMockServer.stubLeggSoknadTilProsessering(path: String) : WireMockServer{
     WireMock.stubFor(
         WireMock.post(WireMock.urlMatching(".*$omsorgpengesoknadMottakPath/$path"))
-            .withHeader("x-nav-apiKey", AnythingPattern())
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(202)
