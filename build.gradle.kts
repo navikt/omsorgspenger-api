@@ -7,7 +7,7 @@ val ktorVersion = ext.get("ktorVersion").toString()
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
@@ -33,7 +33,7 @@ dependencies {
     implementation("no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
     implementation("no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
     implementation("io.lettuce:lettuce-core:5.3.5.RELEASE")
-    implementation("com.github.fppt:jedis-mock:0.1.16")
+    implementation("com.github.fppt:jedis-mock:0.1.19")
 
     // Test
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
@@ -42,7 +42,7 @@ dependencies {
     }
 
     testImplementation("org.skyscreamer:jsonassert:1.5.0")
-    testImplementation("org.awaitility:awaitility-kotlin:4.0.3")
+    testImplementation("org.awaitility:awaitility-kotlin:4.1.0")
 }
 
 repositories {
