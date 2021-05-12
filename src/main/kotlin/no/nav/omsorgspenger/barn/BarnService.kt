@@ -19,7 +19,6 @@ class BarnService(
         callId: CallId
     ): List<Barn> {
         var listeOverBarnOppslag = cache.getIfPresent(idToken.getSubject().toString())
-        logger.info("Fant barn i cache.")
         if (listeOverBarnOppslag != null) return listeOverBarnOppslag
 
         return try {
