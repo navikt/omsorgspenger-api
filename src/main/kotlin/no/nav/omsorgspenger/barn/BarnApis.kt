@@ -1,24 +1,18 @@
 package no.nav.omsorgspenger.barn
 
-import io.ktor.application.call
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Location
-import io.ktor.locations.get
-import io.ktor.response.respond
-import io.ktor.routing.Route
+import io.ktor.application.*
+import io.ktor.response.*
+import io.ktor.routing.*
+import no.nav.omsorgspenger.felles.BARN_URL
 import no.nav.omsorgspenger.general.auth.IdTokenProvider
 import no.nav.omsorgspenger.general.getCallId
 
-@KtorExperimentalLocationsAPI
 fun Route.barnApis(
     barnService: BarnService,
     idTokenProvider: IdTokenProvider
 ) {
 
-    @Location("/barn")
-    class getBarn
-
-    get { _: getBarn ->
+    get(BARN_URL) {
         call.respond(
             BarnResponse(
                 barnService.hentNaaverendeBarn(
