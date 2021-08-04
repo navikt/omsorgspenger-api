@@ -11,10 +11,8 @@ import io.ktor.auth.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.jackson.*
-import io.ktor.locations.*
 import io.ktor.metrics.micrometer.*
 import io.ktor.routing.*
-import io.ktor.util.*
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.helse.dusseldorf.ktor.auth.allIssuers
 import no.nav.helse.dusseldorf.ktor.auth.clients
@@ -49,16 +47,10 @@ import no.nav.omsorgspenger.soknad.søknadApis
 import no.nav.omsorgspenger.vedlegg.K9MellomlagringGateway
 import no.nav.omsorgspenger.vedlegg.VedleggService
 import no.nav.omsorgspenger.vedlegg.vedleggApis
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.time.Duration
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
-private val logger: Logger = LoggerFactory.getLogger("nav.omsorgpengesoknadapi")
-
-@KtorExperimentalAPI
-@KtorExperimentalLocationsAPI
 fun Application.omsorgpengesoknadapi() {
 
     val appId = environment.config.id()
@@ -111,8 +103,6 @@ fun Application.omsorgpengesoknadapi() {
         JacksonStatusPages()
         IdTokenStatusPages()
     }
-
-    install(Locations)
 
     install(Routing) {
         val k9MellomlagringGateway = K9MellomlagringGateway(

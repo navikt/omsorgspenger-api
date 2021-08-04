@@ -10,6 +10,9 @@ import io.ktor.util.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.getAuthCookie
+import no.nav.omsorgspenger.felles.BARN_URL
+import no.nav.omsorgspenger.felles.SØKER_URL
+import no.nav.omsorgspenger.felles.SØKNAD_URL
 import no.nav.omsorgspenger.mellomlagring.started
 import no.nav.omsorgspenger.soknad.BarnDetaljer
 import no.nav.omsorgspenger.wiremock.*
@@ -111,7 +114,7 @@ class ApplicationTest {
     fun `Henting av barn`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/barn",
+            path = BARN_URL,
             expectedCode = HttpStatusCode.OK,
             //language=JSON
             expectedResponse = """
@@ -140,7 +143,7 @@ class ApplicationTest {
     fun `Har ingen registrerte barn`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/barn",
+            path = BARN_URL,
             expectedCode = HttpStatusCode.OK,
             expectedResponse = """
             {
@@ -156,7 +159,7 @@ class ApplicationTest {
         wireMockServer.stubK9OppslagBarn(simulerFeil = true)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/barn",
+            path = BARN_URL,
             expectedCode = HttpStatusCode.OK,
             expectedResponse = """
             {
@@ -188,7 +191,7 @@ class ApplicationTest {
     fun `Hente søker`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/soker",
+            path = SØKER_URL,
             expectedCode = HttpStatusCode.OK,
             expectedResponse = expectedGetSokerJson(fnr)
         )
@@ -198,7 +201,7 @@ class ApplicationTest {
     fun `Hente søker som ikke er myndig`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/soker",
+            path = SØKER_URL,
             expectedCode = HttpStatusCode.OK,
             expectedResponse = expectedGetSokerJson(
                 fodselsnummer = ikkeMyndigFnr,
@@ -217,7 +220,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
@@ -233,7 +236,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
                 {
                     "type": "/problem-details/unauthorized",
@@ -257,7 +260,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
@@ -278,7 +281,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
             {
                 "type": "/problem-details/invalid-request-parameters",
@@ -304,7 +307,7 @@ class ApplicationTest {
     fun `Sende søknad med ugylidge parametre gir feil`() {
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedCode = HttpStatusCode.BadRequest,
             requestEntity =
             //language=JSON
