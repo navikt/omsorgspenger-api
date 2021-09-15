@@ -477,7 +477,6 @@ class ApplicationTest {
         søknadSendtInn: JSONObject,
         søknadFraTopic: JSONObject
     ) {
-        println(søknadFraTopic)
         assertTrue(søknadFraTopic.has("søker"))
         assertTrue(søknadFraTopic.has("mottatt"))
         assertTrue(søknadFraTopic.has("k9FormatSøknad"))
