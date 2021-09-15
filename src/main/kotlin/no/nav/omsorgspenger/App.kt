@@ -28,6 +28,7 @@ import no.nav.helse.dusseldorf.ktor.jackson.JacksonStatusPages
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
+import no.nav.k9.kafka.KafkaProducer
 import no.nav.omsorgspenger.barn.BarnGateway
 import no.nav.omsorgspenger.barn.BarnService
 import no.nav.omsorgspenger.barn.barnApis
@@ -41,15 +42,18 @@ import no.nav.omsorgspenger.redis.RedisStore
 import no.nav.omsorgspenger.soker.SøkerGateway
 import no.nav.omsorgspenger.soker.SøkerService
 import no.nav.omsorgspenger.soker.søkerApis
-import no.nav.omsorgspenger.soknad.OmsorgpengesøknadMottakGateway
 import no.nav.omsorgspenger.soknad.SøknadService
 import no.nav.omsorgspenger.soknad.søknadApis
 import no.nav.omsorgspenger.vedlegg.K9MellomlagringGateway
 import no.nav.omsorgspenger.vedlegg.VedleggService
 import no.nav.omsorgspenger.vedlegg.vedleggApis
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.time.Duration
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+
+private val logger: Logger = LoggerFactory.getLogger("Omsorgspenger-api")
 
 fun Application.omsorgpengesoknadapi() {
 
@@ -113,12 +117,6 @@ fun Application.omsorgpengesoknadapi() {
 
         val vedleggService = VedleggService(k9MellomlagringGateway = k9MellomlagringGateway)
 
-        val omsorgpengesoknadMottakGateway = OmsorgpengesøknadMottakGateway(
-            baseUrl = configuration.getOmsorgpengesoknadMottakBaseUrl(),
-            accessTokenClient = accessTokenClientResolver.accessTokenClient(),
-            omsorgspengesoknadMottakClientId = configuration.getOmsorgspengesoknadMottakClientId()
-        )
-
         val sokerGateway = SøkerGateway(
             baseUrl = configuration.getK9OppslagUrl()
         )
@@ -134,6 +132,16 @@ fun Application.omsorgpengesoknadapi() {
         val søkerService = SøkerService(
             søkerGateway = sokerGateway
         )
+
+        val kafkaProducer = KafkaProducer(
+            kafkaConfig = configuration.getKafkaConfig()
+        )
+
+        environment.monitor.subscribe(ApplicationStopping) {
+            logger.info("Stopper Kafka Producer.")
+            kafkaProducer.stop()
+            logger.info("Kafka Producer Stoppet.")
+        }
 
         authenticate(*issuers.allIssuers()) {
 
@@ -169,8 +177,11 @@ fun Application.omsorgpengesoknadapi() {
             søknadApis(
                 idTokenProvider = idTokenProvider,
                 søknadService = SøknadService(
-                    omsorgpengesøknadMottakGateway = omsorgpengesoknadMottakGateway,
-                    vedleggService = vedleggService
+                    vedleggService = vedleggService,
+                    søkerService = søkerService,
+                    barnService = barnService,
+                    kafkaProducer = kafkaProducer,
+                    k9MellomLagringIngress = configuration.getK9MellomlagringIngress()
                 ),
                 søkerService = søkerService,
                 barnService = barnService
@@ -179,17 +190,15 @@ fun Application.omsorgpengesoknadapi() {
 
         val healthService = HealthService(
             healthChecks = setOf(
-                omsorgpengesoknadMottakGateway,
-                HttpRequestHealthCheck(mapOf(
-                    Url.buildURL(
-                        baseUrl = configuration.getK9MellomlagringUrl(),
-                        pathParts = listOf("health")
-                    ) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
-                    Url.buildURL(
-                        baseUrl = configuration.getOmsorgpengesoknadMottakBaseUrl(),
-                        pathParts = listOf("health")
-                    ) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK)
-                ))
+                kafkaProducer,
+                HttpRequestHealthCheck(
+                    mapOf(
+                        Url.buildURL(
+                            baseUrl = configuration.getK9MellomlagringUrl(),
+                            pathParts = listOf("health")
+                        ) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK)
+                    )
+                )
             )
         )
 

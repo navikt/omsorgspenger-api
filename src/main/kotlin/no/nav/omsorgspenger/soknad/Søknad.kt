@@ -1,9 +1,13 @@
 package no.nav.omsorgspenger.soknad
 
 import com.fasterxml.jackson.annotation.JsonAlias
-import com.fasterxml.jackson.annotation.JsonFormat
+import io.ktor.http.*
+import no.nav.helse.dusseldorf.ktor.client.buildURL
+import no.nav.k9.søknad.Søknad
+import no.nav.omsorgspenger.soker.Søker
+import java.net.URI
 import java.net.URL
-import java.time.LocalDate
+import java.time.ZonedDateTime
 import java.util.*
 
 data class Søknad(
@@ -25,18 +29,28 @@ data class Søknad(
             norskIdentifikator = barn.norskIdentifikator
         )
     }
-}
 
-data class BarnDetaljer(
-    val norskIdentifikator: String? = null,
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    val fødselsdato: LocalDate? = null,
-    val aktørId: String? = null,
-    val navn: String
-) {
-    override fun toString(): String {
-        return "BarnDetaljer(aktoerId=${aktørId}, navn=${navn}, fodselsdato=${fødselsdato}"
-    }
+    fun tilKomplettSøknad(
+        mottatt: ZonedDateTime,
+        søker: Søker,
+        k9Format: Søknad,
+        k9MellomlagringIngress: URI,
+    ) = KomplettSøknad(
+        nyVersjon = nyVersjon,
+        språk = språk,
+        søknadId = søknadId,
+        mottatt = mottatt,
+        kroniskEllerFunksjonshemming = kroniskEllerFunksjonshemming,
+        søker = søker,
+        barn = barn,
+        relasjonTilBarnet = relasjonTilBarnet,
+        sammeAdresse = sammeAdresse,
+        legeerklæring = legeerklæring.tilK9MellomLagringUrl(k9MellomlagringIngress),
+        samværsavtale = samværsavtale?.tilK9MellomLagringUrl(k9MellomlagringIngress),
+        harForståttRettigheterOgPlikter = harForståttRettigheterOgPlikter,
+        harBekreftetOpplysninger = harBekreftetOpplysninger,
+        k9FormatSøknad = k9Format
+    )
 }
 
 enum class SøkerBarnRelasjon() {
@@ -48,4 +62,12 @@ enum class SøkerBarnRelasjon() {
     ADOPTIVFORELDER(),
     @JsonAlias("fosterforelder")
     FOSTERFORELDER()
+}
+
+fun List<URL>.tilK9MellomLagringUrl(baseUrl: URI): List<URL> = map {
+    val idFraUrl = it.path.substringAfterLast("/")
+    Url.buildURL(
+        baseUrl = baseUrl,
+        pathParts = listOf(idFraUrl)
+    ).toURL()
 }

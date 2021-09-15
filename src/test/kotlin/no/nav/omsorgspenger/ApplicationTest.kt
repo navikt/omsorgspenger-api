@@ -6,37 +6,34 @@ import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import io.ktor.util.*
+import no.nav.helse.TestUtils.Companion.getAuthCookie
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
-import no.nav.helse.getAuthCookie
 import no.nav.omsorgspenger.felles.BARN_URL
 import no.nav.omsorgspenger.felles.SØKER_URL
 import no.nav.omsorgspenger.felles.SØKNAD_URL
 import no.nav.omsorgspenger.mellomlagring.started
 import no.nav.omsorgspenger.soknad.BarnDetaljer
 import no.nav.omsorgspenger.wiremock.*
-import org.junit.AfterClass
-import org.junit.BeforeClass
+import org.json.JSONObject
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 private const val forLangtNavn =
     "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
 private const val fnr = "290990123456"
-private const val fnrB = "25118921464"
+private const val fnrUtenBarn = "25118921464"
 private const val ikkeMyndigFnr = "12125012345"
-
-// Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
-private val gyldigFodselsnummerA = "02119970078"
 private val ikkeMyndigDato = "2050-12-12"
 
-@KtorExperimentalAPI
 class ApplicationTest {
 
     private companion object {
@@ -48,15 +45,15 @@ class ApplicationTest {
             .withLoginServiceSupport()
             .omsorgspengesoknadApiConfig()
             .build()
-            .stubOmsorgsoknadMottakHealth()
             .stubOppslagHealth()
-            .stubLeggSoknadTilProsessering("v1/soknad")
-            .stubLeggSoknadTilProsessering("v1/ettersend")
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9Mellomlagring()
 
         val redisServer: RedisServer = RedisServer.newRedisServer().started()
+
+        val kafkaEnvironment = KafkaWrapper.bootstrap()
+        val kafkaKonsumer = kafkaEnvironment.testConsumer()
 
         fun getConfig(): ApplicationConfig {
 
@@ -64,7 +61,8 @@ class ApplicationTest {
             val testConfig = ConfigFactory.parseMap(
                 TestConfiguration.asMap(
                     wireMockServer = wireMockServer,
-                    redisServer = redisServer
+                    redisServer = redisServer,
+                    kafkaEnvironment = kafkaEnvironment
                 )
             )
             val mergedConfig = testConfig.withFallback(fileConfig)
@@ -76,13 +74,13 @@ class ApplicationTest {
             config = getConfig()
         })
 
-        @BeforeClass
+        @BeforeAll
         @JvmStatic
         fun buildUp() {
             engine.start(wait = true)
         }
 
-        @AfterClass
+        @AfterAll
         @JvmStatic
         fun tearDown() {
             logger.info("Tearing down")
@@ -166,7 +164,7 @@ class ApplicationTest {
                 "barn": []
             }
             """.trimIndent(),
-            cookie = getAuthCookie(fnrB)
+            cookie = getAuthCookie(fnrUtenBarn)
         )
         wireMockServer.stubK9OppslagBarn()
     }
@@ -214,9 +212,11 @@ class ApplicationTest {
 
     @Test
     fun `Sende søknad`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val cookie = getAuthCookie(fnr)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
+
+        val søknad = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).somJson()
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -224,8 +224,10 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).somJson()
+            requestEntity = søknad
         )
+
+        hentOgAssertSøknad(søknad = JSONObject(søknad))
     }
 
     @Test
@@ -252,11 +254,18 @@ class ApplicationTest {
         )
     }
 
-    @Test //Denne testen fanger ikke opp om barnets navn blir satt eller ikke. Må undersøke loggen.
+    @Test
     fun `Sende søknad med AktørID som ID på barnet`() {
         val cookie = getAuthCookie(fnr)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
+
+        val søknad = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).copy(
+            barn = BarnDetaljer(
+                navn = "BARN EN BARNESEN",
+                aktørId = "1000000000001"
+            )
+        ).somJson()
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -264,18 +273,15 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).copy(
-                barn = BarnDetaljer(
-                    navn = "BARN EN BARNESEN",
-                    aktørId = "1000000000001"
-                )
-            ).somJson()
+            requestEntity = søknad
         )
+
+        hentOgAssertSøknad(søknad = JSONObject(søknad))
     }
 
     @Test
     fun `Sende søknad hvor et av vedleggene peker på et ikke eksisterende vedlegg`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val cookie = getAuthCookie(fnr)
         val jpegUrl = engine.jpegUrl(cookie)
         val finnesIkkeUrl = jpegUrl.substringBeforeLast("/").plus("/").plus(UUID.randomUUID().toString())
 
@@ -414,7 +420,7 @@ class ApplicationTest {
     @Test
     fun `Test opplasting av ikke støttet vedleggformat`() {
         engine.handleRequestUploadImage(
-            cookie = getAuthCookie(gyldigFodselsnummerA),
+            cookie = getAuthCookie(fnr),
             vedlegg = "jwkset.json".fromResources().readBytes(),
             contentType = "application/json",
             fileName = "jwkset.json",
@@ -425,7 +431,7 @@ class ApplicationTest {
     @Test
     fun `Test opplasting av for stort vedlegg`() {
         engine.handleRequestUploadImage(
-            cookie = getAuthCookie(gyldigFodselsnummerA),
+            cookie = getAuthCookie(fnr),
             vedlegg = ByteArray(8 * 1024 * 1024 + 10),
             contentType = "image/png",
             fileName = "big_picture.png",
@@ -460,5 +466,31 @@ class ApplicationTest {
                 }
             }
         }
+    }
+
+    private fun hentOgAssertSøknad(søknad: JSONObject){
+        val hentet = kafkaKonsumer.hentSøknad(søknad.getString("søknadId"))
+        assertGyldigSøknad(søknad, hentet.data)
+    }
+
+    private fun assertGyldigSøknad(
+        søknadSendtInn: JSONObject,
+        søknadFraTopic: JSONObject
+    ) {
+        println(søknadFraTopic)
+        assertTrue(søknadFraTopic.has("søker"))
+        assertTrue(søknadFraTopic.has("mottatt"))
+        assertTrue(søknadFraTopic.has("k9FormatSøknad"))
+        assertTrue(søknadFraTopic.getJSONObject("barn").has("norskIdentifikator"))
+
+        assertFalse(søknadFraTopic.getJSONArray("legeerklæring").isEmpty)
+
+        assertEquals(søknadSendtInn.getString("søknadId"), søknadFraTopic.getString("søknadId"))
+        assertEquals(søknadSendtInn.getString("relasjonTilBarnet"), søknadFraTopic.getString("relasjonTilBarnet"))
+
+        assertEquals(
+            søknadSendtInn.getJSONObject("barn").getString("navn"),
+            søknadFraTopic.getJSONObject("barn").getString("navn")
+        )
     }
 }

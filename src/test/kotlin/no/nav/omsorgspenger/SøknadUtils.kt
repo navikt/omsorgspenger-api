@@ -29,7 +29,7 @@ class SøknadUtils {
 
         fun gyldigSøknad(legeerklæringURL: String? = null, samværsavtalURL: String? = null): Søknad {
             val legeerklæring = if (legeerklæringURL != null) listOf(URL(legeerklæringURL)) else listOf()
-            val samværsavtale = if (samværsavtalURL != null) listOf(URL(samværsavtalURL)) else listOf()
+            val samværsavtale = if (samværsavtalURL != null) listOf(URL(samværsavtalURL)) else null
 
             return Søknad(
                 nyVersjon = false,

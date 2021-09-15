@@ -24,9 +24,7 @@ class ApplicationWithMocks {
                 .withLoginServiceSupport()
                 .omsorgspengesoknadApiConfig()
                 .build()
-                .stubOmsorgsoknadMottakHealth()
                 .stubOppslagHealth()
-                .stubLeggSoknadTilProsessering("v1/soknad")
                 .stubK9Mellomlagring()
                 .stubK9OppslagSoker()
                 .stubK9OppslagBarn()
@@ -35,10 +33,13 @@ class ApplicationWithMocks {
                 .newRedisServer()
                 .started()
 
+            val kafkaEnvironment = KafkaWrapper.bootstrap()
+
             val testArgs = TestConfiguration.asMap(
                 port = 8082,
                 wireMockServer = wireMockServer,
-                redisServer = redisServer
+                redisServer = redisServer,
+                kafkaEnvironment = kafkaEnvironment
             ).asArguments()
 
             Runtime.getRuntime().addShutdownHook(object : Thread() {
