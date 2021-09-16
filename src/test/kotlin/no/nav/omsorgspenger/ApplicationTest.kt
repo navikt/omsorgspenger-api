@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 private const val forLangtNavn =
@@ -481,8 +480,6 @@ class ApplicationTest {
         assertTrue(søknadFraTopic.has("mottatt"))
         assertTrue(søknadFraTopic.has("k9FormatSøknad"))
         assertTrue(søknadFraTopic.getJSONObject("barn").has("norskIdentifikator"))
-
-        assertFalse(søknadFraTopic.getJSONArray("legeerklæring").isEmpty)
 
         assertEquals(søknadSendtInn.getString("søknadId"), søknadFraTopic.getString("søknadId"))
         assertEquals(søknadSendtInn.getString("relasjonTilBarnet"), søknadFraTopic.getString("relasjonTilBarnet"))
