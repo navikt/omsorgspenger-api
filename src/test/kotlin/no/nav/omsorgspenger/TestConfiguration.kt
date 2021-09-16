@@ -2,21 +2,21 @@ package no.nav.omsorgspenger
 
 import com.github.fppt.jedismock.RedisServer
 import com.github.tomakehurst.wiremock.WireMockServer
+import no.nav.common.KafkaEnvironment
 import no.nav.helse.dusseldorf.testsupport.jws.ClientCredentials
 import no.nav.helse.dusseldorf.testsupport.jws.LoginService
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2WellKnownUrl
 import no.nav.helse.dusseldorf.testsupport.wiremock.getLoginServiceV1WellKnownUrl
 import no.nav.omsorgspenger.wiremock.getK9MellomlagringUrl
 import no.nav.omsorgspenger.wiremock.getK9OppslagUrl
-import no.nav.omsorgspenger.wiremock.getOmsorgpengesoknadMottakUrl
 
 object TestConfiguration {
 
     fun asMap(
         wireMockServer: WireMockServer? = null,
+        kafkaEnvironment: KafkaEnvironment? = null,
         port: Int = 8080,
         k9OppslagUrl: String? = wireMockServer?.getK9OppslagUrl(),
-        omsorgpengesoknadMottakUrl: String? = wireMockServer?.getOmsorgpengesoknadMottakUrl(),
         k9MellomlagringUrl: String? = wireMockServer?.getK9MellomlagringUrl(),
         corsAdresses: String = "http://localhost:8080",
         redisServer: RedisServer
@@ -26,8 +26,8 @@ object TestConfiguration {
             Pair("ktor.deployment.port", "$port"),
             Pair("nav.authorization.cookie_name", "localhost-idtoken"),
             Pair("nav.gateways.k9_oppslag_url", "$k9OppslagUrl"),
-            Pair("nav.gateways.omsorgpengesoknad_mottak_base_url", "$omsorgpengesoknadMottakUrl"),
             Pair("nav.gateways.k9_mellomlagring_url", "$k9MellomlagringUrl"),
+            Pair("nav.gateways.k9_mellomlagring_ingress","$k9MellomlagringUrl"),
             Pair("nav.cors.addresses", corsAdresses),
             Pair("nav.authorization.api_gateway.api_key", "verysecret")
         )
@@ -51,6 +51,11 @@ object TestConfiguration {
         map["nav.redis.host"] = "localhost"
         map["nav.redis.port"] = "${redisServer.bindPort}"
         map["nav.storage.passphrase"] = "verySecret"
+
+        // Kafka
+        kafkaEnvironment?.let {
+            map["nav.kafka.bootstrap_servers"] = it.brokersURL
+        }
 
         return map.toMap()
     }

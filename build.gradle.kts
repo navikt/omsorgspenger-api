@@ -2,10 +2,12 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
-val dusseldorfKtorVersion = "2.1.6.0-1516d10"
+val dusseldorfKtorVersion = "2.1.6.2-6ce5eaa"
 val k9FormatVersion = "5.1.16"
 val ktorVersion = ext.get("ktorVersion").toString()
 val fuelVersion = "2.3.1"
+val kafkaEmbeddedEnvVersion = ext.get("kafkaEmbeddedEnvVersion").toString()
+val kafkaVersion = ext.get("kafkaVersion").toString() // Alligned med version fra kafka-embedded-env
 
 plugins {
     kotlin("jvm") version "1.5.30"
@@ -14,7 +16,7 @@ plugins {
 
 buildscript {
     // Henter ut diverse dependency versjoner, i.e. ktorVersion.
-    apply("https://raw.githubusercontent.com/navikt/dusseldorf-ktor/1516d1006074d9459dbeaa4b355f619ee04a4b77/gradle/dusseldorf-ktor.gradle.kts")
+    apply("https://raw.githubusercontent.com/navikt/dusseldorf-ktor/6ce5eaa4666595bb6b550fca5ca8bbdc242961a0/gradle/dusseldorf-ktor.gradle.kts")
 }
 
 dependencies {
@@ -39,14 +41,19 @@ dependencies {
     implementation("io.lettuce:lettuce-core:5.3.5.RELEASE")
     implementation("com.github.fppt:jedis-mock:0.1.22")
 
+    // kafka
+    implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
+
     // Test
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
+    testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
-
-    testImplementation("org.skyscreamer:jsonassert:1.5.0")
+    testImplementation ("org.skyscreamer:jsonassert:1.5.0")
     testImplementation("org.awaitility:awaitility-kotlin:4.1.0")
+    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
 
 repositories {
@@ -62,10 +69,8 @@ repositories {
     }
 
     mavenCentral()
-    jcenter()
 
-    maven("https://dl.bintray.com/kotlin/ktor")
-    maven("https://kotlin.bintray.com/kotlinx")
+    maven("https://jitpack.io")
     maven("https://packages.confluent.io/maven/")
 }
 
@@ -98,4 +103,8 @@ tasks.withType<ShadowJar> {
 
 tasks.withType<Wrapper> {
     gradleVersion = "7.2"
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

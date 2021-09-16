@@ -5,7 +5,7 @@ import no.nav.omsorgspenger.redis.RedisConfig
 import no.nav.omsorgspenger.redis.RedisStore
 import org.awaitility.Awaitility
 import org.awaitility.Durations
-import org.junit.AfterClass
+import org.junit.jupiter.api.AfterAll
 import org.slf4j.LoggerFactory
 import java.util.*
 import kotlin.test.*
@@ -33,7 +33,7 @@ class MellomlagringTest {
             "VerySecretPass"
         )
 
-        @AfterClass
+        @AfterAll
         @JvmStatic
         fun teardown() {
             redisClient.shutdown()

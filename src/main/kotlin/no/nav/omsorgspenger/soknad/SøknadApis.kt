@@ -8,14 +8,15 @@ import io.ktor.routing.*
 import no.nav.omsorgspenger.barn.BarnService
 import no.nav.omsorgspenger.felles.SØKNAD_URL
 import no.nav.omsorgspenger.felles.VALIDERING_URL
+import no.nav.omsorgspenger.felles.formaterStatuslogging
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.auth.IdToken
 import no.nav.omsorgspenger.general.auth.IdTokenProvider
 import no.nav.omsorgspenger.general.getCallId
+import no.nav.omsorgspenger.general.getMetadata
 import no.nav.omsorgspenger.k9format.tilK9Format
 import no.nav.omsorgspenger.soker.Søker
 import no.nav.omsorgspenger.soker.SøkerService
-import no.nav.omsorgspenger.soker.validate
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
@@ -31,38 +32,16 @@ fun Route.søknadApis(
 ) {
 
     post(SØKNAD_URL) {
-        val mottatt = ZonedDateTime.now(ZoneOffset.UTC)
-        val idToken = idTokenProvider.getIdToken(call)
-        val callId = call.getCallId()
-
-        logger.trace("Mottatt ny søknad. Mapper søknad.")
         val søknad = call.receive<Søknad>()
-        logger.trace("Søknad mappet. Validerer")
-
-        logger.trace("Henter søker.")
-        val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
-        logger.trace("Søker hentet. Validerer søkeren.")
-        søker.validate()
-
-        val barn = resolveBarn(søknad, barnService, idToken, callId)
-        søknad.oppdaterBarnsIdentitetsnummer(barn)
-
-        logger.info("Mapper om søknad til k9format.")
-        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
-
-        søknad.valider(k9FormatSøknad)
-        logger.trace("Validering OK. Registrerer søknad.")
+        logger.info(formaterStatuslogging(søknad.søknadId, "mottatt"))
 
         søknadService.registrer(
             søknad = søknad,
             callId = call.getCallId(),
             idToken = idTokenProvider.getIdToken(call),
-            k9FormatSøknad = k9FormatSøknad,
-            søker = søker,
-            mottatt = mottatt
+            metadata = call.getMetadata()
         )
 
-        logger.trace("Søknad registrert.")
         call.respond(HttpStatusCode.Accepted)
     }
 
@@ -85,7 +64,7 @@ fun Route.søknadApis(
     }
 }
 
-private suspend fun resolveBarn(
+suspend fun resolveBarn(
     søknad: Søknad,
     barnService: BarnService,
     idToken: IdToken,
@@ -111,7 +90,6 @@ private suspend fun resolveBarn(
             )
         }
             .firstOrNull { it.aktørId == søknad.barn.aktørId }
-        barn
-            ?: throw IllegalStateException("Kunne ikke fimme barnets aktørId blant liste over oppslagsbarn.") // Burde ikke forekomme
+        barn ?: throw IllegalStateException("Kunne ikke fimme barnets aktørId blant liste over oppslagsbarn.") // Burde ikke forekomme
     }
 }

@@ -181,14 +181,14 @@ private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violati
 
 private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
 
-internal fun List<Vedlegg>.validerLegeerklæring(vedleggUrler: List<URL>) {
+internal fun List<Vedlegg>.validerVedlegg(path: String, vedleggUrler: List<URL>) {
     if (size != vedleggUrler.size) {
         throw Throwblem(
             ValidationProblemDetails(
                 violations = setOf(
-                    no.nav.helse.dusseldorf.ktor.core.Violation(
-                        parameterName = "legeerklæring",
-                        parameterType = no.nav.helse.dusseldorf.ktor.core.ParameterType.ENTITY,
+                    Violation(
+                        parameterName = "$path",
+                        parameterType = ParameterType.ENTITY,
                         reason = "Mottok referanse til ${vedleggUrler.size} vedlegg, men fant kun $size vedlegg.",
                         invalidValue = vedleggUrler
                     )
@@ -198,28 +198,9 @@ internal fun List<Vedlegg>.validerLegeerklæring(vedleggUrler: List<URL>) {
     }
     validerTotalStørresle()
 }
-
-internal fun List<Vedlegg>.validerSamværsavtale(vedleggUrler: List<URL>) {
-    if (size != vedleggUrler.size) {
-        throw Throwblem(
-            ValidationProblemDetails(
-                violations = setOf(
-                    no.nav.helse.dusseldorf.ktor.core.Violation(
-                        parameterName = "samværsavtale",
-                        parameterType = no.nav.helse.dusseldorf.ktor.core.ParameterType.ENTITY,
-                        reason = "Mottok referanse til ${vedleggUrler.size} vedlegg, men fant kun $size vedlegg.",
-                        invalidValue = vedleggUrler
-                    )
-                )
-            )
-        )
-    }
-    validerTotalStørresle()
-}
-
 
 fun List<Vedlegg>.validerTotalStørresle() {
-    val totalSize = sumBy { it.content.size }
+    val totalSize = sumOf { it.content.size }
     if (totalSize > MAX_VEDLEGG_SIZE) {
         throw Throwblem(vedleggTooLargeProblemDetails)
     }
