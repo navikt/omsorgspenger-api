@@ -15,8 +15,6 @@ import no.nav.omsorgspenger.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 
 
 class SøknadService(
@@ -36,15 +34,16 @@ class SøknadService(
         metadata: Metadata
     ) {
         logger.info(formaterStatuslogging(søknad.søknadId, "registreres"))
-        val mottatt = ZonedDateTime.now(ZoneOffset.UTC)
 
         val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
         søker.validate()
 
-        val barn = resolveBarn(søknad, barnService, idToken, callId)
-        søknad.oppdaterBarnsIdentitetsnummer(barn)
+        if(søknad.barn.norskIdentifikator.isNullOrBlank()){
+            val barnMedNorskIdentifikator = barnService.hentNåværendeBarn(idToken, callId)
+            søknad oppdaterBarnsNorskIdentifikatorFra barnMedNorskIdentifikator
+        }
 
-        val k9Format = søknad.tilK9Format(mottatt, søker)
+        val k9Format = søknad.tilK9Format(søker)
         søknad.valider(k9Format)
 
         logger.info("Validerer ${søknad.legeerklæring.size} legeerklæringsvedlegg.")
@@ -66,7 +65,7 @@ class SøknadService(
             vedleggService.persisterVedlegg(søknad.samværsavtale, callId, dokumentEier)
         }
 
-        val komplettSoknad = søknad.tilKomplettSøknad(mottatt, søker, k9Format, k9MellomLagringIngress)
+        val komplettSoknad = søknad.tilKomplettSøknad(søker, k9Format, k9MellomLagringIngress)
 
         try {
             kafkaProducer.produserKafkaMelding(komplettSoknad, metadata)

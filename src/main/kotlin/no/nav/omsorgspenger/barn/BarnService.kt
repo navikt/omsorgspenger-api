@@ -8,16 +8,16 @@ import org.slf4j.LoggerFactory
 
 class BarnService(
     private val barnGateway: BarnGateway,
-    private val cache: Cache<String, List<Barn>>
+    private val cache: Cache<String, List<BarnOppslag>>
 ) {
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(BarnService::class.java)
     }
 
-    internal suspend fun hentNaaverendeBarn(
+    internal suspend fun hentNåværendeBarn(
         idToken: IdToken,
         callId: CallId
-    ): List<Barn> {
+    ): List<BarnOppslag> {
         var listeOverBarnOppslag = cache.getIfPresent(idToken.getSubject().toString())
         if (listeOverBarnOppslag != null) return listeOverBarnOppslag
 
@@ -31,11 +31,11 @@ class BarnService(
             barn
         } catch (cause: Throwable) {
             logger.error("Feil ved henting av barn, returnerer en tom liste", cause)
-            emptyList<Barn>()
+            emptyList<BarnOppslag>()
         }
     }
 
-    private fun BarnGateway.BarnOppslagDTO.tilBarn() = Barn(
+    private fun BarnGateway.BarnOppslagDTO.tilBarn() = BarnOppslag(
         identitetsnummer = identitetsnummer,
         fødselsdato = fødselsdato,
         fornavn = fornavn,

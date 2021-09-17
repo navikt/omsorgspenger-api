@@ -39,7 +39,6 @@ object TestConfiguration {
             map["nav.auth.clients.0.private_key_jwk"] = ClientCredentials.ClientC.privateKeyJwk
             map["nav.auth.clients.0.certificate_hex_thumbprint"] = "The keyId of Azure JWK"
             map["nav.auth.clients.0.discovery_endpoint"] = wireMockServer.getAzureV2WellKnownUrl()
-            map["nav.auth.scopes.omsorgspengesoknad-mottak-client-id"] = "omsorgspengesoknad-mottak/.default"
             map["nav.auth.scopes.k9-mellomlagring-scope"] = "k9-mellomlagring/.default"
             map["nav.auth.issuers.0.alias"] = "login-service-v1"
             map["nav.auth.issuers.0.discovery_endpoint"] = wireMockServer.getLoginServiceV1WellKnownUrl()

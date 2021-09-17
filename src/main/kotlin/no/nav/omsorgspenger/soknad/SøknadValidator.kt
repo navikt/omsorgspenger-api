@@ -125,30 +125,15 @@ private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): Mutable
         )
     }.sortedBy { it.reason }.toMutableSet()
 
-private fun BarnDetaljer.gyldigAntallIder(): Boolean {
-    val antallIderSatt = listOfNotNull(aktørId, norskIdentifikator).size
-    return antallIderSatt == 0 || antallIderSatt == 1
-}
-
-private fun BarnDetaljer.valider(relasjonTilBarnet: String?): MutableSet<Violation> {
+private fun Barn.valider(relasjonTilBarnet: String?): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
-    if (norskIdentifikator.isNullOrBlank() || (!norskIdentifikator.erGyldigNorskIdentifikator())) {
+    if (norskIdentifikator.isNullOrBlank() || (!norskIdentifikator!!.erGyldigNorskIdentifikator())) {
         violations.add(
             Violation(
                 parameterName = "barn.norskIdentifikator",
                 parameterType = ParameterType.ENTITY,
                 reason = "Ikke gyldig norskIdentifikator.",
-                invalidValue = norskIdentifikator
-            )
-        )
-    }
-    if (norskIdentifikator.isNullOrBlank() && aktørId.isNullOrBlank()) {
-        violations.add(
-            Violation(
-                parameterName = "barn",
-                parameterType = ParameterType.ENTITY,
-                reason = "Ikke tillatt med barn som mangler norskIdentifikator og aktørID.",
                 invalidValue = norskIdentifikator
             )
         )

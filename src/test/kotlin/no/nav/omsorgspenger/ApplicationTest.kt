@@ -13,7 +13,7 @@ import no.nav.omsorgspenger.felles.BARN_URL
 import no.nav.omsorgspenger.felles.SØKER_URL
 import no.nav.omsorgspenger.felles.SØKNAD_URL
 import no.nav.omsorgspenger.mellomlagring.started
-import no.nav.omsorgspenger.soknad.BarnDetaljer
+import no.nav.omsorgspenger.soknad.Barn
 import no.nav.omsorgspenger.wiremock.*
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 private const val forLangtNavn =
@@ -168,6 +169,42 @@ class ApplicationTest {
         wireMockServer.stubK9OppslagBarn()
     }
 
+    @Test
+    fun `Hente barn og sjekk eksplisit at identitetsnummer ikke blir med ved get kall`() {
+
+        val respons = requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = BARN_URL,
+            expectedCode = HttpStatusCode.OK,
+            //language=json
+            expectedResponse = """
+                {
+                  "barn": [
+                    {
+                      "fødselsdato": "2000-08-27",
+                      "fornavn": "BARN",
+                      "mellomnavn": "EN",
+                      "etternavn": "BARNESEN",
+                      "aktørId": "1000000000001"
+                    },
+                    {
+                      "fødselsdato": "2001-04-10",
+                      "fornavn": "BARN",
+                      "mellomnavn": "TO",
+                      "etternavn": "BARNESEN",
+                      "aktørId": "1000000000002"
+                    }
+                  ]
+                }
+            """.trimIndent()
+        ).content
+
+        val responsSomJSONArray = JSONObject(respons).getJSONArray("barn")
+
+        assertFalse(responsSomJSONArray.getJSONObject(0).has("identitetsnummer"))
+        assertFalse(responsSomJSONArray.getJSONObject(1).has("identitetsnummer"))
+    }
+
     fun expectedGetSokerJson(
         fodselsnummer: String,
         fodselsdato: String = "1997-05-25",
@@ -260,7 +297,7 @@ class ApplicationTest {
         val pdfUrl = engine.pdUrl(cookie)
 
         val søknad = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).copy(
-            barn = BarnDetaljer(
+            barn = Barn(
                 navn = "BARN EN BARNESEN",
                 aktørId = "1000000000001"
             )
@@ -322,7 +359,7 @@ class ApplicationTest {
                   "kroniskEllerFunksjonshemming": true,
                   "barn": {
                     "navn": "$forLangtNavn",
-                    "norskIdentifikator": "29099012345",
+                    "norskIdentifikator": "30100577255",
                     "aktørId": "1000000000001"
                   },
                   "sammeAddresse": true,
@@ -446,7 +483,8 @@ class ApplicationTest {
         expectedCode: HttpStatusCode,
         leggTilCookie: Boolean = true,
         cookie: Cookie = getAuthCookie(fnr)
-    ) {
+    ): TestApplicationResponse {
+        val testApplicationResponse: TestApplicationResponse
         with(engine) {
             handleRequest(httpMethod, path) {
                 if (leggTilCookie) addHeader(HttpHeaders.Cookie, cookie.toString())
@@ -455,6 +493,7 @@ class ApplicationTest {
                 if (requestEntity != null) addHeader(HttpHeaders.ContentType, "application/json")
                 if (requestEntity != null) setBody(requestEntity)
             }.apply {
+                testApplicationResponse = response
                 logger.info("Response Entity = ${response.content}")
                 logger.info("Expected Entity = $expectedResponse")
                 assertEquals(expectedCode, response.status())
@@ -465,6 +504,7 @@ class ApplicationTest {
                 }
             }
         }
+        return testApplicationResponse
     }
 
     private fun hentOgAssertSøknad(søknad: JSONObject){
