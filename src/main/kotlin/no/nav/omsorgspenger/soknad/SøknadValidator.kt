@@ -138,16 +138,6 @@ private fun Barn.valider(relasjonTilBarnet: String?): MutableSet<Violation> {
             )
         )
     }
-    if (norskIdentifikator.isNullOrBlank() && aktørId.isNullOrBlank()) {
-        violations.add(
-            Violation(
-                parameterName = "barn",
-                parameterType = ParameterType.ENTITY,
-                reason = "Ikke tillatt med barn som mangler norskIdentifikator og aktørID.",
-                invalidValue = norskIdentifikator
-            )
-        )
-    }
 
     if (navn.erBlankEllerLengreEnn(100)) {
         violations.add(
