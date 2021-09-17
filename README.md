@@ -1,7 +1,7 @@
 # omsorgspengesoknad-api
 
 ![CI / CD](https://github.com/navikt/omsorgspenger-api/workflows/CI%20/%20CD/badge.svg)
-![NAIS Alerts](https://github.com/navikt/omsorgspenger-mottak/workflows/Alerts/badge.svg)
+![NAIS Alerts](https://github.com/navikt/omsorgspenger-api/workflows/Alerts/badge.svg)
 
 # Innholdsoversikt
 * [1. Kontekst](#1-kontekst)

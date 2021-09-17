@@ -15,7 +15,7 @@ fun Route.barnApis(
     get(BARN_URL) {
         call.respond(
             BarnResponse(
-                barnService.hentNaaverendeBarn(
+                barnService.hentNåværendeBarn(
                     idToken = idTokenProvider.getIdToken(call),
                     callId = call.getCallId()
                 )

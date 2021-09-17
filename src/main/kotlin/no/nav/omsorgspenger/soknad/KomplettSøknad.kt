@@ -12,7 +12,7 @@ data class KomplettSøknad(
     val mottatt: ZonedDateTime,
     val kroniskEllerFunksjonshemming: Boolean,
     val søker: Søker,
-    val barn: BarnDetaljer,
+    val barn: Barn,
     val relasjonTilBarnet: SøkerBarnRelasjon? = null,
     val sammeAdresse: Boolean?,
     var legeerklæring: List<URL>,

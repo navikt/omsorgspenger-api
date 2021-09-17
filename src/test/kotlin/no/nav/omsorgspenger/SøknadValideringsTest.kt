@@ -3,12 +3,11 @@ package no.nav.omsorgspenger
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.omsorgspenger.SøknadUtils.Companion.søker
 import no.nav.omsorgspenger.k9format.tilK9Format
-import no.nav.omsorgspenger.soknad.BarnDetaljer
+import no.nav.omsorgspenger.soknad.Barn
 import no.nav.omsorgspenger.soknad.starterMedFodselsdato
 import no.nav.omsorgspenger.soknad.valider
 import org.junit.jupiter.api.Assertions
 import java.net.URL
-import java.time.ZonedDateTime
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -19,7 +18,7 @@ internal class SøknadValideringsTest {
 
     @Test
     fun `Skal ikke feile på gyldig søknad`() {
-        gyldigSøknad.valider(gyldigSøknad.tilK9Format(ZonedDateTime.now(), søker))
+        gyldigSøknad.valider(gyldigSøknad.tilK9Format(søker))
     }
 
     @Test
@@ -31,40 +30,40 @@ internal class SøknadValideringsTest {
     @Test
     fun `Forvent violation dersom barn mangler både aktørID og norskIdentnummer 1`() {
         val søknad = gyldigSøknad.copy(
-            barn = BarnDetaljer(
+            barn = Barn(
                 navn = "Ole Dole Doffen",
                 norskIdentifikator = null,
                 aktørId = null
             )
         )
         Assertions.assertThrows(Throwblem::class.java) {
-            søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
+            søknad.valider(søknad.tilK9Format(søker))
         }
     }
 
     @Test
     fun `Forvent violation dersom barn norskIdentnummer er null`() {
         val søknad = gyldigSøknad.copy(
-            barn = BarnDetaljer(
+            barn = Barn(
                 navn = "Ole Dole Doffen",
                 norskIdentifikator = null
             )
         )
         Assertions.assertThrows(Throwblem::class.java) {
-            søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
+            søknad.valider(søknad.tilK9Format(søker))
         }
     }
 
     @Test
     fun `Forvent violation dersom barn norskIdentnummer er bare whitespace`() {
         val søknad = gyldigSøknad.copy(
-            barn = BarnDetaljer(
+            barn = Barn(
                 navn = "Ole Dole Doffen",
                 norskIdentifikator = "  "
             )
         )
         Assertions.assertThrows(Throwblem::class.java) {
-            søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
+            søknad.valider(søknad.tilK9Format(søker))
         }
     }
 
@@ -74,7 +73,7 @@ internal class SøknadValideringsTest {
             samværsavtale = listOf()
         )
         Assertions.assertThrows(Throwblem::class.java) {
-            søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
+            søknad.valider(søknad.tilK9Format(søker))
         }
     }
 
@@ -84,7 +83,7 @@ internal class SøknadValideringsTest {
             samværsavtale = listOf(URL("http://localhost/FEIL/1"))
         )
         Assertions.assertThrows(Throwblem::class.java) {
-            søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
+            søknad.valider(søknad.tilK9Format(søker))
         }
     }
 
@@ -94,7 +93,7 @@ internal class SøknadValideringsTest {
             harBekreftetOpplysninger = false
         )
         Assertions.assertThrows(Throwblem::class.java) {
-            søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
+            søknad.valider(søknad.tilK9Format(søker))
         }
     }
 
@@ -104,7 +103,7 @@ internal class SøknadValideringsTest {
             harForståttRettigheterOgPlikter = false
         )
         Assertions.assertThrows(Throwblem::class.java) {
-            søknad.valider(søknad.tilK9Format(ZonedDateTime.now(), søker))
+            søknad.valider(søknad.tilK9Format(søker))
         }
     }
 }

@@ -5,16 +5,15 @@ import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
 import no.nav.k9.søknad.felles.type.SøknadId
 import no.nav.k9.søknad.ytelse.omsorgspenger.utvidetrett.v1.OmsorgspengerKroniskSyktBarn
 import no.nav.omsorgspenger.soker.Søker
-import no.nav.omsorgspenger.soknad.BarnDetaljer
+import no.nav.omsorgspenger.soknad.Barn
 import no.nav.omsorgspenger.soknad.Søknad
-import java.time.ZonedDateTime
 import no.nav.k9.søknad.Søknad as K9Søknad
 import no.nav.k9.søknad.felles.personopplysninger.Barn as K9Barn
 import no.nav.k9.søknad.felles.personopplysninger.Søker as K9Søker
 
 private val k9FormatVersjon = Versjon.of("1.0.0")
 
-fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
+fun Søknad.tilK9Format(søker: Søker): K9Søknad {
     return K9Søknad(
         SøknadId.of(this.søknadId),
         k9FormatVersjon,
@@ -29,6 +28,6 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
 
 
 fun Søker.tilK9Søker(): K9Søker = K9Søker(NorskIdentitetsnummer.of(fødselsnummer))
-fun BarnDetaljer.tilK9Barn(): K9Barn = K9Barn(NorskIdentitetsnummer.of(this.norskIdentifikator), null)
+fun Barn.tilK9Barn(): K9Barn = K9Barn(NorskIdentitetsnummer.of(this.norskIdentifikator), null)
 
 

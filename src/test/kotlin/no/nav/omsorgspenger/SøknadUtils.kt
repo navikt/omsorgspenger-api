@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.omsorgspenger.soker.Søker
-import no.nav.omsorgspenger.soknad.BarnDetaljer
+import no.nav.omsorgspenger.soknad.Barn
 import no.nav.omsorgspenger.soknad.SøkerBarnRelasjon
 import no.nav.omsorgspenger.soknad.Søknad
 import java.net.URL
@@ -22,7 +22,7 @@ class SøknadUtils {
             fødselsnummer = "26104500284"
         )
 
-        val barn = BarnDetaljer(
+        val barn = Barn(
             norskIdentifikator = "02119970078",
             navn = "Ole Dole Doffen"
         )

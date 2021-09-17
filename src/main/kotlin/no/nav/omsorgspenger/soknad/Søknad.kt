@@ -4,18 +4,21 @@ import com.fasterxml.jackson.annotation.JsonAlias
 import io.ktor.http.*
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.k9.søknad.Søknad
+import no.nav.omsorgspenger.barn.BarnOppslag
 import no.nav.omsorgspenger.soker.Søker
 import java.net.URI
 import java.net.URL
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.*
 
 data class Søknad(
     val nyVersjon: Boolean,
     val søknadId: String = UUID.randomUUID().toString(),
+    val mottatt: ZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC),
     val språk: String,
     val kroniskEllerFunksjonshemming: Boolean,
-    var barn: BarnDetaljer,
+    var barn: Barn,
     val sammeAdresse: Boolean?,
     val relasjonTilBarnet: SøkerBarnRelasjon? = null,
     val legeerklæring: List<URL>,
@@ -24,14 +27,13 @@ data class Søknad(
     val harBekreftetOpplysninger: Boolean
 ) {
 
-    fun oppdaterBarnsIdentitetsnummer(barn: BarnDetaljer) {
-        this.barn = this.barn.copy(
-            norskIdentifikator = barn.norskIdentifikator
-        )
+    infix fun oppdaterBarnsNorskIdentifikatorFra(listeOverBarnOppslag: List<BarnOppslag>) {
+        if(this.barn.manglerNorskIdentifikator()){
+            barn oppdaterNorskIdentifikatorMed listeOverBarnOppslag.hentIdentitetsnummerForBarn(barn.aktørId)
+        }
     }
 
     fun tilKomplettSøknad(
-        mottatt: ZonedDateTime,
         søker: Søker,
         k9Format: Søknad,
         k9MellomlagringIngress: URI,
@@ -71,3 +73,5 @@ fun List<URL>.tilK9MellomLagringUrl(baseUrl: URI): List<URL> = map {
         pathParts = listOf(idFraUrl)
     ).toURL()
 }
+
+private fun List<BarnOppslag>.hentIdentitetsnummerForBarn(aktørId: String?) = find { it.aktørId == aktørId }?.identitetsnummer
