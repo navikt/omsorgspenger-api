@@ -49,8 +49,8 @@ fun Route.søknadApis(
 
         val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
 
-        val barnMedIdentitetsnummer = barnService.hentNåværendeBarn(idToken, callId)
-        søknad oppdaterBarnsNorskIdentifikatorFra barnMedIdentitetsnummer
+        val barnMedNorskIdentifikator = barnService.hentNåværendeBarn(idToken, callId)
+        søknad oppdaterBarnsNorskIdentifikatorFra barnMedNorskIdentifikator
 
         val k9FormatSøknad = søknad.tilK9Format(søker)
         søknad.valider(k9FormatSøknad)
