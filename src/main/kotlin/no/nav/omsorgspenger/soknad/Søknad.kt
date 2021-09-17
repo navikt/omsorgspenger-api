@@ -29,7 +29,7 @@ data class Søknad(
 
     infix fun oppdaterBarnsNorskIdentifikatorFra(listeOverBarnOppslag: List<BarnOppslag>) {
         if(this.barn.manglerNorskIdentifikator()){
-            barn oppdaterNorskIdentifikatorMed listeOverBarnOppslag.hentIdentitetsnummerForBarn(barn.aktørId)
+            barn oppdaterNorskIdentifikatorMed listeOverBarnOppslag.hentNorskIdentifikatorForBarn(barn.aktørId)
         }
     }
 
@@ -74,4 +74,4 @@ fun List<URL>.tilK9MellomLagringUrl(baseUrl: URI): List<URL> = map {
     ).toURL()
 }
 
-private fun List<BarnOppslag>.hentIdentitetsnummerForBarn(aktørId: String?) = find { it.aktørId == aktørId }?.identitetsnummer
+private fun List<BarnOppslag>.hentNorskIdentifikatorForBarn(aktørId: String?) = find { it.aktørId == aktørId }?.identitetsnummer
