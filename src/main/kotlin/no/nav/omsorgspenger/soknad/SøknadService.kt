@@ -38,8 +38,10 @@ class SøknadService(
         val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
         søker.validate()
 
-        val barnMedNorskIdentifikator = barnService.hentNåværendeBarn(idToken, callId)
-        søknad oppdaterBarnsNorskIdentifikatorFra barnMedNorskIdentifikator
+        if(søknad.barn.norskIdentifikator.isNullOrBlank()){
+            val barnMedNorskIdentifikator = barnService.hentNåværendeBarn(idToken, callId)
+            søknad oppdaterBarnsNorskIdentifikatorFra barnMedNorskIdentifikator
+        }
 
         val k9Format = søknad.tilK9Format(søker)
         søknad.valider(k9Format)
