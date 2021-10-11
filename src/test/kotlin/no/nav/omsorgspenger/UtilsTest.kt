@@ -1,9 +1,9 @@
 package no.nav.omsorgspenger
 
 import no.nav.omsorgspenger.soknad.tilK9MellomLagringUrl
-import org.junit.Test
 import java.net.URI
 import java.net.URL
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class UtilsTest {
