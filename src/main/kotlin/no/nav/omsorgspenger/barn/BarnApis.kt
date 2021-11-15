@@ -6,6 +6,11 @@ import io.ktor.routing.*
 import no.nav.omsorgspenger.felles.BARN_URL
 import no.nav.omsorgspenger.general.auth.IdTokenProvider
 import no.nav.omsorgspenger.general.getCallId
+import no.nav.omsorgspenger.general.oppslag.TilgangNektetException
+import no.nav.omsorgspenger.soker.respondTilgangNektetProblemDetail
+import org.slf4j.LoggerFactory
+
+private val logger = LoggerFactory.getLogger("no.nav.omsorgspenger.barn.BarnApisKt.barnApis")
 
 fun Route.barnApis(
     barnService: BarnService,
@@ -13,13 +18,20 @@ fun Route.barnApis(
 ) {
 
     get(BARN_URL) {
-        call.respond(
-            BarnResponse(
-                barnService.hentNåværendeBarn(
-                    idToken = idTokenProvider.getIdToken(call),
-                    callId = call.getCallId()
+        try {
+            call.respond(
+                BarnResponse(
+                    barnService.hentNåværendeBarn(
+                        idToken = idTokenProvider.getIdToken(call),
+                        callId = call.getCallId()
+                    )
                 )
             )
-        )
+        } catch (e: Exception) {
+            when(e) {
+                is TilgangNektetException -> call.respondTilgangNektetProblemDetail(logger, e)
+                else -> throw e
+            }
+        }
     }
 }

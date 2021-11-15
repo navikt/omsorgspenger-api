@@ -10,6 +10,7 @@ import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.auth.IdToken
 import no.nav.omsorgspenger.general.oppslag.K9OppslagGateway
+import no.nav.omsorgspenger.general.oppslag.throwable
 import no.nav.omsorgspenger.k9SelvbetjeningOppslagKonfigurert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -67,13 +68,11 @@ class BarnGateway(
             result.fold(
                 { success -> objectMapper.readValue<BarnOppslagResponse>(success) },
                 { error ->
-                    logger.error(
-                        "Error response = '${
-                            error.response.body().asString("text/plain")
-                        }' fra '${request.url}'"
+                    throw error.throwable(
+                        request = request,
+                        logger = logger,
+                        errorMessage = "Feil ved henting av informasjon om søkers barn"
                     )
-                    logger.error(error.toString())
-                    throw IllegalStateException("Feil ved henting av informasjon om søkers barn")
                 }
             )
         }

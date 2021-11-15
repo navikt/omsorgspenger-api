@@ -1,10 +1,12 @@
 package no.nav.omsorgspenger.general.oppslag
 
+import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.httpGet
 import io.ktor.http.*
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.auth.IdToken
+import org.slf4j.Logger
 import java.net.URI
 
 abstract class K9OppslagGateway(
@@ -25,3 +27,17 @@ abstract class K9OppslagGateway(
             )
     }
 }
+
+fun FuelError.throwable(request: Request, logger: Logger, errorMessage: String): Throwable {
+    val errorResponseBody = response.body().asString("text/plain")
+    logger.error("Error response = '$errorResponseBody' fra '${request.url}'")
+    logger.error(toString())
+    return when (response.statusCode) {
+        451 -> TilgangNektetException("Tilgang nektet.")
+        else -> {
+            IllegalStateException(errorMessage)
+        }
+    }
+}
+
+data class TilgangNektetException(override val message: String) : RuntimeException(message)
