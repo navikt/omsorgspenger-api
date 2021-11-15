@@ -12,13 +12,14 @@ import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.auth.IdToken
 import no.nav.omsorgspenger.general.oppslag.K9OppslagGateway
+import no.nav.omsorgspenger.general.oppslag.throwable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
 import java.time.Duration
 import java.time.LocalDate
 
-class SøkerGateway (
+class SøkerGateway(
     baseUrl: URI
 ) : K9OppslagGateway(baseUrl) {
 
@@ -34,8 +35,8 @@ class SøkerGateway (
 
     suspend fun hentSoker(
         idToken: IdToken,
-        callId : CallId
-    ) : SokerOppslagRespons {
+        callId: CallId
+    ): SokerOppslagRespons {
         val sokerUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
@@ -58,16 +59,19 @@ class SøkerGateway (
             ) { httpRequest.awaitStringResponseResult() }
 
             result.fold(
-                { success -> objectMapper.readValue<SokerOppslagRespons>(success)},
+                { success -> objectMapper.readValue<SokerOppslagRespons>(success) },
                 { error ->
-                    logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
-                    logger.error(error.toString())
-                    throw IllegalStateException("Feil ved henting av søkers personinformasjon")
+                    throw error.throwable(
+                        request = request,
+                        logger = logger,
+                        errorMessage = "Feil ved henting av søkers personinformasjon"
+                    )
                 }
             )
         }
         return oppslagRespons
     }
+
     data class SokerOppslagRespons(
         val aktør_id: String,
         val fornavn: String,
