@@ -28,6 +28,4 @@ fun Søknad.tilK9Format(søker: Søker): K9Søknad {
 
 
 fun Søker.tilK9Søker(): K9Søker = K9Søker(NorskIdentitetsnummer.of(fødselsnummer))
-fun Barn.tilK9Barn(): K9Barn = K9Barn(NorskIdentitetsnummer.of(this.norskIdentifikator), null)
-
-
+fun Barn.tilK9Barn(): K9Barn = K9Barn().medNorskIdentitetsnummer(NorskIdentitetsnummer.of(this.norskIdentifikator))
