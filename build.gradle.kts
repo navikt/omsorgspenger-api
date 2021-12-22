@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 val dusseldorfKtorVersion = "3.1.6.7-7d29e37"
-val k9FormatVersion = "5.6"
+val k9FormatVersion = "5.7.2"
 val ktorVersion = ext.get("ktorVersion").toString()
 val fuelVersion = "2.3.1"
 val kafkaEmbeddedEnvVersion = ext.get("kafkaEmbeddedEnvVersion").toString()
@@ -38,7 +38,7 @@ dependencies {
     implementation("no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
     implementation("no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
     implementation("io.lettuce:lettuce-core:5.3.5.RELEASE")
-    implementation("com.github.fppt:jedis-mock:0.1.22")
+    implementation("com.github.fppt:jedis-mock:1.0.0")
 
     // kafka
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
