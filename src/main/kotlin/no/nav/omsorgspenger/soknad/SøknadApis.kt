@@ -5,11 +5,11 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import no.nav.helse.dusseldorf.ktor.auth.IdTokenProvider
 import no.nav.omsorgspenger.barn.BarnService
 import no.nav.omsorgspenger.felles.SØKNAD_URL
 import no.nav.omsorgspenger.felles.VALIDERING_URL
 import no.nav.omsorgspenger.felles.formaterStatuslogging
-import no.nav.omsorgspenger.general.auth.IdTokenProvider
 import no.nav.omsorgspenger.general.getCallId
 import no.nav.omsorgspenger.general.getMetadata
 import no.nav.omsorgspenger.k9format.tilK9Format

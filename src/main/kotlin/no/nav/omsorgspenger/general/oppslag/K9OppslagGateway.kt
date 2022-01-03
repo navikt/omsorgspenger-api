@@ -4,8 +4,8 @@ import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.httpGet
 import io.ktor.http.*
+import no.nav.helse.dusseldorf.ktor.auth.IdToken
 import no.nav.omsorgspenger.general.CallId
-import no.nav.omsorgspenger.general.auth.IdToken
 import org.slf4j.Logger
 import java.net.URI
 

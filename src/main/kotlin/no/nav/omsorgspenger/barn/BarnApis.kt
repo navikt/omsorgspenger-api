@@ -3,8 +3,8 @@ package no.nav.omsorgspenger.barn
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import no.nav.helse.dusseldorf.ktor.auth.IdTokenProvider
 import no.nav.omsorgspenger.felles.BARN_URL
-import no.nav.omsorgspenger.general.auth.IdTokenProvider
 import no.nav.omsorgspenger.general.getCallId
 import no.nav.omsorgspenger.general.oppslag.TilgangNektetException
 import no.nav.omsorgspenger.soker.respondTilgangNektetProblemDetail
