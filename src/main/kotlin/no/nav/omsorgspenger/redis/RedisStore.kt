@@ -14,7 +14,6 @@ class RedisStore constructor(
 
     private val connection = redisClient.connect()
     private val async = connection.async()!!
-
     fun get(key: String): String? {
         val get = async.get(key)
         val await = get.await(10, TimeUnit.SECONDS)
@@ -36,9 +35,9 @@ class RedisStore constructor(
     }
 
     fun update(key: String, value: String): String? {
-        val pttl = getPTTL(key)
+        val ttl = getPTTL(key)
         return set(key, value, Calendar.getInstance().let {
-            it.add(Calendar.MILLISECOND, pttl.toInt())
+            it.add(Calendar.MILLISECOND, ttl.toInt())
             it.time
         })
     }
@@ -54,6 +53,7 @@ class RedisStore constructor(
 
         return false
     }
+
 
     private fun settExpiration(key: String, expirationDate: Long) {
         val await = async.pexpireat(key, expirationDate).await(10, TimeUnit.SECONDS)

@@ -6,12 +6,12 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.runBlocking
+import no.nav.helse.dusseldorf.ktor.auth.IdToken
 import no.nav.helse.dusseldorf.testsupport.jws.Azure
 import no.nav.k9.kafka.KafkaProducer
 import no.nav.k9.kafka.Metadata
 import no.nav.omsorgspenger.barn.BarnService
 import no.nav.omsorgspenger.general.CallId
-import no.nav.omsorgspenger.general.auth.IdToken
 import no.nav.omsorgspenger.soker.Søker
 import no.nav.omsorgspenger.soker.SøkerService
 import no.nav.omsorgspenger.soknad.MeldingRegistreringFeiletException
