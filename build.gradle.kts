@@ -37,7 +37,7 @@ dependencies {
     // Client
     implementation("no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
     implementation("no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
-    implementation("io.lettuce:lettuce-core:5.3.5.RELEASE")
+    implementation("io.lettuce:lettuce-core:6.1.6.RELEASE")
 
     // kafka
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
