@@ -1,12 +1,9 @@
 package no.nav.omsorgspenger.soknad
 
 import com.fasterxml.jackson.annotation.JsonAlias
-import io.ktor.http.*
-import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.k9.søknad.Søknad
 import no.nav.omsorgspenger.barn.BarnOppslag
 import no.nav.omsorgspenger.soker.Søker
-import java.net.URI
 import java.net.URL
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -35,8 +32,7 @@ data class Søknad(
 
     fun tilKomplettSøknad(
         søker: Søker,
-        k9Format: Søknad,
-        k9MellomlagringIngress: URI,
+        k9Format: Søknad
     ) = KomplettSøknad(
         nyVersjon = nyVersjon,
         språk = språk,
@@ -47,8 +43,8 @@ data class Søknad(
         barn = barn,
         relasjonTilBarnet = relasjonTilBarnet,
         sammeAdresse = sammeAdresse,
-        legeerklæring = legeerklæring.tilK9MellomLagringUrl(k9MellomlagringIngress),
-        samværsavtale = samværsavtale?.tilK9MellomLagringUrl(k9MellomlagringIngress),
+        legeerklæringVedleggId = legeerklæring.map { it.vedleggId() },
+        samværsavtaleVedleggId = samværsavtale?.map { it.vedleggId() } ?: listOf(),
         harForståttRettigheterOgPlikter = harForståttRettigheterOgPlikter,
         harBekreftetOpplysninger = harBekreftetOpplysninger,
         k9FormatSøknad = k9Format
@@ -66,12 +62,6 @@ enum class SøkerBarnRelasjon() {
     FOSTERFORELDER()
 }
 
-fun List<URL>.tilK9MellomLagringUrl(baseUrl: URI): List<URL> = map {
-    val idFraUrl = it.path.substringAfterLast("/")
-    Url.buildURL(
-        baseUrl = baseUrl,
-        pathParts = listOf(idFraUrl)
-    ).toURL()
-}
+fun URL.vedleggId(): String = this.toString().substringAfterLast("/")
 
 private fun List<BarnOppslag>.hentNorskIdentifikatorForBarn(aktørId: String?) = find { it.aktørId == aktørId }?.identitetsnummer

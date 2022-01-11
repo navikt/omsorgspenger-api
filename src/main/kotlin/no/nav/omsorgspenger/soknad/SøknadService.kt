@@ -14,15 +14,13 @@ import no.nav.omsorgspenger.vedlegg.DokumentEier
 import no.nav.omsorgspenger.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.net.URI
 
 
 class SøknadService(
     private val vedleggService: VedleggService,
     private val søkerService: SøkerService,
     private val barnService: BarnService,
-    private val kafkaProducer: KafkaProducer,
-    private val k9MellomLagringIngress: URI,
+    private val kafkaProducer: KafkaProducer
     ) {
 
     private val logger: Logger = LoggerFactory.getLogger(SøknadService::class.java)
@@ -65,7 +63,7 @@ class SøknadService(
             vedleggService.persisterVedlegg(søknad.samværsavtale, callId, dokumentEier)
         }
 
-        val komplettSoknad = søknad.tilKomplettSøknad(søker, k9Format, k9MellomLagringIngress)
+        val komplettSoknad = søknad.tilKomplettSøknad(søker, k9Format)
 
         try {
             kafkaProducer.produserKafkaMelding(komplettSoknad, metadata)

@@ -43,8 +43,6 @@ data class Configuration(val config : ApplicationConfig) {
 
     internal fun getK9MellomlagringUrl() = URI(config.getRequiredString("nav.gateways.k9_mellomlagring_url", secret = false))
 
-    internal fun getK9MellomlagringIngress() = URI(config.getRequiredString("nav.gateways.k9_mellomlagring_ingress", secret = false))
-
     internal fun getK9MellomlagringScopes() = getScopesFor("k9-mellomlagring-scope")
 
     private fun getScopesFor(operation: String) =

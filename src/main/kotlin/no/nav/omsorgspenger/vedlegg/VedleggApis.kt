@@ -46,7 +46,7 @@ fun Route.vedleggApis(
                             callId = call.getCallId()
                         )
                         logger.info("$vedleggId")
-                        call.respondVedlegg(vedleggId)
+                        call.respondVedlegg(VedleggId(vedleggId))
                     }
                 }
             }
@@ -60,7 +60,7 @@ fun Route.vedleggApis(
                 var eier = idTokenProvider.getIdToken(call).getNorskIdentifikasjonsnummer()
                 if (eier == null) call.respond(HttpStatusCode.Forbidden) else {
                     val vedlegg = vedleggService.hentVedlegg(
-                        vedleggId = vedleggId,
+                        vedleggId = vedleggId.value,
                         idToken = idTokenProvider.getIdToken(call),
                         callId = call.getCallId(),
                         eier = DokumentEier(eier)
@@ -83,7 +83,7 @@ fun Route.vedleggApis(
                 var eier = idTokenProvider.getIdToken(call).getNorskIdentifikasjonsnummer()
                 if (eier == null) call.respond(HttpStatusCode.Forbidden) else {
                     val resultat = vedleggService.slettVedlegg(
-                        vedleggId = vedleggId,
+                        vedleggId = vedleggId.value,
                         idToken = idTokenProvider.getIdToken(call),
                         callId = call.getCallId(),
                         eier = DokumentEier(eier)
