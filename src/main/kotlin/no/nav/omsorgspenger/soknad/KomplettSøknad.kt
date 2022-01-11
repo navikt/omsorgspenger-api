@@ -2,7 +2,6 @@ package no.nav.omsorgspenger.soknad
 
 import no.nav.k9.søknad.Søknad
 import no.nav.omsorgspenger.soker.Søker
-import java.net.URL
 import java.time.ZonedDateTime
 
 data class KomplettSøknad(
@@ -15,8 +14,8 @@ data class KomplettSøknad(
     val barn: Barn,
     val relasjonTilBarnet: SøkerBarnRelasjon? = null,
     val sammeAdresse: Boolean?,
-    var legeerklæring: List<URL>,
-    var samværsavtale: List<URL>?,
+    var legeerklæringVedleggId: List<String>,
+    var samværsavtaleVedleggId: List<String>,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
     val k9FormatSøknad: Søknad

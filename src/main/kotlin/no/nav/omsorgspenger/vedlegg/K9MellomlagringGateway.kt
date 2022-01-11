@@ -68,7 +68,7 @@ class K9MellomlagringGateway(
         vedlegg: Vedlegg,
         idToken: IdToken,
         callId: CallId
-    ): VedleggId {
+    ): String {
         val body = objectMapper.writeValueAsBytes(vedlegg)
 
         return retry(
@@ -97,7 +97,7 @@ class K9MellomlagringGateway(
                     .awaitStringResponseResult()
             }
             result.fold(
-                { success -> VedleggId(objectMapper.readValue<CreatedResponseEntity>(success).id) },
+                { success -> objectMapper.readValue<CreatedResponseEntity>(success).id },
                 { error ->
                     logger.error(
                         "Error response = '${
@@ -111,7 +111,7 @@ class K9MellomlagringGateway(
     }
 
     suspend fun slettVedlegg(
-        vedleggId: VedleggId,
+        vedleggId: String,
         idToken: IdToken,
         callId: CallId,
         eier: DokumentEier
@@ -120,7 +120,7 @@ class K9MellomlagringGateway(
 
         val urlMedId = Url.buildURL(
             baseUrl = komplettUrl,
-            pathParts = listOf(vedleggId.value)
+            pathParts = listOf(vedleggId)
         )
 
         val httpRequest = urlMedId
@@ -197,7 +197,7 @@ class K9MellomlagringGateway(
     }
 
     internal suspend fun persisterVedlegg(
-        vedleggId: List<VedleggId>,
+        vedleggId: List<String>,
         callId: CallId,
         eier: DokumentEier
     ) {
@@ -221,7 +221,7 @@ class K9MellomlagringGateway(
     }
 
     private suspend fun requestPersisterVedlegg(
-        vedleggId: VedleggId,
+        vedleggId: String,
         callId: CallId,
         eier: DokumentEier,
         authorizationHeader: String
@@ -229,7 +229,7 @@ class K9MellomlagringGateway(
 
         val urlMedId = Url.buildURL(
             baseUrl = komplettUrl,
-            pathParts = listOf(vedleggId.value, "persister")
+            pathParts = listOf(vedleggId, "persister")
         )
 
         val body = objectMapper.writeValueAsBytes(eier)
@@ -262,12 +262,12 @@ class K9MellomlagringGateway(
         )
     }
 
-    suspend fun hentVedlegg(vedleggId: VedleggId, idToken: IdToken, eier: DokumentEier, callId: CallId): Vedlegg? {
+    suspend fun hentVedlegg(vedleggId: String, idToken: IdToken, eier: DokumentEier, callId: CallId): Vedlegg? {
         val body = objectMapper.writeValueAsBytes(eier)
 
         val urlMedId = Url.buildURL(
             baseUrl = komplettUrl,
-            pathParts = listOf(vedleggId.value)
+            pathParts = listOf(vedleggId)
         )
 
         val httpRequest = urlMedId
@@ -284,7 +284,7 @@ class K9MellomlagringGateway(
     }
 
     internal suspend fun fjernHoldPåPersistertVedlegg(
-        vedleggId: List<VedleggId>,
+        vedleggId: List<String>,
         callId: CallId,
         eier: DokumentEier
     ) {
@@ -308,7 +308,7 @@ class K9MellomlagringGateway(
     }
 
     private suspend fun requestFjerneHoldPåPersisterVedlegg(
-        vedleggId: VedleggId,
+        vedleggId: String,
         callId: CallId,
         eier: DokumentEier,
         authorizationHeader: String
@@ -316,7 +316,7 @@ class K9MellomlagringGateway(
 
         val urlMedId = Url.buildURL(
             baseUrl = komplettUrl,
-            pathParts = listOf("persistert", vedleggId.value)
+            pathParts = listOf("persistert", vedleggId)
         )
 
         val body = objectMapper.writeValueAsBytes(eier)
