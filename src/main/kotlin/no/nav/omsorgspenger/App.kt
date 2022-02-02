@@ -14,10 +14,7 @@ import io.ktor.jackson.*
 import io.ktor.metrics.micrometer.*
 import io.ktor.routing.*
 import io.prometheus.client.hotspot.DefaultExports
-import no.nav.helse.dusseldorf.ktor.auth.IdTokenProvider
-import no.nav.helse.dusseldorf.ktor.auth.allIssuers
-import no.nav.helse.dusseldorf.ktor.auth.clients
-import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
+import no.nav.helse.dusseldorf.ktor.auth.*
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthCheck
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthConfig
 import no.nav.helse.dusseldorf.ktor.client.buildURL
@@ -29,11 +26,11 @@ import no.nav.helse.dusseldorf.ktor.jackson.JacksonStatusPages
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
+import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.k9.kafka.KafkaProducer
 import no.nav.omsorgspenger.barn.BarnGateway
 import no.nav.omsorgspenger.barn.BarnService
 import no.nav.omsorgspenger.barn.barnApis
-import no.nav.omsorgspenger.general.auth.IdTokenStatusPages
 import no.nav.omsorgspenger.general.systemauth.AccessTokenClientResolver
 import no.nav.omsorgspenger.mellomlagring.MellomlagringService
 import no.nav.omsorgspenger.mellomlagring.mellomlagringApis
@@ -65,6 +62,7 @@ fun Application.omsorgpengesoknadapi() {
 
     val configuration = Configuration(environment.config)
     val accessTokenClientResolver = AccessTokenClientResolver(environment.config.clients())
+    val tokenxClient = CachedAccessTokenClient(accessTokenClientResolver.tokenxClient)
 
     install(ContentNegotiation) {
         jackson {
@@ -111,19 +109,27 @@ fun Application.omsorgpengesoknadapi() {
     install(Routing) {
         val k9MellomlagringGateway = K9MellomlagringGateway(
             baseUrl = configuration.getK9MellomlagringUrl(),
-            accessTokenClient = accessTokenClientResolver.accessTokenClient(),
-            k9MellomlagringScope = configuration.getK9MellomlagringScopes()
+            accessTokenClient = accessTokenClientResolver.azureV2AccessTokenClient,
+            k9MellomlagringScope = configuration.getK9MellomlagringScopes(),
+            exchangeTokenClient = tokenxClient,
+            k9MellomlagringTokenxAudience = configuration.getK9MellomlagringTokenxAudience()
+
         )
 
         val vedleggService = VedleggService(k9MellomlagringGateway = k9MellomlagringGateway)
 
         val sokerGateway = SøkerGateway(
-            baseUrl = configuration.getK9OppslagUrl()
+            baseUrl = configuration.getK9OppslagUrl(),
+            exchangeTokenClient = tokenxClient,
+            k9SelvbetjeningOppslagTokenxAudience = configuration.getK9SelvbetjeningOppslagTokenxAudience()
         )
 
         val barnGateway = BarnGateway(
+            exchangeTokenClient = tokenxClient,
+            k9SelvbetjeningOppslagTokenxAudience = configuration.getK9SelvbetjeningOppslagTokenxAudience(),
             baseUrl = configuration.getK9OppslagUrl()
         )
+
         val barnService = BarnService(
             barnGateway = barnGateway,
             cache = configuration.cache()
@@ -144,12 +150,10 @@ fun Application.omsorgpengesoknadapi() {
         }
 
         authenticate(*issuers.allIssuers()) {
-
             søkerApis(
                 søkerService = søkerService,
                 idTokenProvider = idTokenProvider
             )
-
 
             barnApis(
                 barnService = barnService,

@@ -34,6 +34,8 @@ import java.time.Duration
 class K9MellomlagringGateway(
     private val accessTokenClient: AccessTokenClient,
     private val k9MellomlagringScope: Set<String>,
+    private val exchangeTokenClient: CachedAccessTokenClient,
+    private val k9MellomlagringTokenxAudience: Set<String>,
     private val baseUrl: URI
 ) : HealthCheck {
 
@@ -84,12 +86,15 @@ class K9MellomlagringGateway(
             ) {
                 val contentStream = { ByteArrayInputStream(body) }
 
+                val exchangeToken = IdToken(exchangeTokenClient.getAccessToken(k9MellomlagringTokenxAudience, idToken.value).token)
+                logger.info("Utvekslet token fra {} med token fra {}.", idToken.issuer(), exchangeToken.issuer())
+
                 komplettUrl
                     .toString()
                     .httpPost()
                     .body(contentStream)
                     .header(
-                        HttpHeaders.Authorization to "Bearer ${idToken.value}",
+                        HttpHeaders.Authorization to "Bearer ${exchangeToken.value}",
                         HttpHeaders.ContentType to "application/json",
                         HttpHeaders.Accept to "application/json",
                         HttpHeaders.XCorrelationId to callId.value
@@ -116,8 +121,10 @@ class K9MellomlagringGateway(
         callId: CallId,
         eier: DokumentEier
     ): Boolean {
-        val body = objectMapper.writeValueAsBytes(eier)
+        val exchangeToken = IdToken(exchangeTokenClient.getAccessToken(k9MellomlagringTokenxAudience, idToken.value).token)
+        logger.info("Utvekslet token fra {} med token fra {}.", idToken.issuer(), exchangeToken.issuer())
 
+        val body = objectMapper.writeValueAsBytes(eier)
         val urlMedId = Url.buildURL(
             baseUrl = komplettUrl,
             pathParts = listOf(vedleggId)
@@ -128,7 +135,7 @@ class K9MellomlagringGateway(
             .httpDelete()
             .body(body)
             .header(
-                HttpHeaders.Authorization to "Bearer ${idToken.value}",
+                HttpHeaders.Authorization to "Bearer ${exchangeToken.value}",
                 HttpHeaders.XCorrelationId to callId.value,
                 HttpHeaders.ContentType to "application/json"
             )

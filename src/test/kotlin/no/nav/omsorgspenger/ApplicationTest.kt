@@ -7,6 +7,7 @@ import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import no.nav.helse.TestUtils.Companion.getAuthCookie
+import no.nav.helse.TestUtils.Companion.getTokenDingsToken
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.omsorgspenger.felles.BARN_URL
@@ -32,7 +33,6 @@ private const val forLangtNavn =
 private const val fnr = "290990123456"
 private const val fnrUtenBarn = "25118921464"
 private const val ikkeMyndigFnr = "12125012345"
-private val ikkeMyndigDato = "2050-12-12"
 
 class ApplicationTest {
 
@@ -43,6 +43,7 @@ class ApplicationTest {
             .withAzureSupport()
             .withNaisStsSupport()
             .withLoginServiceSupport()
+            .withTokendingsSupport()
             .omsorgspengesoknadApiConfig()
             .build()
             .stubOppslagHealth()
@@ -54,6 +55,8 @@ class ApplicationTest {
 
         val kafkaEnvironment = KafkaWrapper.bootstrap()
         val kafkaKonsumer = kafkaEnvironment.testConsumer()
+
+        val tokenXToken = getTokenDingsToken(fnr = fnr)
 
         fun getConfig(): ApplicationConfig {
 
@@ -138,6 +141,35 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Henting av barn med tokenx`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = BARN_URL,
+            jwtToken = tokenXToken,
+            expectedCode = HttpStatusCode.OK,
+            //language=JSON
+            expectedResponse = """
+            {
+                "barn": [{
+                    "fødselsdato": "2000-08-27",
+                    "fornavn": "BARN",
+                    "mellomnavn": "EN",
+                    "etternavn": "BARNESEN",
+                    "aktørId": "1000000000001"
+                }, 
+                {
+                    "fødselsdato": "2001-04-10",
+                    "fornavn": "BARN",
+                    "mellomnavn": "TO",
+                    "etternavn": "BARNESEN",
+                    "aktørId": "1000000000002"
+                }]
+            }
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun `Har ingen registrerte barn`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
@@ -175,6 +207,7 @@ class ApplicationTest {
         val respons = requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = BARN_URL,
+            cookie = getAuthCookie(fnr),
             expectedCode = HttpStatusCode.OK,
             //language=json
             expectedResponse = """
@@ -205,27 +238,23 @@ class ApplicationTest {
         assertFalse(responsSomJSONArray.getJSONObject(1).has("identitetsnummer"))
     }
 
-    fun expectedGetSokerJson(
-        fodselsnummer: String,
-        fodselsdato: String = "1997-05-25",
-        myndig: Boolean = true
-    ) = """
-        {
-            "etternavn": "MORSEN",
-            "fornavn": "MOR",
-            "mellomnavn": "HEISANN",
-            "fødselsnummer": "$fodselsnummer",
-            "aktørId": "12345",
-            "fødselsdato": "$fodselsdato",
-            "myndig": $myndig
-        } 
-    """.trimIndent()
-
     @Test
     fun `Hente søker`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = SØKER_URL,
+            cookie = getAuthCookie(fnr),
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = expectedGetSokerJson(fnr)
+        )
+    }
+
+    @Test
+    fun `Hente søker med tokenx`(){
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = SØKER_URL,
+            jwtToken = tokenXToken,
             expectedCode = HttpStatusCode.OK,
             expectedResponse = expectedGetSokerJson(fnr)
         )
@@ -284,6 +313,26 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
             requestEntity = søknad
+        )
+
+        hentOgAssertSøknad(søknad = JSONObject(søknad))
+    }
+
+
+    @Test
+    fun `Sende søknad med tokenx`() {
+        val jpegUrl = engine.jpegUrl(jwtToken = tokenXToken)
+        val pdfUrl = engine.pdUrl(jwtToken = tokenXToken)
+
+        val søknad = SøknadUtils.gyldigSøknad(pdfUrl, jpegUrl).somJson()
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = SØKNAD_URL,
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            requestEntity = søknad,
+            jwtToken = tokenXToken
         )
 
         hentOgAssertSøknad(søknad = JSONObject(søknad))
@@ -374,6 +423,7 @@ class ApplicationTest {
             httpMethod = HttpMethod.Post,
             path = SØKNAD_URL,
             expectedCode = HttpStatusCode.BadRequest,
+            cookie = getAuthCookie(fnr),
             requestEntity =
             //language=JSON
             """{
@@ -504,13 +554,14 @@ class ApplicationTest {
         requestEntity: String? = null,
         expectedResponse: String?,
         expectedCode: HttpStatusCode,
-        leggTilCookie: Boolean = true,
-        cookie: Cookie = getAuthCookie(fnr)
+        jwtToken: String? = null,
+        cookie: Cookie? = null
     ): TestApplicationResponse {
         val testApplicationResponse: TestApplicationResponse
         with(engine) {
             handleRequest(httpMethod, path) {
-                if (leggTilCookie) addHeader(HttpHeaders.Cookie, cookie.toString())
+                if (cookie != null) addHeader(HttpHeaders.Cookie, cookie.toString())
+                if (jwtToken != null) addHeader(HttpHeaders.Authorization, "Bearer $jwtToken")
                 logger.info("Request Entity = $requestEntity")
                 addHeader(HttpHeaders.Accept, "application/json")
                 if (requestEntity != null) addHeader(HttpHeaders.ContentType, "application/json")
@@ -552,4 +603,20 @@ class ApplicationTest {
             søknadFraTopic.getJSONObject("barn").getString("navn")
         )
     }
+
+    fun expectedGetSokerJson(
+        fodselsnummer: String,
+        fodselsdato: String = "1997-05-25",
+        myndig: Boolean = true
+    ) = """
+        {
+            "etternavn": "MORSEN",
+            "fornavn": "MOR",
+            "mellomnavn": "HEISANN",
+            "fødselsnummer": "$fodselsnummer",
+            "aktørId": "12345",
+            "fødselsdato": "$fodselsdato",
+            "myndig": $myndig
+        } 
+    """.trimIndent()
 }
