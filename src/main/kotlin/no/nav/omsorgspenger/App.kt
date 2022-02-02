@@ -93,10 +93,7 @@ fun Application.omsorgpengesoknadapi() {
     install(Authentication) {
        multipleJwtIssuers(
            issuers = issuers,
-           extractHttpAuthHeader = {call ->
-               idTokenProvider.getIdToken(call)
-                   .somHttpAuthHeader()
-           }
+           extractHttpAuthHeader = { call -> idTokenProvider.getIdToken(call).somHttpAuthHeader() }
        )
     }
 
