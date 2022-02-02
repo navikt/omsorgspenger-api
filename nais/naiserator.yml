@@ -12,6 +12,8 @@ spec:
   port: 8080
   kafka:
     pool: {{kafka-pool}}
+  idporten:
+    enabled: true
   liveness:
     path: isalive
     initialDelay: 20
