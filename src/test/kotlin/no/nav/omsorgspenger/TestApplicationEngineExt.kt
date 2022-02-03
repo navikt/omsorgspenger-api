@@ -2,17 +2,16 @@ package no.nav.omsorgspenger
 
 import com.github.tomakehurst.wiremock.http.Cookie
 import io.ktor.http.*
-import io.ktor.http.content.PartData
-import io.ktor.server.testing.TestApplicationEngine
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.setBody
-import io.ktor.utils.io.streams.asInput
+import io.ktor.http.content.*
+import io.ktor.server.testing.*
+import io.ktor.utils.io.streams.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 fun TestApplicationEngine.handleRequestUploadImage(
-    cookie: Cookie,
+    cookie: Cookie? = null,
+    jwtToken: String? = null,
     vedlegg: ByteArray = "vedlegg/iPhone_6.jpg".fromResources().readBytes(),
     fileName: String = "iPhone_6.jpg",
     contentType: String = "image/jpeg",
@@ -21,7 +20,8 @@ fun TestApplicationEngine.handleRequestUploadImage(
     val boundary = "***vedlegg***"
 
     handleRequest(HttpMethod.Post, "/vedlegg") {
-        addHeader("Cookie", cookie.toString())
+        cookie?.let {  addHeader("Cookie", cookie.toString()) }
+        jwtToken?.let { addHeader("Authorization", "Bearer $jwtToken") }
         addHeader(
             HttpHeaders.ContentType,
             ContentType.MultiPart.FormData.withParameter("boundary", boundary).toString()
@@ -59,10 +59,12 @@ fun TestApplicationEngine.handleRequestUploadImage(
 }
 
 fun TestApplicationEngine.jpegUrl(
-    cookie: Cookie
+    cookie: Cookie? = null,
+    jwtToken: String? = null
 ): String {
     return handleRequestUploadImage(
         cookie = cookie,
+        jwtToken = jwtToken,
         vedlegg = "vedlegg/nav-logo.png".fromResources().readBytes(),
         fileName = "nav-logo.png",
         contentType = "image/png"
@@ -70,10 +72,12 @@ fun TestApplicationEngine.jpegUrl(
 }
 
 fun TestApplicationEngine.pdUrl(
-    cookie: Cookie
+    cookie: Cookie? = null,
+    jwtToken: String? = null
 ): String {
     return handleRequestUploadImage(
         cookie = cookie,
+        jwtToken = jwtToken,
         vedlegg = "vedlegg/test.pdf".fromResources().readBytes(),
         fileName = "test.pdf",
         contentType = "application/pdf"

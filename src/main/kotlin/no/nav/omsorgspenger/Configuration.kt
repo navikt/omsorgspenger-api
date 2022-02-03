@@ -22,7 +22,8 @@ data class Configuration(val config : ApplicationConfig) {
 
     internal fun issuers() = config.issuers().withAdditionalClaimRules(mapOf(
         "login-service-v1" to loginServiceClaimRules,
-        "login-service-v2" to loginServiceClaimRules
+        "login-service-v2" to loginServiceClaimRules,
+        "tokenx" to loginServiceClaimRules
     ))
 
     internal fun getCookieName(): String {
@@ -40,10 +41,12 @@ data class Configuration(val config : ApplicationConfig) {
     }
 
     internal fun getK9OppslagUrl() = URI(config.getRequiredString("nav.gateways.k9_oppslag_url", secret = false))
+    fun getK9SelvbetjeningOppslagTokenxAudience(): Set<String> = getScopesFor("k9_selvbetjening_oppslag_tokenx_audience")
 
     internal fun getK9MellomlagringUrl() = URI(config.getRequiredString("nav.gateways.k9_mellomlagring_url", secret = false))
-
     internal fun getK9MellomlagringScopes() = getScopesFor("k9-mellomlagring-scope")
+    internal fun getK9MellomlagringTokenxAudience(): Set<String> = getScopesFor("k9_mellomlagring_tokenx_audience")
+
 
     private fun getScopesFor(operation: String) =
         config.getRequiredList("nav.auth.scopes.$operation", secret = false, builder = { it }).toSet()

@@ -8,6 +8,7 @@ import no.nav.helse.dusseldorf.ktor.auth.IdToken
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
+import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.omsorgspenger.general.CallId
 import no.nav.omsorgspenger.general.oppslag.K9OppslagGateway
 import no.nav.omsorgspenger.general.oppslag.throwable
@@ -19,6 +20,8 @@ import java.time.Duration
 import java.time.LocalDate
 
 class BarnGateway(
+    private val exchangeTokenClient: CachedAccessTokenClient,
+    private val k9SelvbetjeningOppslagTokenxAudience: Set<String>,
     baseUrl: URI
 ) : K9OppslagGateway(baseUrl) {
 
@@ -43,6 +46,9 @@ class BarnGateway(
         idToken: IdToken,
         callId: CallId
     ): List<BarnOppslagDTO> {
+        val exchangeToken = IdToken(exchangeTokenClient.getAccessToken(k9SelvbetjeningOppslagTokenxAudience, idToken.value).token)
+        logger.info("Utvekslet token fra {} med token fra {}.", idToken.issuer(), exchangeToken.issuer())
+
         val barnUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
@@ -51,7 +57,7 @@ class BarnGateway(
             )
         ).toString()
 
-        val httpRequest = generateHttpRequest(idToken, barnUrl, callId)
+        val httpRequest = generateHttpRequest(exchangeToken, barnUrl, callId)
 
         val oppslagRespons = Retry.retry(
             operation = HENTE_BARN_OPERATION,
