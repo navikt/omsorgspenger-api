@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 val dusseldorfKtorVersion = "3.1.6.7-3fd207a"
-val k9FormatVersion = "5.7.2"
+val k9FormatVersion = "5.7.7"
 val ktorVersion = ext.get("ktorVersion").toString()
 val fuelVersion = "2.3.1"
 val kafkaEmbeddedEnvVersion = ext.get("kafkaEmbeddedEnvVersion").toString()
