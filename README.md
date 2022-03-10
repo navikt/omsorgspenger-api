@@ -3,6 +3,8 @@
 ![CI / CD](https://github.com/navikt/omsorgspenger-api/workflows/CI%20/%20CD/badge.svg)
 ![NAIS Alerts](https://github.com/navikt/omsorgspenger-api/workflows/Alerts/badge.svg)
 
+OBS: Erstattet av k9-brukerdialog-api
+
 # Innholdsoversikt
 * [1. Kontekst](#1-kontekst)
 * [2. Funksjonelle Krav](#2-funksjonelle-krav)
